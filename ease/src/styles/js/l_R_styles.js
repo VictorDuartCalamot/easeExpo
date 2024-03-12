@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-export const l_R_styles = StyleSheet.create({
+const l_R_styles = StyleSheet.create({
   container:{
     flex:1
   },
@@ -48,3 +48,5 @@ export const l_R_styles = StyleSheet.create({
     fontSize: 12,
   },
 });
+
+export default l_R_styles;

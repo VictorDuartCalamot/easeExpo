@@ -1,8 +1,8 @@
-import { View, ImageBackground, TextInput, Image} from 'react-native'
+import { View, ImageBackground, TextInput, Image, Button } from 'react-native'
 import React, {useState} from 'react'
 import { MyButton } from '../components/MyButton'
 import { getUnmetPasswordRequirements } from '../utils/passwordUtils'
-import { l_R_styles } from '../styles/js/l_R_styles'
+import l_R_styles from '../styles/css/l_R_styles.css'
 
 const RegisterScreen = () => {
     const [username, setUsername] = useState('');
