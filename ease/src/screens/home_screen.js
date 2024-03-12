@@ -3,9 +3,9 @@ import { View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { SettingsScreen } from './SettingsScreen';
-import { ProfileScreen } from './ProfileScreen';
-import { homeStyle } from '../styles/js/homeStyle';
+import homeStyle from '../styles/js/homeStyle';
+import SettingsScreen from './settings_screen';
+import ProfileScreen from './profile_screen';
 
 const Tab = createBottomTabNavigator();
 
