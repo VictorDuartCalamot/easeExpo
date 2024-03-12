@@ -1,40 +1,62 @@
-import React from 'react';
-import { View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import * as React from 'react';
+import { Alert, Settings, Text, View, SafeAreaView} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SettingsScreen } from './settings_screen';
-import { ProfileScreen } from './profile_screen';
-import { homeStyle } from '../styles/js/homeStyle';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import SettingsScreens from './settings_screen';
+import AdminScreen1   from './admin_screen';
+function Profile() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Profile!</Text>
+    </View>
+  );
+}
+
+function Home() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Profile!</Text>
+    </View>
+  );
+}
 
 const Tab = createBottomTabNavigator();
 
-const HomeScreen = ({ navigation }) => {
+export default function App() {
   return (
     <NavigationContainer independent={true}>
       <Tab.Navigator
         screenOptions={({ route }) => ({
-          tabBarIcon: ({ color, size }) => {
+          tabBarIcon: ({ focused, color, size }) => {
             let iconName;
 
-            if (route.name === 'Profile') {
-              iconName = 'menu';
+            if (route.name === 'Home') {
+              iconName = focused ? 'home-outline' : 'home-outline';
             } else if (route.name === 'Settings') {
-              iconName = 'home';
+              iconName = focused ? 'settings-outline' : 'settings-outline';
+            } else if (route.name === 'Profile') {
+              iconName = focused ? 'person-circle-outline' : 'person-circle-outline';
             }
+              else if (route.name === 'Admin') {
+                iconName = focused ? 'shield-outline' : 'shield-outline';
+           }
 
+            // You can return any component that you like here!
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: 'tomato',
-          tabBarInactiveTintColor: 'gray',
-          tabBarStyle: homeStyle.tabBarStyle,
         })}
+        tabBarOptions={{
+          activeTintColor: 'tomato',
+          inactiveTintColor: 'gray',
+        }}
       >
-        <Tab.Screen name="Profile" component={ProfileScreen} />
-        <Tab.Screen name="Settings" component={SettingsScreen} />
+        <Tab.Screen name="Home" component={Home} />
+        <Tab.Screen name="Admin" component={AdminScreen1} />
+        <Tab.Screen name="Settings" component={SettingsScreens} />
+        <Tab.Screen name="Profile" component={Profile} />
+
       </Tab.Navigator>
     </NavigationContainer>
   );
-};
-
-export default HomeScreen;
+}
