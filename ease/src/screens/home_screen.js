@@ -3,8 +3,8 @@ import { View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { SettingsScreen } from './SettingsScreen';
-import { ProfileScreen } from './ProfileScreen';
+import { SettingsScreen } from './settings_screen';
+import { ProfileScreen } from './profile_screen';
 import { homeStyle } from '../styles/js/homeStyle';
 
 const Tab = createBottomTabNavigator();

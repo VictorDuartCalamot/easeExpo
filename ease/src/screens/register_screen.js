@@ -1,6 +1,5 @@
-import { View, ImageBackground, TextInput, Image} from 'react-native'
+import { View, ImageBackground, TextInput, Image, Button, TouchableOpacity} from 'react-native'
 import React, {useState} from 'react'
-import { MyButton } from '../components/MyButton'
 import { getUnmetPasswordRequirements } from '../utils/passwordUtils'
 import { l_R_styles } from '../styles/js/l_R_styles'
 
@@ -53,7 +52,7 @@ const RegisterScreen = () => {
                         </View>
                     )}
 
-                    <MyButton title="Register" onPress={handleRegister}/>
+                    <Text>ola</Text>
                 </View>
             </ImageBackground>
         </View>
