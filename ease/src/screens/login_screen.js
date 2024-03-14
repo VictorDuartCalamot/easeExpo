@@ -20,11 +20,11 @@ const LoginScreen = ({navigation}) =>{
           <TextInput placeholder ="Password" secureTextEntry/>
           <View style={styles.border}/>
           
-          <Text style={{marginTop:15,color:"blue" }} onPress={() =>navigation.navigate('Register')}
+          <Text style={{marginTop:15,color:"blue" }} onPress={() =>navigation.navigate(Register)}
           >Don't have an account?</Text>
 
           <Text style={{marginTop:15,color:"blue" }}>Don't remember your password?</Text>
-          <Text style={{marginTop:15,color:"blue" }} onPress={() =>navigation.navigate('Home')}
+          <Text style={{marginTop:15,color:"blue" }} onPress={() =>navigation.navigate(Home)}
           >Salto de pagina</Text>
 
           <Text>iniciar sesion</Text>
