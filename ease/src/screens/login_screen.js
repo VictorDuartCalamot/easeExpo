@@ -1,4 +1,4 @@
-import {Text, View, StyleSheet,ImageBackground,TextInput,Image,TouchableOpacity} from 'react-native'
+import {Text, View, StyleSheet,ImageBackground,TextInput,Image,Button} from 'react-native'
 import React from 'react'
 import Register from './register_screen';
 import Home from './home_screen';
@@ -28,6 +28,7 @@ const LoginScreen = ({navigation}) =>{
           >Salto de pagina</Text>
 
           <Text>iniciar sesion</Text>
+          {/**<Button>iniciar sesion</Button> */}
       </View>
       </ImageBackground>
     </View>
