@@ -42,14 +42,12 @@ const DrawerMenu = ({ navigation, children }) => {
 const styles = StyleSheet.create({
     drawer: {
         flex: 1,
-        backgroundColor: '#7FFF00',
         padding: 15,
     },
     menuItem: {
         fontSize: 18,
         padding: 10,
         borderBottomWidth: 1,
-        borderBottomColor: '#dddddd',
     },
     menuButton: {
         position: 'absolute',
@@ -59,7 +57,7 @@ const styles = StyleSheet.create({
     },
     menuButtonText: {
         fontSize: 24,
-        color: '#FFF'
+        color: 'black'
     },
 });
 
