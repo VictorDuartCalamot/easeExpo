@@ -1,4 +1,4 @@
-import { View, ImageBackground, TextInput, Image, Button, TouchableOpacity} from 'react-native'
+import { View, ImageBackground, TextInput, Image, Button, TouchableOpacity, Text} from 'react-native'
 import React, {useState} from 'react'
 import { getUnmetPasswordRequirements } from '../utils/passwordUtils'
 import { l_R_styles } from '../styles/js/l_R_styles'

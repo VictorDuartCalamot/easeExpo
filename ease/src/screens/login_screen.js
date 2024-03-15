@@ -9,7 +9,7 @@ import Home from './home_screen';
 const LoginScreen = ({navigation}) =>{
   return(
     <View style={styles.container}>
-      <ImageBackground source={require("../pictures/fondo.png")}
+      <ImageBackground source={require("../pictures/verde1.jpg")}
             style={styles.ImageBackground}>
       <View style={styles.inputContainer}>
         <Image source={require("../pictures/logo.png")}
@@ -20,11 +20,11 @@ const LoginScreen = ({navigation}) =>{
           <TextInput placeholder ="Password" secureTextEntry/>
           <View style={styles.border}/>
           
-          <Text style={{marginTop:15,color:"blue" }} onPress={() =>navigation.navigate(Register)}
+          <Text style={{marginTop:15,color:"blue" }} onPress={() =>navigation.navigate('Register')}
           >Don't have an account?</Text>
 
           <Text style={{marginTop:15,color:"blue" }}>Don't remember your password?</Text>
-          <Text style={{marginTop:15,color:"blue" }} onPress={() =>navigation.navigate(Home)}
+          <Text style={{marginTop:15,color:"blue" }} onPress={() =>navigation.navigate('Home')}
           >Salto de pagina</Text>
 
           <Text>iniciar sesion</Text>
