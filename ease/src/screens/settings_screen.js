@@ -1,12 +1,26 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet, Settings } from "react-native";
+import DrawerMenu from "../components/DrawerMenu";
 
-function SettingScreen() {
+function SettingsScreen({navigation}) {
     return (
-        <View>
-            <Text>SettingScreen</Text>
-        </View>
+        <DrawerMenu navigation={navigation}>
+            <View style={styles.container}>
+                <Text style={styles.title}>SettingsScreen</Text>
+            </View>
+        </DrawerMenu>
     );
 }
 
-export default SettingScreen;
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    title: {
+      fontSize: 24,
+    },
+})
+
+export default SettingsScreen;

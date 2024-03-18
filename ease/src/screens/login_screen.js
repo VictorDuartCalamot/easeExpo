@@ -1,4 +1,4 @@
-import {Text, View, StyleSheet,ImageBackground,TextInput,Image,Button} from 'react-native'
+import {Text, View, StyleSheet,ImageBackground,TextInput,Image,Button, TouchableOpacity,onp} from 'react-native'
 import React from 'react'
 import Register from './register_screen';
 import Home from './home_screen';
@@ -27,7 +27,9 @@ const LoginScreen = ({navigation}) =>{
           <Text style={{marginTop:15,color:"blue" }} onPress={() =>navigation.navigate('Home')}
           >Salto de pagina</Text>
 
-          <Text>iniciar sesion</Text>
+          <Button title="Iniciar Sesion" style={styles.button}>
+            <Text style={styles.buttonText}>Iniciar Sesión</Text>
+          </Button>
           {/**<Button>iniciar sesion</Button> */}
       </View>
       </ImageBackground>
@@ -66,5 +68,19 @@ const styles = StyleSheet.create({
       alignSelf:"center",
       borderRadius:30,
       marginBottom:20,
+    },
+    button: {
+      backgroundColor: '#3498db',
+      paddingVertical: 15,
+      paddingHorizontal: 30,
+      borderRadius: 5,
+      marginTop:15,
+    },
+    buttonText: {
+      color: '#000000',
+      fontSize: 18,
+      fontWeight: 'bold',
+      textAlign: 'center',
+      top:25,
     }
   })

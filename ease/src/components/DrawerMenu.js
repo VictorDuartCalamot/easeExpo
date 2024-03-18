@@ -48,6 +48,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
         padding: 10,
         borderBottomWidth: 1,
+        marginTop:30,
+        marginBottom:-10,
     },
     menuButton: {
         position: 'absolute',
@@ -57,7 +59,8 @@ const styles = StyleSheet.create({
     },
     menuButtonText: {
         fontSize: 24,
-        color: 'black'
+        color: 'black',
+        marginTop:30,
     },
 });
 
