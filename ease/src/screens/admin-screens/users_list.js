@@ -1,15 +1,15 @@
 import React from "react";
 import { View, Text } from "react-native";
-import DrawerMenuAdmin from "../components/DrawerMenu-admin";
+import DrawerMenuAdmin from "../../components/DrawerMenu-admin";
 
-function AdminScreen({navigation}) {
+const usersList = ({ navigation }) => {
     return (
         <DrawerMenuAdmin navigation={navigation}>
             <View>
-                <Text>AdminScreen</Text>
+                <Text>Users List</Text>
             </View>
         </DrawerMenuAdmin>
-    );
+    )
 }
 
-export default AdminScreen;
+export default usersList;

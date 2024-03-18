@@ -6,6 +6,8 @@ import HomeScreen from './src/screens/home_screen';
 import SettingScreen from './src/screens/settings_screen';
 import ProfileScreen from './src/screens/profile_screen';
 import AdminScreen from './src/screens/admin_screen';
+import usersList from './src/screens/admin-screens/users_list';
+import userData from './src/screens/admin-screens/user_data';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,6 +21,8 @@ export default function App() {
         <Stack.Screen name='Setting' component={SettingScreen} options={{headerShown: false}}/>
         <Stack.Screen name='Profile' component={ProfileScreen} options={{headerShown: false}}/>
         <Stack.Screen name='Admin' component={AdminScreen} options={{headerShown: false}}/>
+        <Stack.Screen name='usersList' component={usersList} options={{headerShown: false}}/>
+        <Stack.Screen name='userData' component={userData} options={{headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
