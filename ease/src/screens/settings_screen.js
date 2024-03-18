@@ -1,8 +1,11 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import DrawerMenu from "../components/DrawerMenu";
+import { View, Text, StyleSheet, Settings } from "react-native";
+import DrawerMenu from "../components/DrawerMenu";
 
 function SettingScreen({ navigation }) {
+function SettingsScreen({navigation}) {
     return (
         <DrawerMenu navigation={navigation}>
             <View style={styles.container}>
