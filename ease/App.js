@@ -9,6 +9,8 @@ import ProfileScreen from './src/screens/profile_screen';
 import AdminScreen from './src/screens/admin_screen';
 import UsersList from './src/screens/admin-screens/users_list';
 import UserData from './src/screens/admin-screens/user_data';
+import SummaryScreen from './src/screens/summary_screen';
+import Menu from './src/components/menu';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,13 +20,14 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName='Login'>
         <Stack.Screen name='Login' component={LoginScreen} options={{headerShown:false}}/>
-        <Stack.Screen name='Home'component={HomeScreen} options={{headerShown:false}}/>
+        <Stack.Screen name='Home'component={Menu} options={{headerShown:false}}/>
         <Stack.Screen name='Register' component={RegisterScreen} options={{headerShown:false}}/>
         <Stack.Screen name='Setting' component={SettingScreen} options={{headerShown:false}}/>
         <Stack.Screen name='Admin' component={AdminScreen} options={{headerShown:false}}/>
         <Stack.Screen name='UsersList' component={UsersList} options={{headerShown:false}}/>
         <Stack.Screen name='UserData' component={UserData} options={{headerShown:false}}/>
         <Stack.Screen name='Profile' component={ProfileScreen} options={{headerShown:false}}/>
+        <Stack.Screen name='Summary' component={SummaryScreen} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
