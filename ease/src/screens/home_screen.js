@@ -1,14 +1,11 @@
 import * as React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-import DrawerMenu from '../components/DrawerMenu';
 
-function HomeScreen({ navigation }) {
+function HomeScreen({navigation}) {
   return (
-    <DrawerMenu navigation={navigation}>
-      <View style={styles.container}>
-        <Text style={styles.title}>HomeScreen</Text>
-      </View>
-    </DrawerMenu>
+    <View style={styles.container}>
+      <Text style={styles.title}>HomeScreen</Text>
+    </View>
   );
 }
 

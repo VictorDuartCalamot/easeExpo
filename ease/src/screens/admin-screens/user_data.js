@@ -1,15 +1,23 @@
 import React from "react";
-import { View, Text } from "react-native";
-import DrawerMenuAdmin from "../../components/DrawerMenu-admin";
+import { View, Text, StyleSheet } from "react-native";
 
-const userData = ({ navigation }) => {
+function UserData ({ navigation }) {
     return (
-        <DrawerMenuAdmin navigation={navigation}>
-            <View>
-                <Text>User Data</Text>
-            </View>
-        </DrawerMenuAdmin>
+        <View style={styles.container}>
+            <Text style={styles.title}>User Data</Text>
+        </View>
     )
 }
 
-export default userData;
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    title: {
+      fontSize: 24,
+    },
+})
+
+export default UserData;

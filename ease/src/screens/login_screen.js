@@ -1,10 +1,5 @@
 import {Text, View, StyleSheet,ImageBackground,TextInput,Image,Button, TouchableOpacity,onp} from 'react-native'
 import React from 'react'
-import Register from './register_screen';
-import Home from './home_screen';
-
-
-
 
 const LoginScreen = ({navigation}) =>{
   return(
@@ -26,6 +21,8 @@ const LoginScreen = ({navigation}) =>{
           <Text style={{marginTop:15,color:"blue" }}>Don't remember your password?</Text>
           <Text style={{marginTop:15,color:"blue" }} onPress={() =>navigation.navigate('Home')}
           >Salto de pagina</Text>
+          <Text style={{marginTop:15,color:"blue" }} onPress={() =>navigation.navigate('Admin')}
+          >admin view</Text>
 
           <Button title="Iniciar Sesion" style={styles.button}>
             <Text style={styles.buttonText}>Iniciar Sesión</Text>
@@ -44,12 +41,13 @@ const styles = StyleSheet.create({
     },
     ImageBackground:{
       height:"100%",
+      width: "auto",
       paddingHorizontal: 20,
-      alignItems:'center'
+      alignItems:'center',
     },
     inputContainer:{
       height: 450,
-      width:"100%",
+      width:"85%",
       backgroundColor:"white",
       borderRadius:20,
       justifyContent:"center",

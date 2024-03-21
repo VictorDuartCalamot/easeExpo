@@ -3,7 +3,7 @@ import React, {useState} from 'react'
 import { getUnmetPasswordRequirements } from '../utils/passwordUtils'
 import { l_R_styles } from '../styles/js/l_R_styles'
 
-const RegisterScreen = () => {
+const RegisterScreen = ({navigation}) => {
     const [username, setUsername] = useState('');
     const [lastname, setLastname] = useState('');
     const [email, setEmail] = useState('');
@@ -52,7 +52,7 @@ const RegisterScreen = () => {
                         </View>
                     )}
 
-                    <Text>ola</Text>
+                    <Text onPress={() => navigation.navigate('Login')}>Back</Text> 
                 </View>
             </ImageBackground>
         </View>
