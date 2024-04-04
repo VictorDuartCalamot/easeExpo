@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Image} from 'react-native';
 
 const SettingsScreen = () => {
   const [email, setEmail] = useState('');
@@ -20,6 +20,9 @@ const SettingsScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Configuración</Text>
+      <Image source={require("../pictures/logo.png")}
+          style={styles.ImageLogo}>
+        </Image>
       <View style={styles.section}>
         <Text style={styles.label}>Cambiar correo electrónico</Text>
         <TextInput
@@ -58,6 +61,13 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 20,
+  },
+  ImageLogo:{
+    width:100,
+    height:100,
+    alignSelf:"center",
+    borderRadius:30,
+    marginBottom:20,
   },
   label: {
     fontSize: 18,
