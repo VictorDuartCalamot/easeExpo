@@ -1,7 +1,21 @@
-import {Text, View, StyleSheet,ImageBackground,TextInput,Image,Button, TouchableOpacity,onp} from 'react-native'
-import React from 'react'
+import {Text, View, StyleSheet,ImageBackground,TextInput,Image,Button, TouchableOpacity,onp, Platform} from 'react-native'
+import React, { useState } from 'react'
+import { loginUser } from '../services/api_authentication';
 
 const LoginScreen = ({navigation}) =>{
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    try {
+      const response = await loginUser(email, password, Platform.OS);
+      console.log(response);
+      navigation.navigate('Home');
+    }catch(error) {
+      console.error(error);
+    }
+  };
+
   return(
     <View style={styles.container}>
       <ImageBackground source={require("../pictures/verde1.jpg")}
@@ -10,24 +24,19 @@ const LoginScreen = ({navigation}) =>{
         <Image source={require("../pictures/logo.png")}
           style={styles.ImageLogo}>
         </Image>
-          <TextInput placeholder="Enter Email or username"/>
+          <TextInput placeholder="Enter Email or username" value={email} onChangeText={setEmail}/>
           <View style={styles.border}/>
-          <TextInput placeholder ="Password" secureTextEntry/>
+          <TextInput placeholder ="Password" secureTextEntry value={password} onChangeText={setPassword}/>
           <View style={styles.border}/>
           
           <Text style={{marginTop:15,color:"blue" }} onPress={() =>navigation.navigate('Register')}
           >Don't have an account?</Text>
 
           <Text style={{marginTop:15,color:"blue" }}>Don't remember your password?</Text>
-          <Text style={{marginTop:15,color:"blue" }} onPress={() =>navigation.navigate('Home')}
-          >Salto de pagina</Text>
-          <Text style={{marginTop:15,color:"blue" }} onPress={() =>navigation.navigate('Admin')}
-          >admin view</Text>
 
-          <Button title="Iniciar Sesion" style={styles.button}>
+          <Button title="Iniciar Sesion" style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Iniciar Sesión</Text>
           </Button>
-          {/**<Button>iniciar sesion</Button> */}
       </View>
       </ImageBackground>
     </View>

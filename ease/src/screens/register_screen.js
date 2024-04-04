@@ -2,6 +2,7 @@ import { View, ImageBackground, TextInput, Image, Button, TouchableOpacity, Text
 import React, {useState} from 'react'
 import { getUnmetPasswordRequirements } from '../utils/passwordUtils'
 import { l_R_styles } from '../styles/js/l_R_styles'
+import { registerUser } from '../services/api_authentication'
 
 const RegisterScreen = ({navigation}) => {
     const [username, setUsername] = useState('');
@@ -11,13 +12,14 @@ const RegisterScreen = ({navigation}) => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [passwordRequirements, setPasswordRequirements] = useState([]);
 
-    const handleRegister = () => {
-        console.log('Registering...');
-        console.log('Username:', username);
-        console.log('LastName', lastname);
-        console.log('Email:', email);
-        console.log('Password:', password);
-        console.log('confirm your password:', confirmPassword);
+    const handleRegister = async () => {
+        try {
+            const response = await registerUser(username, lastname, email, password);
+            console.log(response);
+            navigation.navigate('Login');
+        }catch(error){
+            console.error(error);
+        }
     };
 
     const handlePasswordChange = (text) => {

@@ -1,47 +1,47 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import { Platform, View, StyleSheet } from "react-native";
-import HomeScreen from "../screens/home_screen";
-import SettingsScreen from "../screens/settings_screen";
-import SummaryScreen from "../screens/summary_screen";
+import UserData from "../screens/admin-screens/user_data";
+import UsersList from "../screens/admin-screens/users_list";
+import AdminScreen from "../screens/admin_screen";
 
 const Tab = Platform.OS === 'web' ? createMaterialTopTabNavigator() : createBottomTabNavigator();
 
-const Menu = () => {
+const MenuAdmin = () => {
     return(
         <View style={styles.container}>
             <Tab.Navigator>
                 <Tab.Screen
-                    name="Category"
-                    component={HomeScreen}
+                    name="Admin"
+                    component={AdminScreen}
                     options={{
-                        tabBarLabel: 'Category',
+                        tabBarLabel: 'Admin',
                         tabBarIcon: ({ color, size }) => (
-                            <MaterialIcons name="data-usage" size={size} color={color}/>
+                            <MaterialIcons name="admin-panel-settings" size={size} color={color}/>
                         ),
                         headerShown: false
                     }}
                 />
                 <Tab.Screen
-                    name="Setting"
-                    component={SettingsScreen}
+                    name="User Data"
+                    component={UserData}
                     options={{
-                        tabBarLabel: 'Setting',
+                        tabBarLabel: 'User Data',
                         tabBarIcon: ({ color, size }) => (
-                            <MaterialIcons name="settings" size={size} color={color}/>
+                            <FontAwesome5 name="user-edit" size={size} color={color}/>
                         ),
                         headerShown: false
                     }}
                 />
                 <Tab.Screen
-                    name="Summary"
-                    component={SummaryScreen}
+                    name="Users List"
+                    component={UsersList}
                     options={{
-                        tabBarLabel: 'Summary',
+                        tabBarLabel: 'Users List',
                         tabBarIcon: ({ color, size }) => (
-                            <MaterialIcons name="description" size={size} color={color}/>
+                            <FontAwesome5 name="users" size={size} color={color}/>
                         ),
                         headerShown: false
                     }}
@@ -58,4 +58,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Menu;
+export default MenuAdmin
