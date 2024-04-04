@@ -11,11 +11,8 @@ import UsersList from './src/screens/admin-screens/users_list';
 import UserData from './src/screens/admin-screens/user_data';
 import SummaryScreen from './src/screens/summary_screen';
 import Menu from './src/components/menu';
-<<<<<<< HEAD
 import MenuAdmin from './src/components/menu_admin';
-=======
 import SplashScreen from './src/screens/splash_screen';
->>>>>>> e877394bbcc7dd788711e73408d33848c92c316b
 
 const Stack = createNativeStackNavigator();
 

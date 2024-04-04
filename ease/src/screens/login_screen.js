@@ -24,7 +24,7 @@ const LoginScreen = ({navigation}) =>{
         <Image source={require("../pictures/logo.png")}
           style={styles.ImageLogo}>
         </Image>
-          <TextInput placeholder="Enter Email or username" value={email} onChangeText={setEmail}/>
+          <TextInput placeholder="Enter Email" value={email} onChangeText={setEmail}/>
           <View style={styles.border}/>
           <TextInput placeholder ="Password" secureTextEntry value={password} onChangeText={setPassword}/>
           <View style={styles.border}/>
