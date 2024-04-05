@@ -1,4 +1,4 @@
-import {Text, View, StyleSheet,ImageBackground,TextInput,Image,Button, TouchableOpacity,onp, Platform} from 'react-native'
+import {Text, View, StyleSheet,ImageBackground,TextInput,Image,Button, Alert,onp, Platform} from 'react-native'
 import React, { useState } from 'react'
 import { loginUser } from '../services/api_authentication';
 
@@ -9,10 +9,11 @@ const LoginScreen = ({navigation}) =>{
   const handleLogin = async () => {
     try {
       const response = await loginUser(email, password, Platform.OS);
-      console.log(response);
+      console.log('Login response', response);
       navigation.navigate('Home');
     }catch(error) {
-      console.error(error);
+      console.error('Login error',error);
+      Alert.alert('Error', 'Failed to log in. Please check your credencials and try again');
     }
   };
 
@@ -34,8 +35,8 @@ const LoginScreen = ({navigation}) =>{
 
           <Text style={{marginTop:15,color:"blue" }}>Don't remember your password?</Text>
 
-          <Button title="Iniciar Sesion" style={styles.button} onPress={handleLogin}>
-            <Text style={styles.buttonText}>Iniciar Sesión</Text>
+          <Button title="Login" style={styles.button} onPress={handleLogin}>
+            <Text style={styles.buttonText}>Login</Text>
           </Button>
       </View>
       </ImageBackground>
@@ -68,6 +69,7 @@ const styles = StyleSheet.create({
       backgroundColor:"gray",
       height:1,
       alignSelf:"center",
+      marginBottom: 15,
     },
     ImageLogo:{
       width:100,
@@ -90,4 +92,4 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       top:25,
     }
-  })
+})
