@@ -30,7 +30,8 @@ const LoginScreen = ({navigation}) =>{
     <View style={styles.container}>
       <ImageBackground source={require("../pictures/verde1.jpg")}
             style={styles.ImageBackground}>
-      <View style={styles.inputContainer}>
+        <View style={[Platform.OS === 'web' && styles.containerWeb]}>
+        <View style={styles.inputContainer}>
         <Image source={require("../pictures/logo.png")}
           style={styles.ImageLogo}>
         </Image>
@@ -47,58 +48,70 @@ const LoginScreen = ({navigation}) =>{
           <Button title="Login" style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Login</Text>
           </Button>
+          </View>
       </View>
       </ImageBackground>
     </View>
   );
 };
 
-export default LoginScreen;
 const styles = StyleSheet.create({
-    container:{
-      flex:1
-    },
-    ImageBackground:{
-      height:"100%",
-      width: "auto",
-      paddingHorizontal: 20,
-      alignItems:'center',
-    },
-    inputContainer:{
-      height: 450,
-      width:"85%",
-      backgroundColor:"white",
-      borderRadius:20,
-      justifyContent:"center",
-      marginTop: 170,
-      paddingHorizontal:25,
-    },
-    border:{
-      width:"100%",
-      backgroundColor:"gray",
-      height:1,
-      alignSelf:"center",
-      marginBottom: 15,
-    },
-    ImageLogo:{
-      width:100,
-      height:100,
-      alignSelf:"center",
-      borderRadius:30,
-      marginBottom:20,
-    },
-    button: {
-      backgroundColor: '#3498db',
-      paddingVertical: 15,
-      paddingHorizontal: 30,
-      borderRadius: 5,
-      marginTop:15,
-    },
-    buttonText: {
-      color: '#000000',
-      fontSize: 18,
-      fontWeight: 'bold',
-      textAlign: 'center',
-      top:25,
-    }
-})
+  container: {
+    flex: 1,
+  },
+  ImageBackground: {
+    height: "100%",
+    width: "auto",
+    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  containerWeb: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: "30%",
+    marginLeft: "auto", // Mover hacia la derecha
+    marginRight: "10", // Mover hacia la izquierda
+    height: '100vh',
+    backgroundImage: 'url("../pictures/verde1.jpg")', // URL de la imagen de fondo
+    marginTop: '-10vh'    
+  },
+  inputContainer: {
+    height: 450,
+    width: "85%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    justifyContent: "center",
+    marginTop: 170,
+    paddingHorizontal: 25,
+  },
+  border: {
+    width: "100%",
+    backgroundColor: "gray",
+    height: 1,
+    alignSelf: "center",
+    marginBottom: 15,
+  },
+  ImageLogo: {
+    width: 100,
+    height: 100,
+    alignSelf: "center",
+    borderRadius: 30,
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#3498db',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 5,
+    marginTop: 15,
+  },
+  buttonText: {
+    color: '#000000',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    top: 25,
+  },
+});
+
+export default LoginScreen;
