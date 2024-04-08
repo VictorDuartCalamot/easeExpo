@@ -1,4 +1,4 @@
-import { View, ImageBackground, TextInput, Image, Button, StyleSheet, Text} from 'react-native'
+import { View, ImageBackground, TextInput, Image, Button, StyleSheet, Text, Alert} from 'react-native'
 import React, {useState} from 'react'
 import { getUnmetPasswordRequirements } from '../utils/passwordUtils'
 import { l_R_styles } from '../styles/js/l_R_styles'
@@ -13,9 +13,14 @@ const RegisterScreen = ({navigation}) => {
     const [passwordRequirements, setPasswordRequirements] = useState([]);
 
     const handleRegister = async () => {
+        if (!email || !password || !username || !lastname || !confirmPassword ) {
+            Alert.alert('Rellene todos los campos');
+            return;
+        }
         try {
             const response = await registerUser(username, lastname, email, password);
             console.log(response);
+            Alert.alert('Usuario creado');
             navigation.navigate('Login');
         }catch(error){
             console.error(error);

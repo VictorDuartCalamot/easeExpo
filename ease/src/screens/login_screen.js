@@ -7,10 +7,19 @@ const LoginScreen = ({navigation}) =>{
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Rellene todos los campos');
+      return;
+    }
     try {
       const response = await loginUser(email, password, Platform.OS);
-      console.log('Login response', response);
-      navigation.navigate('Home');
+      if(response.success && response.accountExits) {
+        console.log('Login response', response);
+        Alert.alert('Access');
+        navigation.navigate('Home');
+      } else {
+        Alert.alert("User don't exits");
+      }
     }catch(error) {
       console.error('Login error',error);
       Alert.alert('Error', 'Failed to log in. Please check your credencials and try again');
