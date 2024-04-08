@@ -13,7 +13,7 @@ const LoginScreen = ({navigation}) =>{
     }
     try {
       const response = await loginUser(email, password, Platform.OS);
-      if(response.success && response.accountExits) {
+      if(response) {
         console.log('Login response', response);
         Alert.alert('Access');
         navigation.navigate('Home');
