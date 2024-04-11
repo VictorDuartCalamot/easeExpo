@@ -34,7 +34,7 @@ export const loginUser = async (email,password,os) => {
     const response = await axios.post(baseurl+'users/login/', {
       username: email,
       password: password,
-      OS: os
+      os: os
     });
     
     const {token} = response.data;

@@ -1,4 +1,4 @@
-import {Text, View, StyleSheet,ImageBackground,TextInput,Image,Button, Alert,onp, Platform} from 'react-native'
+import {Text, View, StyleSheet,ImageBackground,TextInput,Image,Button, Alert, Platform} from 'react-native'
 import React, { useState } from 'react'
 import { loginUser } from '../services/api_authentication';
 
@@ -18,7 +18,7 @@ const LoginScreen = ({navigation}) =>{
         Alert.alert('Access');
         navigation.navigate('Home');
       } else {
-        Alert.alert("User don't exits");
+        Alert.alert("User doesn't exist.");
       }
     }catch(error) {
       console.error('Login error',error);
