@@ -1,6 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 baseurl = 'https://ease-backend-xsi2.onrender.com/api/'
+//baseurl = 'https://easeapi.onrender.com/api/'
 
 // Function to store access token securely
 const storeToken = async (Token) => {
@@ -33,7 +34,7 @@ export const loginUser = async (email,password,os) => {
     const response = await axios.post(baseurl+'users/login/', {
       username: email,
       password: password,
-      OS: os
+      os: os
     });
     
     const {token} = response.data;

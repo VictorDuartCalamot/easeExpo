@@ -10,6 +10,8 @@ import {
   Platform,
 } from 'react-native';
 import React, { useState } from 'react';
+import {Text, View, StyleSheet,ImageBackground,TextInput,Image,Button, Alert, Platform} from 'react-native'
+import React, { useState } from 'react'
 import { loginUser } from '../services/api_authentication';
 
 const LoginScreen = ({ navigation }) => {
@@ -29,6 +31,7 @@ const LoginScreen = ({ navigation }) => {
         navigation.navigate('Home');
       } else {
         Alert.alert("User don't exists");
+        Alert.alert("User doesn't exist.");
       }
     } catch (error) {
       console.error('Login error', error);

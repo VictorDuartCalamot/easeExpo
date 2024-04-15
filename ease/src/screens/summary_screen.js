@@ -1,9 +1,11 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import DatePickerButton from "../components/datePickerButton";
 
 function SummaryScreen() {
     return(
         <View style={styles.container}>
+            <DatePickerButton/>
             <Text style={styles.title}>Summary Screen</Text>
         </View>
     )
