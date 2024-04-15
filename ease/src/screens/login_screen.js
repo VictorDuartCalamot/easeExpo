@@ -80,6 +80,15 @@ const LoginScreen = ({ navigation }) => {
 
             <Button title="Login" onPress={handleLogin} />
             <View style={styles.buttonContainer}></View>
+
+            <View style={styles.buttonContainer}>
+  <Button
+    title="Go to Home"
+    onPress={() => navigation.navigate('Home')}
+    style={styles.button}
+  />
+</View>
+
           </View>
         </View>
       </ImageBackground>
