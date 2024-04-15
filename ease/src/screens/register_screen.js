@@ -38,18 +38,19 @@ const RegisterScreen = ({navigation}) => {
               <ImageBackground
                 source={require('../pictures/verde1.jpg')}
                 style={styles.ImageBackground}
-              >        
+              >  
+              <View style={[Platform.OS === 'web' && styles.containerWeb]}>
+                  {Platform.OS === 'web' && (
+                    <View style={styles.esloganContainer}>
+                      <Text style={styles.esloganTextWeb}>Optimiza tus recursos, potencia tu éxito,Gestión inteligente para empresas eficientes.</Text>
+                    </View>
+                  )}      
                   <View style={styles.inputContainer}>
                     <Image
                       source={require('../pictures/logo.png')}
                       style={styles.ImageLogo}
                     />
-                 <View style={[Platform.OS === 'web' && styles.containerWeb]}>
-                  {Platform.OS === 'web' && (
-                    <View style={styles.esloganContainer}>
-                      <Text style={styles.esloganTextWeb}>Optimiza tus recursos, potencia tu éxito,Gestión inteligente para empresas eficientes.</Text>
-                    </View>
-                  )}
+                 
                     <View style={styles.inputWrapper}>
                       <TextInput
                         placeholder="Username"
@@ -101,7 +102,6 @@ const RegisterScreen = ({navigation}) => {
                             ))}
                         </View>
                     )}
-
                     <Button title='Register' style={styles.button} onPress={handleRegister}>
                         <Text style={styles.buttonText} >Register</Text>
                     </Button>
@@ -113,6 +113,7 @@ const RegisterScreen = ({navigation}) => {
 }
 
 export default RegisterScreen;
+
 
 const styles = StyleSheet.create({
     container: {
@@ -127,8 +128,8 @@ const styles = StyleSheet.create({
     containerWeb: {
       justifyContent: 'center',
       alignItems: 'center',
-      width: '20%',
-      marginLeft: 'auto',
+      width: '30%',
+      marginLeft: 'auto', 
       marginRight: '10',
       height: '100vh',
       backgroundImage: 'url("../pictures/verde1.jpg")',
@@ -145,17 +146,18 @@ const styles = StyleSheet.create({
     },
     esloganContainer: {
       top:200,
-      right:750,
+      right:1000,
   
     },
     inputContainer: {
       height: 600,
-      width: '75%',
+      width: '90%',
       backgroundColor: 'white',
-      borderRadius: 20,
+      borderRadius: 40,
       justifyContent: 'center',
-      marginTop: 130,
-      paddingHorizontal: 25,
+      marginTop: 85,
+      paddingHorizontal: 60,
+      
     },
     inputWrapper: {
       marginBottom: 15,
@@ -163,7 +165,7 @@ const styles = StyleSheet.create({
     input: {
       borderBottomWidth: 1,
       borderColor: 'gray',
-      paddingVertical: 10,
+      paddingVertical: 8,
     },
     inputLine: {
       height: 1,

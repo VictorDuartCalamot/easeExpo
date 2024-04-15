@@ -1,17 +1,5 @@
-import {
-  Text,
-  View,
-  StyleSheet,
-  ImageBackground,
-  TextInput,
-  Image,
-  Button,
-  Alert,
-  Platform,
-} from 'react-native';
 import React, { useState } from 'react';
 import {Text, View, StyleSheet,ImageBackground,TextInput,Image,Button, Alert, Platform} from 'react-native'
-import React, { useState } from 'react'
 import { loginUser } from '../services/api_authentication';
 
 const LoginScreen = ({ navigation }) => {
@@ -130,17 +118,17 @@ const styles = StyleSheet.create({
   },
   esloganContainer: {
     top:200,
-    right:750,
+    right:1000,
 
   },
   inputContainer: {
-    height: 450,
-    width: '75%',
+    height: 550,
+    width: '95%',
     backgroundColor: 'white',
-    borderRadius: 20,
+    borderRadius: 40,
     justifyContent: 'center',
-    marginTop: 170,
-    paddingHorizontal: 25,
+    marginTop: 110,
+    paddingHorizontal: 50,
   },
   inputWrapper: {
     marginBottom: 15,
