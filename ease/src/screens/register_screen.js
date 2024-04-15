@@ -1,4 +1,4 @@
-import { View, ImageBackground, TextInput, Image, Button, StyleSheet, Text, Alert} from 'react-native'
+import { View, ImageBackground, TextInput, Image, Button, StyleSheet, Text, Alert, Platform} from 'react-native'
 import React, {useState} from 'react'
 import { getUnmetPasswordRequirements } from '../utils/passwordUtils'
 import { l_R_styles } from '../styles/js/l_R_styles'
@@ -34,22 +34,63 @@ const RegisterScreen = ({navigation}) => {
     };
 
     return (
-        <View style={styles.container}>
-            <ImageBackground source={require("../pictures/verde1.jpg")}
+            <View style={styles.container}>
+              <ImageBackground
+                source={require('../pictures/verde1.jpg')}
                 style={styles.ImageBackground}
-            >
-                <View style={styles.inputContainer}>
-                    <Image source={require("../pictures/logo.png")} style={styles.ImageLogo}/>
-                    <TextInput placeholder='Name' value={username} onChangeText={setUsername}/>
-                    <View style={styles.border}/>
-                    <TextInput placeholder='Last name' value={lastname} onChangeText={setLastname}/>
-                    <View style={styles.border}/>
-                    <TextInput placeholder='Email' value={email} onChangeText={setEmail} keyboardType='email-address'/>
-                    <View style={styles.border}/>
-                    <TextInput placeholder='Password' secureTextEntry value={password} onChangeText={handlePasswordChange}/>
-                    <View style={styles.border}/>
-                    <TextInput placeholder='Confirm password' secureTextEntry value={confirmPassword} onChangeText={setConfirmPassword}/>
-                    <View style={styles.border}/>
+              >        
+                  <View style={styles.inputContainer}>
+                    <Image
+                      source={require('../pictures/logo.png')}
+                      style={styles.ImageLogo}
+                    />
+                 <View style={[Platform.OS === 'web' && styles.containerWeb]}>
+                  {Platform.OS === 'web' && (
+                    <View style={styles.esloganContainer}>
+                      <Text style={styles.esloganTextWeb}>Optimiza tus recursos, potencia tu éxito,Gestión inteligente para empresas eficientes.</Text>
+                    </View>
+                  )}
+                    <View style={styles.inputWrapper}>
+                      <TextInput
+                        placeholder="Username"
+                        value={username}
+                        onChangeText={setUsername}
+                        style={styles.input}
+                      />
+                    </View>
+                    <View style={styles.inputWrapper}>
+                      <TextInput
+                        placeholder="Lastname"
+                        value={lastname}
+                        onChangeText={setLastname}
+                        style={styles.input}
+                      />
+                    </View>
+                    <View style={styles.inputWrapper}>
+                      <TextInput
+                        placeholder="Enter Email"
+                        value={email}
+                        onChangeText={setEmail}
+                        style={styles.input}
+                      />
+                    </View>
+                    <View style={styles.inputWrapper}>
+                      <TextInput
+                        placeholder="Enter Password"
+                        secureTextEntry
+                        value={password}
+                        onChangeText={setPassword}
+                        style={styles.input}
+                      />
+                    </View>
+                    <View style={styles.inputWrapper}>
+                      <TextInput
+                        placeholder="Confirm password"
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword}
+                        style={styles.input}
+                      />
+                    </View>
 
                     {passwordRequirements.length > 0 && (
                         <View style={l_R_styles.passwordRequirementsContainer}>
@@ -62,8 +103,9 @@ const RegisterScreen = ({navigation}) => {
                     )}
 
                     <Button title='Register' style={styles.button} onPress={handleRegister}>
-                                <Text style={styles.buttonText}>Register</Text>
+                        <Text style={styles.buttonText} >Register</Text>
                     </Button>
+                    </View>
                 </View>
             </ImageBackground>
         </View>
@@ -73,50 +115,83 @@ const RegisterScreen = ({navigation}) => {
 export default RegisterScreen;
 
 const styles = StyleSheet.create({
-    container:{
-      flex:1
+    container: {
+      flex: 1,
     },
-    ImageBackground:{
-      height:"100%",
-      width: "auto",
+    ImageBackground: {
+      height: '100%',
+      width: 'auto',
       paddingHorizontal: 20,
-      alignItems:'center',
+      alignItems: 'center',
     },
-    inputContainer:{
-      height: 450,
-      width:"85%",
-      backgroundColor:"white",
-      borderRadius:20,
-      justifyContent:"center",
-      marginTop: 170,
-      paddingHorizontal:25,
+    containerWeb: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '20%',
+      marginLeft: 'auto',
+      marginRight: '10',
+      height: '100vh',
+      backgroundImage: 'url("../pictures/verde1.jpg")',
+      marginTop: '-10vh',
     },
-    border:{
-      width:"100%",
-      backgroundColor:"gray",
-      height:1,
-      alignSelf:"center",
+    esloganTextWeb: {
+      position: 'absolute',
+      top: 10,
+      left: 10,
+      zIndex: 100,
+      color: 'white',
+      fontSize: 30,
+      fontWeight: 'bold',
+    },
+    esloganContainer: {
+      top:200,
+      right:750,
+  
+    },
+    inputContainer: {
+      height: 600,
+      width: '75%',
+      backgroundColor: 'white',
+      borderRadius: 20,
+      justifyContent: 'center',
+      marginTop: 130,
+      paddingHorizontal: 25,
+    },
+    inputWrapper: {
+      marginBottom: 15,
+    },
+    input: {
+      borderBottomWidth: 1,
+      borderColor: 'gray',
+      paddingVertical: 10,
+    },
+    inputLine: {
+      height: 1,
+      backgroundColor: 'gray',
+    },
+    ImageLogo: {
+      width: 100,
+      height: 100,
+      alignSelf: 'center',
+      borderRadius: 30,
       marginBottom: 20,
-    },
-    ImageLogo:{
-      width:100,
-      height:100,
-      alignSelf:"center",
-      borderRadius:30,
-      marginBottom:15,
     },
     button: {
       backgroundColor: '#3498db',
       paddingVertical: 15,
       paddingHorizontal: 30,
       borderRadius: 5,
-      marginTop:15,
+      marginTop: 20,
     },
     buttonText: {
       color: '#000000',
       fontSize: 18,
       fontWeight: 'bold',
       textAlign: 'center',
-      top:25,
-    }
-})
+    },
+    buttonContainer: {
+      marginTop: 15,
+      alignItems: 'center',
+    },
+  });
+  
