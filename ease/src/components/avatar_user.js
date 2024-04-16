@@ -1,28 +1,30 @@
 import React, { useState } from "react";
 import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
 import { EvilIcons, MaterialIcons } from '@expo/vector-icons';
+import {useNavigation} from '@react-navigation/native';
 
-const AvatarUser = ({navigation}) => {
+const AvatarUser = () => {
+    const navigation = useNavigation();
     const [menuVisible, setMenuVisible] = useState(false);
 
     const toggleMenu = () => {
         setMenuVisible(!menuVisible);
-    };
+    }
 
     const handleAccountPress = () => {
         navigation.navigate('Profile');
         console.log('Go to Account');
-    };
+    }
 
     const handleLogoutPress = () => {
         navigation.navigate('Login');
         console.log('Logout')
-    };
+    }
 
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={toggleMenu} style={styles.avatar}>
-                <EvilIcons name="user" size={24} color="black"/>
+                <EvilIcons name="user" size={40} color="black"/>
             </TouchableOpacity>
             {menuVisible && (
                 <View style={styles.menu}>
@@ -43,26 +45,27 @@ const AvatarUser = ({navigation}) => {
 const styles = StyleSheet.create({
     container: {
         position: 'relative',
+        marginTop: 20,
     },
     avatar: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: 60,
+        height: 60,
+        borderRadius: 30,
     },
     menu: {
         position: 'absolute',
-        top: 50,
+        top: 70,
         right: 0,
         backgroundColor: 'white',
-        padding: 5,
-        borderRadius: 5,
+        padding: 10,
+        borderRadius: 10,
         elevation: 3,
     },
     menuItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 5,
-        paddingHorizontal: 10,
+        paddingVertical: 8,
+        paddingHorizontal: 12,
     },
     menuItemText: {
         marginLeft: 10,

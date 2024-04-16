@@ -6,6 +6,7 @@ import { Platform, View, StyleSheet } from "react-native";
 import HomeScreen from "../screens/home_screen";
 import SettingsScreen from "../screens/settings_screen";
 import SummaryScreen from "../screens/summary_screen";
+import AvatarUser from "./avatar_user";
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -14,10 +15,10 @@ const Menu = () => {
   if (Platform.OS === "web") {
     return (
       <View style={styles.container}>
-        <Drawer.Navigator>
-          <Drawer.Screen name="Category" component={HomeScreen} />
-          <Drawer.Screen name="Setting" component={SettingsScreen} />
-          <Drawer.Screen name="Summary" component={SummaryScreen} />
+        <Drawer.Navigator screenOptions={AvatarUser}>
+          <Drawer.Screen name="Category" component={HomeScreen} options={{headerRight: AvatarUser}}/>
+          <Drawer.Screen name="Setting" component={SettingsScreen} options={{headerRight: AvatarUser}}/>
+          <Drawer.Screen name="Summary" component={SummaryScreen} options={{headerRight: AvatarUser}}/>
         </Drawer.Navigator>
       </View>
     );
@@ -34,6 +35,7 @@ const Menu = () => {
                 <MaterialIcons name="data-usage" size={size} color={color} />
               ),
               headerShown: false,
+              headerRight: AvatarUser,
             }}
           />
           <Tab.Screen
@@ -45,6 +47,7 @@ const Menu = () => {
                 <MaterialIcons name="settings" size={size} color={color} />
               ),
               headerShown: false,
+              headerRight: AvatarUser,
             }}
           />
           <Tab.Screen
@@ -56,6 +59,7 @@ const Menu = () => {
                 <MaterialIcons name="description" size={size} color={color} />
               ),
               headerShown: false,
+              headerRight: AvatarUser,
             }}
           />
         </Tab.Navigator>
