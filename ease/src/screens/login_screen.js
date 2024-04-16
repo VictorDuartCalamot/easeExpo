@@ -36,13 +36,6 @@ const LoginScreen = ({ navigation }) => {
         source={require('../pictures/verde1.jpg')}
         style={styles.ImageBackground}
       >
-        <View style={[Platform.OS === 'web' && styles.containerWeb]}>
-          {Platform.OS === 'web' && (
-            <View style={styles.esloganContainer}>
-              <Text style={styles.esloganTextWeb}>Optimiza tus recursos, potencia tu éxito,Gestión inteligente para empresas eficientes.</Text>
-            </View>
-          )}
-
           <View style={styles.inputContainer}>
             <Image
               source={require('../pictures/logo.png')}
@@ -88,9 +81,7 @@ const LoginScreen = ({ navigation }) => {
     style={styles.button}
   />
 </View>
-
           </View>
-        </View>
       </ImageBackground>
     </View>
   );

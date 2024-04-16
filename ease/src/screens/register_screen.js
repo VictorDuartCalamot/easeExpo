@@ -39,12 +39,6 @@ const RegisterScreen = ({navigation}) => {
                 source={require('../pictures/verde1.jpg')}
                 style={styles.ImageBackground}
               >  
-              <View style={[Platform.OS === 'web' && styles.containerWeb]}>
-                  {Platform.OS === 'web' && (
-                    <View style={styles.esloganContainer}>
-                      <Text style={styles.esloganTextWeb}>Optimiza tus recursos, potencia tu éxito,Gestión inteligente para empresas eficientes.</Text>
-                    </View>
-                  )}      
                   <View style={styles.inputContainer}>
                     <Image
                       source={require('../pictures/logo.png')}
@@ -106,7 +100,6 @@ const RegisterScreen = ({navigation}) => {
                         <Text style={styles.buttonText} >Register</Text>
                     </Button>
                     </View>
-                </View>
             </ImageBackground>
         </View>
     )
