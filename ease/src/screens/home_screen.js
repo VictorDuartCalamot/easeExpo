@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import PieChartComponent from '../components/pieChartComponent';
+import AvatarUser from '../components/avatar_user';
 
 function HomeScreen({navigation}) {
   const data = [
@@ -43,6 +44,9 @@ function HomeScreen({navigation}) {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <AvatarUser/>
+      </View>
       <PieChartComponent data={data}/>
     </View>
   );
@@ -56,6 +60,11 @@ const styles = StyleSheet.create ({
   },
   title: {
     fontSize: 24,
+  },
+  header: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
   },
 });
 

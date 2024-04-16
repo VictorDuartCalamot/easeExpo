@@ -31,6 +31,7 @@
     "react-native-paper": "^5.12.3",
     "react-native-svg": "^15.1.0",
     "react-native-web": "~0.19.6",
+    "selected-option-picker": "^0.0.23",
     "typescript": "^5.3.0"
   },
   "devDependencies": {

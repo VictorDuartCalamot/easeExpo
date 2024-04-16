@@ -12,6 +12,7 @@ import UserData from './src/screens/admin-screens/user_data';
 import SummaryScreen from './src/screens/summary_screen';
 import Menu from './src/components/menu';
 import MenuAdmin from './src/components/menu_admin';
+import SupportScreen from './src/screens/support_screen';
 import SplashScreen from './src/screens/splash_screen';
 
 const Stack = createNativeStackNavigator();
@@ -31,6 +32,7 @@ export default function App() {
         <Stack.Screen name='UserData' component={UserData} options={{headerShown:false}}/>
         <Stack.Screen name='Profile' component={ProfileScreen} options={{headerShown:false}}/>
         <Stack.Screen name='Summary' component={SummaryScreen} options={{headerShown:false}}/>
+        <Stack.Screen name='Support' component={SupportScreen} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

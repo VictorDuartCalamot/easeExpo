@@ -42,7 +42,7 @@ const LoginScreen = ({navigation}) =>{
           <Text style={{marginTop:15,color:"blue" }} onPress={() =>navigation.navigate('Register')}
           >Don't have an account?</Text>
 
-          <Text style={{marginTop:15,color:"blue" }}>Don't remember your password?</Text>
+          <Text style={{marginTop:15,color:"blue" }} onPress={() =>navigation.navigate('Support')}>Don't remember your password?</Text>
 
           <Button title="Login" style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Login</Text>
