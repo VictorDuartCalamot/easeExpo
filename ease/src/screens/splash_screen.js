@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Image, ActivityIndicator, StyleSheet } from 'react-native';
+import { StackActions } from '@react-navigation/native';
 
 const SplashScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -12,7 +13,7 @@ const SplashScreen = ({ navigation }) => {
       // Cuando la carga ha finalizado, cambiar isLoading a false
       setIsLoading(false);
       // Navega a la pantalla de inicio (Home)
-      navigation.navigate('Login');
+      navigation.dispatch(StackActions.replace('Login'));
     };
     loadData();
   }, []);
