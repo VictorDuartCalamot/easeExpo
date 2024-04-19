@@ -77,7 +77,7 @@ const LoginScreenWeb = () => {
           <View style={styles.buttonContainer}>
             <Button
               title="Go to Home"
-              onPress={() => navigation.navigate('Home')}
+              onPress={() => navigation.navigate('HomeScreen.web')}
               style={styles.button}
             />
           </View>

@@ -15,6 +15,7 @@ import MenuAdmin from './src/components/menu_admin';
 import SupportScreen from './src/screens/support_screen';
 import SplashScreen from './src/screens/splash_screen';
 import AvatarUser from './src/components/avatar_user';
+import HomewebScreen from './src/screens/web/homeScreen.web'
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +35,7 @@ export default function App() {
         <Stack.Screen name='Profile' component={ProfileScreen} options={{ headerRight: AvatarUser }}/>
         <Stack.Screen name='Summary' component={SummaryScreen} options={{headerShown:false}}/>
         <Stack.Screen name='Support' component={SupportScreen} options={{headerShown:false}}/>
+        <Stack.Screen name='HomeWeb' component={HomewebScreen} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
