@@ -18,7 +18,7 @@ const LoginScreenWeb = () => {
           if (response) {
             console.log('Login response', response);
             Alert.alert('Access');
-            navigation.navigate('Home');
+            navigation.navigate('HomeWeb');
           } else {
             Alert.alert("User don't exists");
             Alert.alert("User doesn't exist.");
@@ -75,7 +75,7 @@ const LoginScreenWeb = () => {
                     <View>
                     <Button
                         title="Go to Home"
-                        onPress={() => navigation.navigate('Home')}
+                        onPress={() => navigation.navigate('HomeWeb')}
                     />
                     </View>
                 </View>

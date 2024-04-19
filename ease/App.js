@@ -15,10 +15,16 @@ import MenuAdmin from './src/components/menu_admin';
 import SupportScreen from './src/screens/support_screen';
 import SplashScreen from './src/screens/splash_screen';
 import AvatarUser from './src/components/avatar_user';
+import MenuMovil from './src/components/movil/menu.movil';
+import MenuWeb from './src/components/web/menu.web';
+import { isMobile } from 'react-device-detect'
+import HomeScreenWeb from './src/screens/web/homeScreen.web';
+import HomeScreenMovil from './src/screens/movil/homeScreen.movil';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const MenuComponent = isMobile ? MenuMovil : MenuWeb;
 
   return (
     <NavigationContainer>
@@ -34,6 +40,9 @@ export default function App() {
         <Stack.Screen name='Profile' component={ProfileScreen} options={{ headerRight: AvatarUser }}/>
         <Stack.Screen name='Summary' component={SummaryScreen} options={{headerShown:false}}/>
         <Stack.Screen name='Support' component={SupportScreen} options={{headerShown:false}}/>
+        <Stack.Screen name='Menu' component={MenuComponent} options={{ headerShown: false }}/>
+        <Stack.Screen name='HomeWeb' component={MenuMovil} options={{headerShown:false}}/>
+        <Stack.Screen name='HomeMovil' component={HomeScreenMovil} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,5 +1,3 @@
-import LoginScreenMovil from './movil/loginScreen.movil';
-import LoginScreenWeb from './web/loginScreen.web';
 import { Platform } from 'react-native';
 
 const LoginScreen = Platform.select({
