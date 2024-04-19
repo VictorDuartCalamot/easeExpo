@@ -8,29 +8,29 @@ const LoginScreenWeb = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-    const handleLogin = async () => {
-        if (!email || !password) {
-          Alert.alert('Rellene todos los campos');
-          return;
-        }
-        try {
-          const response = await loginUser(email, password, Platform.OS);
-          if (response) {
-            console.log('Login response', response);
-            Alert.alert('Access');
-            navigation.navigate('Home');
-          } else {
-            Alert.alert("User don't exists");
-            Alert.alert("User doesn't exist.");
-          }
-        } catch (error) {
-          console.error('Login error', error);
-          Alert.alert(
-            'Error',
-            'Failed to log in. Please check your credentials and try again'
-          );
-        }
-      };
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Rellene todos los campos');
+      return;
+    }
+    try {
+      const response = await loginUser(email, password, Platform.OS);
+      if (response) {
+        console.log('Login response', response);
+        Alert.alert('Access');
+        navigation.navigate('Home');
+      } else {
+        Alert.alert("User don't exists");
+        Alert.alert("User doesn't exist.");
+      }
+    } catch (error) {
+      console.error('Login error', error);
+      Alert.alert(
+        'Error',
+        'Failed to log in. Please check your credentials and try again'
+      );
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -62,24 +62,19 @@ const LoginScreenWeb = () => {
             <View style={styles.inputLine} />
           </View>
           <Text
-            style={{ marginTop: 15, color: 'blue'}}
+            style={{ marginTop: 10, color: 'blue',fontSize:12}}
             onPress={() => navigation.navigate('Register')}
           >
             Don't have an account?
           </Text>
           <Text 
-            style={{ marginTop: 15, color: 'blue' }}
+            style={{ marginTop: 10, color: 'blue',fontSize:12 }}
             onPress={() => navigation.navigate('Support')}
           >
             Don't remember your password?
           </Text>
-          <Button title="Login" onPress={handleLogin} />
           <View style={styles.buttonContainer}>
-            <Button
-              title="Go to Home"
-              onPress={() => navigation.navigate('HomeScreen.web')}
-              style={styles.button}
-            />
+            <Button title="Login" onPress={handleLogin} style={styles.button} />
           </View>
         </View>
       </ImageBackground>
@@ -99,20 +94,23 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: 20,
     alignItems: 'center',
+    justifyContent: 'center', // Centrar contenido verticalmente
   },
   inputContainer: {
     width: 350,
+    height:450,
     backgroundColor: 'white',
     borderRadius: 40,
     justifyContent: 'center',
-    marginTop: 110,
     paddingHorizontal: 60,
     paddingBottom: 20,
+    marginRight:-600
   },
   input: {
     borderBottomWidth: 1,
     borderColor: 'gray',
-    paddingVertical: 10,
+    paddingVertical: 12,
+    paddingBottom:10,
   },
   inputLine: {
     height: 1,
@@ -123,14 +121,23 @@ const styles = StyleSheet.create({
     height: 100,
     alignSelf: 'center',
     borderRadius: 30,
-    marginBottom: 20,
+    marginTop: 15,
+  },
+  esloganText: {
+    position: 'absolute',
+    marginTop:55,
+    Left:10,
+    fontSize: 25,
+    fontStyle: 'italic',
+    textAlign: 'left',
+    color: 'white',
   },
   button: {
     backgroundColor: '#3498db',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 5,
-    marginTop: 20,
+    marginTop: 20, // Añadimos margen arriba al botón
   },
   buttonText: {
     color: '#000000',
@@ -139,7 +146,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   buttonContainer: {
-    marginTop: 15,
+    marginTop: 50,
     alignItems: 'center',
   },
 })

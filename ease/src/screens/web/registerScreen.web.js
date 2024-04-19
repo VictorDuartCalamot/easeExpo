@@ -159,18 +159,18 @@ const styles = StyleSheet.create({
     input: {
       borderBottomWidth: 1,
       borderColor: 'gray',
-      paddingVertical: 8,
+      paddingVertical: 9,
     },
     inputLine: {
       height: 1,
       backgroundColor: 'gray',
     },
     ImageLogo: {
-      width: 100,
-      height: 100,
+      width: 90,
+      height: 90,
       alignSelf: 'center',
       borderRadius: 30,
-      marginBottom: 20,
+      marginTop:20,
     },
     button: {
       backgroundColor: '#3498db',

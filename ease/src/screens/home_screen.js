@@ -5,16 +5,17 @@ import PieChartComponent from '../components/pieChartComponent';
 import AvatarUser from '../components/avatar_user';
 
 const HomeScreen = Platform.select({
-  web: () => require('./web/homeScreen.web').default,
-  default: () => require('./movil/homeScreen.movil').default,
-})();
-export default HomeScreen;
-  return (
+  web: () => () => (
     <View style={styles.container}>
-      <PieChartComponent data={data}/>
+      <PieChartComponent/>
     </View>
-  );
-}
+  ),
+  default: () => () => (
+    <View style={styles.container}>
+      <PieChartComponent/>
+    </View>
+  ),
+})();
 
 const styles = StyleSheet.create ({
   container: {
@@ -32,3 +33,4 @@ const styles = StyleSheet.create ({
   },
 });
 
+export default HomeScreen;
