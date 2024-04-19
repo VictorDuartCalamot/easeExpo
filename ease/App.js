@@ -40,9 +40,6 @@ export default function App() {
         <Stack.Screen name='Profile' component={ProfileScreen} options={{ headerRight: AvatarUser }}/>
         <Stack.Screen name='Summary' component={SummaryScreen} options={{headerShown:false}}/>
         <Stack.Screen name='Support' component={SupportScreen} options={{headerShown:false}}/>
-        <Stack.Screen name='Menu' component={MenuComponent} options={{ headerShown: false }}/>
-        <Stack.Screen name='HomeWeb' component={MenuMovil} options={{headerShown:false}}/>
-        <Stack.Screen name='HomeMovil' component={HomeScreenMovil} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
