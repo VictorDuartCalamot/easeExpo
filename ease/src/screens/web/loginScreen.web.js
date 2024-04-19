@@ -7,7 +7,7 @@ const LoginScreenWeb = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
+
     const handleLogin = async () => {
         if (!email || !password) {
           Alert.alert('Rellene todos los campos');
@@ -18,7 +18,7 @@ const LoginScreenWeb = () => {
           if (response) {
             console.log('Login response', response);
             Alert.alert('Access');
-            navigation.navigate('HomeWeb');
+            navigation.navigate('Home');
           } else {
             Alert.alert("User don't exists");
             Alert.alert("User doesn't exist.");
