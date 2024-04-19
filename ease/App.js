@@ -16,6 +16,10 @@ import SupportScreen from './src/screens/support_screen';
 import SplashScreen from './src/screens/splash_screen';
 import AvatarUser from './src/components/avatar_user';
 import HomewebScreen from './src/screens/web/homeScreen.web'
+import HomeScreenWeb from './src/screens/web/homeScreen.web';
+import HomeScreenMovil from './src/screens/movil/homeScreen.movil';
+import MenuWeb from './src/components/web/menu.web';
+import MenuMovil from './src/components/movil/menu.movil';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,6 +40,8 @@ export default function App() {
         <Stack.Screen name='Summary' component={SummaryScreen} options={{headerShown:false}}/>
         <Stack.Screen name='Support' component={SupportScreen} options={{headerShown:false}}/>
         <Stack.Screen name='HomeWeb' component={HomewebScreen} options={{headerShown:false}}/>
+        <Stack.Screen name='HomeWeb' component={MenuWeb} options={{headerShown:false}}/>
+        <Stack.Screen name='HomeMovil' component={MenuMovil} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
