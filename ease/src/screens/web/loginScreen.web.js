@@ -37,6 +37,9 @@ const LoginScreenWeb = () => {
       <ImageBackground 
         source={require('../../pictures/verde1.jpg')}
         style={styles.imageBackground}>
+          <View>
+        <Text style={styles.esloganText}>Optimiza tus recursos, potencia tu éxito: Gestión inteligente para empresas eficientes</Text>
+            </View>
         <View style={styles.inputContainer}>
           <Image
             source={require('../../pictures/logo.png')}
@@ -104,8 +107,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 60,
     paddingBottom: 20,
-    marginRight:-600
-  },
+    marginRight:-1100,  },
   input: {
     borderBottomWidth: 1,
     borderColor: 'gray',
@@ -124,13 +126,13 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   esloganText: {
-    position: 'absolute',
-    marginTop:55,
-    Left:10,
+    position: "relative",
+    alignSelf:"center",
     fontSize: 25,
     fontStyle: 'italic',
     textAlign: 'left',
     color: 'white',
+    marginRight:300,
   },
   button: {
     backgroundColor: '#3498db',
