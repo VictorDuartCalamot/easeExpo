@@ -16,7 +16,6 @@ import SupportScreen from './src/screens/support_screen';
 import SplashScreen from './src/screens/splash_screen';
 import AvatarUser from './src/components/avatar_user';
 
-
 const Stack = createNativeStackNavigator();
 
 export default function App() {
