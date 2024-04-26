@@ -15,10 +15,6 @@ import MenuAdmin from './src/components/menu_admin';
 import SupportScreen from './src/screens/support_screen';
 import SplashScreen from './src/screens/splash_screen';
 import AvatarUser from './src/components/avatar_user';
-import HomeScreenWeb from './src/screens/web/homeScreen.web';
-import HomeScreenMovil from './src/screens/movil/homeScreen.movil';
-import MenuWeb from './src/components/web/menu.web';
-import MenuMovil from './src/components/movil/menu.movil';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,17 +25,15 @@ export default function App() {
       <Stack.Navigator initialRouteName='Splash'>
         <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
         <Stack.Screen name='Login' component={LoginScreen} options={{headerShown:false}}/>
-        <Stack.Screen name='Home'component={Menu} options={{headerShown:false}}/>
+        <Stack.Screen name='Home'component={HomeScreen} options={{headerLeft: Menu, headerRight: AvatarUser}}/>
         <Stack.Screen name='Register' component={RegisterScreen} options={{headerShown:false}}/>
         <Stack.Screen name='Setting' component={SettingScreen} options={{headerShown:false}}/>
         <Stack.Screen name='Admin' component={MenuAdmin} options={{headerShown:false}}/>
         <Stack.Screen name='UsersList' component={UsersList} options={{headerShown:false}}/>
         <Stack.Screen name='UserData' component={UserData} options={{headerShown:false}}/>
         <Stack.Screen name='Profile' component={ProfileScreen} options={{ headerRight: AvatarUser }}/>
-        <Stack.Screen name='Summary' component={SummaryScreen} options={{headerShown:false}}/>
+        <Stack.Screen name='Summary' component={SummaryScreen} options={{headerLeft: Menu, headerRight: AvatarUser}}/>
         <Stack.Screen name='Support' component={SupportScreen} options={{headerShown:false}}/>
-        <Stack.Screen name='HomeWeb' component={MenuWeb} options={{headerShown:false}}/>
-        <Stack.Screen name='HomeMovil' component={MenuMovil} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

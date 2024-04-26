@@ -1,60 +1,74 @@
-import React from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { MaterialIcons } from "@expo/vector-icons";
-import { Platform, View, StyleSheet } from "react-native";
-import HomeScreen from "../screens/home_screen";
-import SettingsScreen from "../screens/settings_screen";
-import SummaryScreen from "../screens/summary_screen";
-
-const Tab = Platform.OS === 'web' ? createMaterialTopTabNavigator() : createBottomTabNavigator();
+import React, { useState } from "react";
+import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const Menu = () => {
-    return(
+    const navigation = useNavigation();
+    const [menuVisible, setMenuVisible] = useState(false);
+
+    const toggleMenu = () => {
+        setMenuVisible(!menuVisible);
+    }
+
+    const handleHomePress = () => {
+        navigation.navigate('Home');
+        console.log('Go to Categories');
+    }
+
+    const handleSummaryPress = () => {
+        navigation.navigate('Summary')
+        console.log('Go to Summary');
+    }
+
+    return (
         <View style={styles.container}>
-            <Tab.Navigator>
-                <Tab.Screen
-                    name="Category"
-                    component={HomeScreen}
-                    options={{
-                        tabBarLabel: 'Category',
-                        tabBarIcon: ({ color, size }) => (
-                            <MaterialIcons name="data-usage" size={size} color={color}/>
-                        ),
-                        headerShown: false,
-                    }}
-                />
-                <Tab.Screen
-                    name="Setting"
-                    component={SettingsScreen}
-                    options={{
-                        tabBarLabel: 'Setting',
-                        tabBarIcon: ({ color, size }) => (
-                            <MaterialIcons name="settings" size={size} color={color}/>
-                        ),
-                        headerShown: false
-                    }}
-                />
-                <Tab.Screen
-                    name="Summary"
-                    component={SummaryScreen}
-                    options={{
-                        tabBarLabel: 'Summary',
-                        tabBarIcon: ({ color, size }) => (
-                            <MaterialIcons name="description" size={size} color={color}/>
-                        ),
-                        headerShown: false
-                    }}
-                />
-            </Tab.Navigator>
+            <TouchableOpacity onPress={toggleMenu} style={styles.avatar}>
+                <Ionicons name="menu" size={40} color="black"/>
+            </TouchableOpacity>
+            {menuVisible && (
+                <View style={styles.menu}>
+                    <TouchableOpacity style={styles.menuItem} onPress={handleHomePress}>
+                        <MaterialIcons name="data-usage" size={24} color="black"/>
+                        <Text style={styles.menuItemText}>Categories</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.menuItem} onPress={handleSummaryPress}>
+                        <MaterialIcons name="description" size={24} color="black"/>
+                        <Text style={styles.menuItemText}>Summary</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
         </View>
     )
-};
+}
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        justifyContent: 'flex-start',
+        position: 'relative',
+        marginTop: 20,
+    },
+    avatar: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+    },
+    menu: {
+        position: 'absolute',
+        top: 70,
+        right: 0,
+        backgroundColor: 'white',
+        padding: 10,
+        borderRadius: 10,
+        elevation: 3,
+    },
+    menuItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+    },
+    menuItemText: {
+        marginLeft: 10,
     },
 });
 
