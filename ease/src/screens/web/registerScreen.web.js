@@ -39,7 +39,8 @@ const RegisterScreenWeb = ({navigation}) => {
               <ImageBackground
                 source={require('../../pictures/verde1.jpg')}
                 style={styles.ImageBackground}
-              >  
+              >
+                
                   <View style={styles.inputContainer}>
                     <Image
                       source={require('../../pictures/logo.png')}
@@ -128,14 +129,14 @@ const styles = StyleSheet.create({
       backgroundImage: 'url("../pictures/verde1.jpg")',
       marginTop: '-10vh',
     },
-    esloganTextWeb: {
-      position: 'absolute',
-      top: 10,
-      left: 10,
-      zIndex: 100,
-      color: 'white',
-      fontSize: 30,
-      fontWeight: 'bold',
+    esloganText: {
+    position: "relative",
+    alignSelf:"flex-end",
+    fontSize: 25,
+    fontStyle: 'italic',
+    textAlign: 'left',
+    color: 'white',
+    marginRight:300,
     },
     esloganContainer: {
       top:200,
@@ -147,10 +148,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 40,
         justifyContent: 'center',
-        marginTop: 110,
-        paddingHorizontal: 60,
-        paddingBottom: 20,
-        marginRight:-700,
+        marginTop: 200,
+        paddingHorizontal: 50,
+        paddingBottom: 80,
+        marginRight:-1100,
       
     },
     inputWrapper: {
@@ -159,18 +160,18 @@ const styles = StyleSheet.create({
     input: {
       borderBottomWidth: 1,
       borderColor: 'gray',
-      paddingVertical: 8,
+      paddingVertical: 9,
     },
     inputLine: {
       height: 1,
       backgroundColor: 'gray',
     },
     ImageLogo: {
-      width: 100,
-      height: 100,
+      width: 90,
+      height: 90,
       alignSelf: 'center',
       borderRadius: 30,
-      marginBottom: 20,
+      marginTop:20,
     },
     button: {
       backgroundColor: '#3498db',
