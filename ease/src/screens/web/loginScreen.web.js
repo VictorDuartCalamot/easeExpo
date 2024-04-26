@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ImageBackground, TextInput, Image, Button, Alert, Platform} from "react-native";
+import { View, Text, StyleSheet, ImageBackground, TextInput, Image, Button, Alert, Platform, Dimensions } from "react-native";
 import { loginUser } from "../../services/api_authentication";
 import { useNavigation } from '@react-navigation/native';
 
@@ -32,15 +32,15 @@ const LoginScreenWeb = () => {
     }
   };
 
+  const windowHeight = Dimensions.get('window').height;
+  const windowWidth = Dimensions.get('window').width;
+
   return (
     <View style={styles.container}>
       <ImageBackground 
         source={require('../../pictures/verde1.jpg')}
         style={styles.imageBackground}>
-          <View>
-        <Text style={styles.esloganText}>Optimiza tus recursos, potencia tu éxito: Gestión inteligente para empresas eficientes</Text>
-            </View>
-        <View style={styles.inputContainer}>
+        <View style={[styles.inputContainer, { height: windowHeight * 0.6, width: windowWidth * 0.9 }]}>
           <Image
             source={require('../../pictures/logo.png')}
             style={styles.imageLogo}
@@ -65,19 +65,19 @@ const LoginScreenWeb = () => {
             <View style={styles.inputLine} />
           </View>
           <Text
-            style={{ marginTop: 10, color: 'blue',fontSize:12}}
+            style={styles.linkText}
             onPress={() => navigation.navigate('Register')}
           >
             Don't have an account?
           </Text>
           <Text 
-            style={{ marginTop: 10, color: 'blue',fontSize:12 }}
+            style={styles.linkText}
             onPress={() => navigation.navigate('Support')}
           >
             Don't remember your password?
           </Text>
           <View style={styles.buttonContainer}>
-            <Button title="Login" onPress={handleLogin} style={styles.button} />
+            <Button title="Login" onPress={handleLogin} color="#3498db" />
           </View>
         </View>
       </ImageBackground>
@@ -88,31 +88,33 @@ const LoginScreenWeb = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   inputWrapper: {
     marginBottom: 15,
   },
   imageBackground: {
-    height: '100vh',
+    flex: 1,
     width: '100%',
-    paddingHorizontal: 20,
     alignItems: 'center',
-    justifyContent: 'center', // Centrar contenido verticalmente
+    justifyContent: 'center',
   },
   inputContainer: {
-    width: 350,
-    height:450,
+    width: '90%',
+    maxWidth: 350,
     backgroundColor: 'white',
     borderRadius: 40,
     justifyContent: 'center',
     paddingHorizontal: 60,
     paddingBottom: 20,
-    marginRight:-1100,  },
+  },
   input: {
+    width: '100%',
     borderBottomWidth: 1,
     borderColor: 'gray',
     paddingVertical: 12,
-    paddingBottom:10,
+    paddingBottom: 10,
   },
   inputLine: {
     height: 1,
@@ -125,32 +127,15 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginTop: 15,
   },
-  esloganText: {
-    position: "relative",
-    alignSelf:"center",
-    fontSize: 25,
-    fontStyle: 'italic',
-    textAlign: 'left',
-    color: 'white',
-    marginRight:300,
-  },
-  button: {
-    backgroundColor: '#3498db',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 5,
-    marginTop: 20, // Añadimos margen arriba al botón
-  },
-  buttonText: {
-    color: '#000000',
-    fontSize: 18,
-    fontWeight: 'bold',
+  linkText: {
+    marginTop: 10,
+    color: 'blue',
+    fontSize: 12,
     textAlign: 'center',
   },
   buttonContainer: {
-    marginTop: 50,
-    alignItems: 'center',
+    marginTop: 20,
   },
-})
+});
 
 export default LoginScreenWeb;
