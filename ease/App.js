@@ -15,10 +15,7 @@ import MenuAdmin from './src/components/menu_admin';
 import SupportScreen from './src/screens/support_screen';
 import SplashScreen from './src/screens/splash_screen';
 import AvatarUser from './src/components/avatar_user';
-<<<<<<< HEAD
-=======
 
->>>>>>> 6c914e602e940ff19939f6059b02971be69d593e
 
 const Stack = createNativeStackNavigator();
 
