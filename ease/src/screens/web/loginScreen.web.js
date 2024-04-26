@@ -76,6 +76,11 @@ const LoginScreenWeb = () => {
           >
             Don't remember your password?
           </Text>
+          <Text
+            style={{ marginTop: 10, color: 'blue', fontSize: 12}}
+            onPress={() => navigation.navigate('UsersList')}> 
+            Admin view
+          </Text>
           <View style={styles.buttonContainer}>
             <Button title="Login" onPress={handleLogin} style={styles.button} />
           </View>

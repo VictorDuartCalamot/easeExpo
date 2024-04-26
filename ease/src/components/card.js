@@ -12,15 +12,25 @@ const Card = ({ user }) => {
         // falta codigo
     };
 
-    const handleDelete = () => {
+    const handleUpdate = () => {
         // Enviar a una ventana para actualizar los usuarios
     };
 
     return (
         <TouchableOpacity onPress={toggleExpanded} style={styles.card}>
-            <Text style={styles.userName}></Text>
+            <Text style={styles.userName}>{user.name}</Text>
+            {expanded && (
+                <View style={styles.buttonsContainer}>
+                    <TouchableOpacity onPress={handleDelete} style={styles.button}>
+                        <Text>Delete</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleUpdate} style={styles.button}>
+                        <Text>Update</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
         </TouchableOpacity>
-    )
+    );
 };
 
 const styles = StyleSheet.create({
