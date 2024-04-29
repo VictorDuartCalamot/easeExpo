@@ -1,23 +1,9 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { Platform } from 'react-native';
+import ProfileScreen from './web/profileScreen.web';
 
-function ProfileScreen({navigation}) {
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>ProfileScreen</Text>
-        </View>
-    );
-}
+const profileScreen = Platform.select({
+  web: () => require('./web/profileScreen.web').default,
+  default: () => require('./movil/profileScreen.movil').default,
+})();
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    title: {
-      fontSize: 24,
-    },
-})
-
-export default ProfileScreen;
+export default profileScreen;

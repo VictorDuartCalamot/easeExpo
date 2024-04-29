@@ -28,14 +28,14 @@ const Menu = () => {
             </TouchableOpacity>
             {menuVisible && (
                 <View style={styles.menu}>
-                    <TouchableOpacity style={styles.menuItem} onPress={handleHomePress}>
+                    <View style={styles.menuItem}>
                         <MaterialIcons name="data-usage" size={24} color="black"/>
                         <Text style={styles.menuItemText}>Categories</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.menuItem} onPress={handleSummaryPress}>
+                    </View>
+                    <View style={styles.menuItem}>
                         <MaterialIcons name="description" size={24} color="black"/>
                         <Text style={styles.menuItemText}>Summary</Text>
-                    </TouchableOpacity>
+                    </View>
                 </View>
             )}
         </View>
@@ -55,11 +55,13 @@ const styles = StyleSheet.create({
     menu: {
         position: 'absolute',
         top: 70,
-        right: 0,
+        left: 0, // Cambiado de "right: 0" a "left: 0"
         backgroundColor: 'white',
         padding: 10,
         borderRadius: 10,
         elevation: 3,
+        flexDirection: 'row', // Agregado para colocar los elementos de izquierda a derecha
+        alignItems: 'center', // Agregado para alinear verticalmente los elementos
     },
     menuItem: {
         flexDirection: 'row',
