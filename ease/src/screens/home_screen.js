@@ -5,4 +5,4 @@ const homeScreen = Platform.select({
   default: () => require('./movil/homeScreen.movil').default,
 })();
 
-export default homeScreen;
+export default homes;

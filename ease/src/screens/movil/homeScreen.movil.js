@@ -4,7 +4,7 @@ import PieChartComponent from '../../components/pieChartComponent';
 import { createExpense } from '../../services/api_management';
 import { AntDesign } from '@expo/vector-icons';
 
-const HomeScreen = () => {
+const HomeScreenMovil = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
@@ -107,4 +107,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default HomeScreenMovil;
