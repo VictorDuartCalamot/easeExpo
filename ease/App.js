@@ -15,6 +15,7 @@ import MenuAdmin from './src/components/menu_admin';
 import SupportScreen from './src/screens/support_screen';
 import SplashScreen from './src/screens/splash_screen';
 import AvatarUser from './src/components/avatar_user';
+import NewUserAdmin from './src/components/newUser.admin';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,11 +30,12 @@ export default function App() {
         <Stack.Screen name='Register' component={RegisterScreen} options={{headerShown:false}}/>
         <Stack.Screen name='Setting' component={SettingScreen} options={{headerShown:false}}/>
         <Stack.Screen name='Admin' component={MenuAdmin} options={{headerShown:false}}/>
-        <Stack.Screen name='UsersList' component={UsersList} options={{headerShown:false}}/>
-        <Stack.Screen name='UserData' component={UserData} options={{headerShown:false}}/>
+        <Stack.Screen name='UsersList' component={UsersList} options={{headerRight: AvatarUser}}/>
+        <Stack.Screen name='UserData' component={UserData} options={{headerRight: AvatarUser}}/>
         <Stack.Screen name='Profile' component={ProfileScreen} options={{ headerRight: AvatarUser }}/>
         <Stack.Screen name='Summary' component={SummaryScreen} options={{headerLeft: Menu, headerRight: AvatarUser}}/>
         <Stack.Screen name='Support' component={SupportScreen} options={{headerShown:false}}/>
+        <Stack.Screen name='NewUserAdmin' component={NewUserAdmin} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

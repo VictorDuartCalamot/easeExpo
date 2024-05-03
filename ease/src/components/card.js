@@ -1,31 +1,23 @@
+import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
-const Card = ({ user }) => {
-    const [expanded, setExpanded] = useState(false);
-
-    const toggleExpanded = () => {
-        setExpanded(!expanded);
-    };
-
-    const handleDelete = () => {
-        // falta codigo
-    };
-
-    const handleUpdate = () => {
-        // Enviar a una ventana para actualizar los usuarios
-    };
-
+const Card = ({ user, onDelete, onUpdate, onActive, expanded, onPress }) => {
+    const navigation = useNavigation();
     return (
-        <TouchableOpacity onPress={toggleExpanded} style={styles.card}>
-            <Text style={styles.userName}>{user.name}</Text>
+        <TouchableOpacity onPress={onPress} style={styles.card}>
+            <Text style={styles.userName}>{user.id} .</Text>
+            <Text style={styles.userEmail}>{user.email}</Text>
             {expanded && (
                 <View style={styles.buttonsContainer}>
-                    <TouchableOpacity onPress={handleDelete} style={styles.button}>
+                    <TouchableOpacity onPress={onDelete} style={styles.button}>
                         <Text>Delete</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={handleUpdate} style={styles.button}>
+                    <TouchableOpacity onPress={() => onUpdate(user.id)} style={styles.button}>
                         <Text>Update</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => onActive(user.id, user.is_active)} style={styles.button}>
+                        <Text>{user.is_active ? "Deactivate" : "Activate"}</Text>
                     </TouchableOpacity>
                 </View>
             )}
@@ -39,9 +31,12 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         backgroundColor: "#f0f0f0",
     },
-      userName: {
-        fontSize: 18,
+    userName: {
+        fontSize: 16,
         fontWeight: "bold",
+    },
+    userEmail:{
+        fontSize: 15,
     },
     buttonsContainer: {
         flexDirection: "row",
