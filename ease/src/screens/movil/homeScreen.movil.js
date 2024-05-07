@@ -5,7 +5,5 @@ const homescreen_movil = () => {
     <View>
         <Text>hola</Text>
     </View>
-
 }
-
 export default homescreen_movil;

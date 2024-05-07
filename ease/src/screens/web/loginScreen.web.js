@@ -18,7 +18,11 @@ const LoginScreenWeb = () => {
       if (response) {
         console.log('Login response', response);
         Alert.alert('Access');
-        navigation.navigate('Home');
+        if(response.is_superuser || response.is_staff) {
+          navigation.navigate('UsersList');
+        } else {
+          navigation.navigate('Home');
+        }
       } else {
         Alert.alert("User don't exists");
         Alert.alert("User doesn't exist.");
