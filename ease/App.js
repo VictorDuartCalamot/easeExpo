@@ -15,7 +15,7 @@ import MenuAdmin from './src/components/menu_admin';
 import SupportScreen from './src/screens/support_screen';
 import SplashScreen from './src/screens/splash_screen';
 import AvatarUser from './src/components/avatar_user';
-import profileScreen from './src/screens/profile_screen';
+import Home_screen from './src/screens/web/homeScreen.web';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,15 +26,17 @@ export default function App() {
       <Stack.Navigator initialRouteName='Splash'>
         <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
         <Stack.Screen name='Login' component={LoginScreen} options={{headerShown:false}}/>
-        <Stack.Screen name='Home'component={HomeScreen} options={{headerLeft: Menu, headerRight: AvatarUser}}/>
+        <Stack.Screen name='Home'component={HomeScreen} options={{headerShown:false}}/>
         <Stack.Screen name='Register' component={RegisterScreen} options={{headerShown:false}}/>
         <Stack.Screen name='Setting' component={SettingScreen} options={{headerShown:false}}/>
         <Stack.Screen name='Admin' component={MenuAdmin} options={{headerShown:false}}/>
         <Stack.Screen name='UsersList' component={UsersList} options={{headerShown:false}}/>
         <Stack.Screen name='UserData' component={UserData} options={{headerShown:false}}/>
-        <Stack.Screen name='Profile' component={ProfileScreen} options={{ headerRight: AvatarUser }}/>
-        <Stack.Screen name='Summary' component={SummaryScreen} options={{headerLeft: Menu, headerRight: AvatarUser}}/>
+        <Stack.Screen name='Profile' component={ProfileScreen}/>
+        <Stack.Screen name='Summary' component={SummaryScreen}/>
         <Stack.Screen name='Support' component={SupportScreen} options={{headerShown:false}}/>
+        <Stack.Screen name='HomeScreen' component={Home_screen} options={{headerShown:false}}/>
+
 
       </Stack.Navigator>
     </NavigationContainer>
