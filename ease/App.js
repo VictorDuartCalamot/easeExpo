@@ -32,8 +32,8 @@ export default function App() {
         <Stack.Screen name='Admin' component={MenuAdmin} options={{headerShown:false}}/>
         <Stack.Screen name='UsersList' component={UsersList} options={{headerShown:false}}/>
         <Stack.Screen name='UserData' component={UserData} options={{headerShown:false}}/>
-        <Stack.Screen name='Profile' component={ProfileScreen} options={{ headerRight: AvatarUser }}/>
-        <Stack.Screen name='Summary' component={SummaryScreen} options={{headerLeft: Menu, headerRight: AvatarUser}}/>
+        <Stack.Screen name='Profile' component={ProfileScreen}/>
+        <Stack.Screen name='Summary' component={SummaryScreen}/>
         <Stack.Screen name='Support' component={SupportScreen} options={{headerShown:false}}/>
 
       </Stack.Navigator>
