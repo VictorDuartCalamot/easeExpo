@@ -13,6 +13,8 @@ const AddExpenseButton = () => {
     const [categories, setCategories] = useState([]);
     const [subCategories, setSubCategories] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
+    const [showCategoryPicker, setShowCategoryPicker] = useState(false);
+    const [showSubCategoryPicker, setShowSubCategoryPicker] = useState(false);
 
     useEffect(() => {
         fetchCategories();
@@ -106,23 +108,27 @@ const AddExpenseButton = () => {
                     />
                     <View style={styles.pickerContainer}>
                         <Button title="Select Category" onPress={() => setShowCategoryPicker(true)} />
-                        <SelectedOptionPicker
-                            data={categories}
-                            showPicker={showCategoryPicker}
-                            onDonePress={() => setShowCategoryPicker(false)}
-                            onCancelPress={() => setShowCategoryPicker(false)}
-                            onItemChange={(option) => handleCategoryChange(option.value)}
-                        />
+                        {categories.length > 0 && (
+                            <SelectedOptionPicker
+                                data={categories.map(category => ({ label: category.name, value: category.id }))}
+                                showPicker={showCategoryPicker}
+                                onDonePress={() => setShowCategoryPicker(false)}
+                                onCancelPress={() => setShowCategoryPicker(false)}
+                                onItemChange={(option) => handleCategoryChange(option.value)}
+                            />
+                        )}
                     </View>
                     <View style={styles.pickerContainer}>
                         <Button title="Select Subcategory" onPress={() => setShowSubCategoryPicker(true)} />
-                        <SelectedOptionPicker
-                            data={subCategories}
-                            showPicker={showSubCategoryPicker}
-                            onDonePress={() => setShowSubCategoryPicker(false)}
-                            onCancelPress={() => setShowSubCategoryPicker(false)}
-                            onItemChange={(option) => setSubCategory(option.value)}
-                        />
+                        {subCategories.length > 0 && (
+                            <SelectedOptionPicker
+                                data={subCategories.map(subCategory => ({ label: subCategory.name, value: subCategory.id }))}
+                                showPicker={showSubCategoryPicker}
+                                onDonePress={() => setShowSubCategoryPicker(false)}
+                                onCancelPress={() => setShowSubCategoryPicker(false)}
+                                onItemChange={(option) => setSubCategory(option.value)}
+                            />
+                        )}
                     </View>
                     <View style={styles.buttonContainer}>
                         <Button title="Add Expense" onPress={newExpense}/>

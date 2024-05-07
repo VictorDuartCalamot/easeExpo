@@ -7,6 +7,7 @@ const LoginScreenMovil = () => {
     const navigation = useNavigation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [userType, setUserType] = useState('');
 
     const handleLogin = async () => {
         if (!email || !password) {
@@ -18,11 +19,8 @@ const LoginScreenMovil = () => {
           if (response) {
             console.log('Login response', response);
             Alert.alert('Access');
-            if(response.is_superuser || response.is_staff) {
-              navigation.navigate('UsersList');
-            } else {
-              navigation.navigate('Home');
-            }
+            setUserType(response.is_superuser || response.is_staff ? 'admin' : 'client');    
+            navigation.navigate(response.is_superuser || response.is_staff ? 'UsersList' : 'Home');
           } else {
             Alert.alert("User don't exists");
             Alert.alert("User doesn't exist.");

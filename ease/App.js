@@ -10,12 +10,13 @@ import AdminScreen from './src/screens/admin_screen';
 import UsersList from './src/screens/admin-screens/users_list';
 import UserData from './src/screens/admin-screens/user_data';
 import SummaryScreen from './src/screens/summary_screen';
-import Menu from './src/components/menu';
+import Menu from './src/components/menu.web';
 import MenuAdmin from './src/components/menu_admin';
 import SupportScreen from './src/screens/support_screen';
 import SplashScreen from './src/screens/splash_screen';
 import AvatarUser from './src/components/avatar_user';
 import NewUserAdmin from './src/components/newUser.admin';
+import AssistanceScreen from './src/components/chat';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,15 +26,16 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName='Splash'>
         <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Assistant" component={AssistanceScreen} options={{ headerShown: false }}/>
         <Stack.Screen name='Login' component={LoginScreen} options={{headerShown:false}}/>
-        <Stack.Screen name='Home'component={HomeScreen} options={{headerLeft: Menu, headerRight: AvatarUser}}/>
+        <Stack.Screen name='Home'component={HomeScreen} options={{ headerShow: false}}/>
         <Stack.Screen name='Register' component={RegisterScreen} options={{headerShown:false}}/>
         <Stack.Screen name='Setting' component={SettingScreen} options={{headerShown:false}}/>
         <Stack.Screen name='Admin' component={MenuAdmin} options={{headerShown:false}}/>
         <Stack.Screen name='UsersList' component={UsersList} options={{headerRight: AvatarUser}}/>
         <Stack.Screen name='UserData' component={UserData} options={{headerRight: AvatarUser}}/>
         <Stack.Screen name='Profile' component={ProfileScreen} options={{ headerRight: AvatarUser }}/>
-        <Stack.Screen name='Summary' component={SummaryScreen} options={{headerLeft: Menu, headerRight: AvatarUser}}/>
+        <Stack.Screen name='Summary' component={SummaryScreen} options={{ headerRight: AvatarUser}}/>
         <Stack.Screen name='Support' component={SupportScreen} options={{headerShown:false}}/>
         <Stack.Screen name='NewUserAdmin' component={NewUserAdmin} options={{headerShown:false}}/>
       </Stack.Navigator>
