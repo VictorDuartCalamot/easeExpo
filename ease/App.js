@@ -10,7 +10,6 @@ import AdminScreen from './src/screens/admin_screen';
 import UsersList from './src/screens/admin-screens/users_list';
 import UserData from './src/screens/admin-screens/user_data';
 import SummaryScreen from './src/screens/summary_screen';
-import Menu from './src/components/menu.web';
 import MenuAdmin from './src/components/menu_admin';
 import SupportScreen from './src/screens/support_screen';
 import SplashScreen from './src/screens/splash_screen';
@@ -37,7 +36,7 @@ export default function App() {
         <Stack.Screen name='Profile' component={ProfileScreen} options={{ headerRight: AvatarUser }}/>
         <Stack.Screen name='Summary' component={SummaryScreen} options={{ headerRight: AvatarUser}}/>
         <Stack.Screen name='Support' component={SupportScreen} options={{headerShown:false}}/>
-        <Stack.Screen name='NewUserAdmin' component={NewUserAdmin} options={{headerShown:false}}/>
+
       </Stack.Navigator>
     </NavigationContainer>
   );

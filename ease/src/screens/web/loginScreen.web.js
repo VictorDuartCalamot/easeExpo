@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, ImageBackground, TextInput, Image, Button, Alert, Platform, Dimensions } from "react-native";
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ImageBackground, TextInput, Image, Button, Alert, Platform, Dimensions } from 'react-native';
 import { loginUser } from "../../services/api_authentication";
 import { useNavigation } from '@react-navigation/native';
 
@@ -38,6 +38,10 @@ const LoginScreenWeb = () => {
 
   const windowHeight = Dimensions.get('window').height;
   const windowWidth = Dimensions.get('window').width;
+
+  const handleGoToHome = () => {
+    navigation.navigate('HomeScreen'); // Asegúrate de que la ruta 'HomeScreen' coincide con la del StackNavigator
+  };
 
   return (
     <View style={styles.container}>
@@ -87,6 +91,9 @@ const LoginScreenWeb = () => {
           </Text>
           <View style={styles.buttonContainer}>
             <Button title="Login" onPress={handleLogin} color="#3498db" />
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button title="Go to Home" onPress={handleGoToHome} color="#3498db" />
           </View>
         </View>
       </ImageBackground>
