@@ -16,6 +16,7 @@ import SplashScreen from './src/screens/splash_screen';
 import AvatarUser from './src/components/avatar_user';
 import NewUserAdmin from './src/components/newUser.admin';
 import AssistanceScreen from './src/components/chat';
+import IAScreen from './src/services/apiTest_chatIA';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +26,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName='Splash'>
         <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="IAScreen" component={IAScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="Assistant" component={AssistanceScreen} options={{ headerShown: false }}/>
         <Stack.Screen name='Login' component={LoginScreen} options={{headerShown:false}}/>
         <Stack.Screen name='Home'component={HomeScreen} options={{ headerShow: false}}/>
@@ -36,6 +38,8 @@ export default function App() {
         <Stack.Screen name='Profile' component={ProfileScreen} options={{ headerRight: AvatarUser }}/>
         <Stack.Screen name='Summary' component={SummaryScreen} options={{ headerRight: AvatarUser}}/>
         <Stack.Screen name='Support' component={SupportScreen} options={{headerShown:false}}/>
+        <Stack.Screen name='HomeScreen' component={HomeScreen} options={{headerShown:false}}/>
+
 
       </Stack.Navigator>
     </NavigationContainer>

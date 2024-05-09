@@ -40,7 +40,7 @@ const LoginScreenWeb = () => {
   const windowWidth = Dimensions.get('window').width;
 
   const handleGoToHome = () => {
-    navigation.navigate('HomeScreen'); // Asegúrate de que la ruta 'HomeScreen' coincide con la del StackNavigator
+    navigation.navigate('Home'); // Asegúrate de que la ruta 'HomeScreen' coincide con la del StackNavigator
   };
 
   return (
