@@ -146,4 +146,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default LoginScreenMovil
+export default LoginScreenMovil;

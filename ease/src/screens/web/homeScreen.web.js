@@ -10,7 +10,7 @@ import { createExpense } from '../../services/api_management';
 
 const Stack = createStackNavigator();
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreenWeb = ({ navigation }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
@@ -181,4 +181,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default HomeScreenWeb;
