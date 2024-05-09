@@ -7,6 +7,7 @@ import SummaryScreen from '../summary_screen';
 import SettingsScreen from '../settings_screen';
 import ProfileScreen from '../profile_screen'; // Importa la pantalla de perfil
 import { createExpense } from '../../services/api_management';
+import AddExpenseButton from '../../components/AddExpenseButton';
 
 const Stack = createStackNavigator();
 

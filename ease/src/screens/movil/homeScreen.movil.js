@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Modal, TextInput, Button, Alert, Text } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { MaterialIcons } from '@expo/vector-icons';
+    import React, { useState } from 'react';
+    import { View, StyleSheet, Modal, TextInput, Button, Alert, TouchableOpacity,Text } from 'react-native';
+    import { createStackNavigator } from '@react-navigation/stack';
+    import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+    import AddExpenseButton from '../../components/AddExpenseButton';
 
 import SummaryScreen from '../summary_screen';
 import SettingsScreen from '../settings_screen';
@@ -38,6 +43,9 @@ const HomeScreenMovil= ({ navigation }) => {
     console.log('Date:', newDate);
     console.log('Time:', newTime);
   };
+    const HomeScreen = ({ navigation }) => {
+    const [showMenu, setShowMenu] = useState(false);
+    const [showAvatarMenu, setShowAvatarMenu] = useState(false);
 
   const handleLogout = () => {
     navigation.navigate('Login');
@@ -114,6 +122,23 @@ const HomeScreenMovil= ({ navigation }) => {
     </View>
   );
 };
+      <TouchableOpacity onPress={() => setShowAvatarMenu(!showAvatarMenu)} style={styles.avatarIcon}>
+        <MaterialIcons name="person" size={35} color="black" />
+      </TouchableOpacity>
+      {showAvatarMenu && (
+        <View style={styles.menu1}>
+          <TouchableOpacity onPress={() => { navigation.navigate('Profile'); setShowAvatarMenu(false); }}>
+            <Text>Profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleLogout}>
+            <Text>Logout</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+          <AddExpenseButton/>      
+        </View>
+    );
+    };
 
 const styles = StyleSheet.create({
   container: {
