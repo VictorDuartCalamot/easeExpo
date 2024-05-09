@@ -22,7 +22,7 @@ function NewUserAdmin() {
                 last_name: surname,
                 email: email,
                 password:  password,
-                isStaff: isStaff,
+                is_staff: isStaff,
             };
             await registerNewUser(userData);
             navigation.goBack();

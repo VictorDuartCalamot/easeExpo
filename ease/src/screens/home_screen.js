@@ -1,8 +1,8 @@
 import { Platform } from 'react-native';
 
-const Home_screen = Platform.select({
+const HomeScreen = Platform.select({
   web: () => require('./web/homeScreen.web').default,
   default: () => require('./movil/homeScreen.movil').default,
 })();
 
-export default Home_screen;
+export default HomeScreen;
