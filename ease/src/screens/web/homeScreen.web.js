@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Modal, TextInput, Button, Alert } from 'react-native';
+import { View, StyleSheet, Modal, TextInput, Button, Alert, Text } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import SummaryScreen from '../summary_screen';
 import SettingsScreen from '../settings_screen';
@@ -48,17 +48,27 @@ const HomeScreen = ({ navigation }) => {
       <MaterialIcons name="home" size={24} color="black" onPress={() => setShowMenu(!showMenu)} style={styles.menuIcon} />
       {showMenu && (
         <View style={styles.menu}>
-          <Button title="Summary" onPress={() => { navigation.navigate('Summary'); setShowMenu(false); }} />
-          <Button title="Settings" onPress={() => { navigation.navigate('Settings'); setShowMenu(false); }} />
+        <View style={styles.menuItem}>
+          <MaterialIcons name="description" size={24} color="black" />
+          <Text style={styles.menuText} onPress={() => { navigation.navigate('Summary'); setShowMenu(false); }}>Summary</Text>
+        </View>
         </View>
       )}
-      <MaterialIcons name="person" size={24} color="black" onPress={() => setShowAvatarMenu(!showAvatarMenu)} style={styles.avatarIcon} />
-      {showAvatarMenu && (
-        <View style={styles.menu1}>
-          <Button title="Profile" onPress={() => { navigation.navigate('Profile'); setShowAvatarMenu(false); }} />
-          <Button title="Logout" onPress={handleLogout} />
-        </View>
-      )}
+      <View style={styles.avatarContainer}>
+        <MaterialIcons name="person" size={24} color="black" onPress={() => setShowAvatarMenu(!showAvatarMenu)} style={styles.avatarIcon} />
+        {showAvatarMenu && (
+          <View style={styles.menu1}>
+            <View style={styles.menuItem}>
+              <MaterialIcons name="person" size={24} color="black" />
+              <Text style={styles.menuText} onPress={() => { navigation.navigate('Profile'); setShowMenu(false); }}>Profile</Text>
+            </View>
+            <View style={styles.menuItem}>
+              <MaterialIcons name="exit-to-app" size={24} color="black" onPress={handleLogout} />
+              <Text style={styles.menuText} onPress={handleLogout}>Logout</Text>
+            </View>
+          </View>
+        )}
+      </View>
       <Button title="Add Expense" onPress={() => setModalVisible(true)} />
       <Modal
         animationType="slide"
@@ -144,18 +154,30 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   menu1: {
-    position: 'absolute',
-    top: 50,
-    right: 20,
     backgroundColor: 'white',
     borderRadius: 5,
     padding: 10,
+    marginVertical: 10,
     zIndex: 1,
   },
-  avatarIcon: {
+  avatarContainer: {
     position: 'absolute',
     top: 20,
     right: 20,
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  avatarIcon: {
+    marginBottom: 5,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal:10,
+  },
+  menuText: {
+    marginTop: 5,
+    fontSize: 16,
   },
 });
 
