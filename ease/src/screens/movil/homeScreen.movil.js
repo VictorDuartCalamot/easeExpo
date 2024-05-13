@@ -2,11 +2,6 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Modal, TextInput, Button, Alert, Text } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { MaterialIcons } from '@expo/vector-icons';
-    import React, { useState } from 'react';
-    import { View, StyleSheet, Modal, TextInput, Button, Alert, TouchableOpacity,Text } from 'react-native';
-    import { createStackNavigator } from '@react-navigation/stack';
-    import { AntDesign, MaterialIcons } from '@expo/vector-icons';
-    import AddExpenseButton from '../../components/AddExpenseButton';
 
 import SummaryScreen from '../summary_screen';
 import SettingsScreen from '../settings_screen';
@@ -135,9 +130,6 @@ const HomeScreenMovil= ({ navigation }) => {
           </TouchableOpacity>
         </View>
       )}
-          <AddExpenseButton/>      
-        </View>
-    );
     };
 
 const styles = StyleSheet.create({
