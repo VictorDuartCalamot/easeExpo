@@ -7,10 +7,11 @@ import SummaryScreen from '../summary_screen';
 import SettingsScreen from '../settings_screen';
 import ProfileScreen from '../profile_screen'; // Importa la pantalla de perfil
 import { createExpense } from '../../services/api_management';
+import AddExpenseButton from '../../components/AddExpenseButton';
 
 const Stack = createStackNavigator();
 
-const HomeScreenMovil= ({ navigation }) => {
+const HomeScreenWeb = ({ navigation }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
@@ -38,9 +39,6 @@ const HomeScreenMovil= ({ navigation }) => {
     console.log('Date:', newDate);
     console.log('Time:', newTime);
   };
-    const HomeScreen = ({ navigation }) => {
-    const [showMenu, setShowMenu] = useState(false);
-    const [showAvatarMenu, setShowAvatarMenu] = useState(false);
 
   const handleLogout = () => {
     navigation.navigate('Login');
@@ -48,25 +46,25 @@ const HomeScreenMovil= ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <MaterialIcons name="home" size={32} color="black" onPress={() => setShowMenu(!showMenu)} style={styles.menuIcon} />
+      <MaterialIcons name="home" size={24} color="black" onPress={() => setShowMenu(!showMenu)} style={styles.menuIcon} />
       {showMenu && (
         <View style={styles.menu}>
         <View style={styles.menuItem}>
-          <MaterialIcons name="description" size={28} color="black" />
+          <MaterialIcons name="description" size={24} color="black" />
           <Text style={styles.menuText} onPress={() => { navigation.navigate('Summary'); setShowMenu(false); }}>Summary</Text>
         </View>
         </View>
       )}
       <View style={styles.avatarContainer}>
-        <MaterialIcons name="person" size={32} color="black" onPress={() => setShowAvatarMenu(!showAvatarMenu)} style={styles.avatarIcon} />
+        <MaterialIcons name="person" size={24} color="black" onPress={() => setShowAvatarMenu(!showAvatarMenu)} style={styles.avatarIcon} />
         {showAvatarMenu && (
           <View style={styles.menu1}>
             <View style={styles.menuItem}>
-              <MaterialIcons name="person" size={28} color="black" />
+              <MaterialIcons name="person" size={24} color="black" />
               <Text style={styles.menuText} onPress={() => { navigation.navigate('Profile'); setShowMenu(false); }}>Profile</Text>
             </View>
             <View style={styles.menuItem}>
-              <MaterialIcons name="exit-to-app" size={29} color="black" onPress={handleLogout} />
+              <MaterialIcons name="exit-to-app" size={24} color="black" onPress={handleLogout} />
               <Text style={styles.menuText} onPress={handleLogout}>Logout</Text>
             </View>
           </View>
@@ -117,27 +115,12 @@ const HomeScreenMovil= ({ navigation }) => {
     </View>
   );
 };
-      <TouchableOpacity onPress={() => setShowAvatarMenu(!showAvatarMenu)} style={styles.avatarIcon}>
-        <MaterialIcons name="person" size={35} color="black" />
-      </TouchableOpacity>
-      {showAvatarMenu && (
-        <View style={styles.menu1}>
-          <TouchableOpacity onPress={() => { navigation.navigate('Profile'); setShowAvatarMenu(false); }}>
-            <Text>Profile</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleLogout}>
-            <Text>Logout</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    
   },
   modalContainer: {
     flex: 1,
@@ -161,7 +144,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 20,
     left: 20,
-    marginTop:40
+    marginTop:35
   },
   menu: {
     position: 'absolute',
@@ -171,7 +154,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     zIndex: 1,
-    marginTop:60
   },
   menu1: {
     backgroundColor: 'white',
@@ -186,10 +168,9 @@ const styles = StyleSheet.create({
     right: 20,
     flexDirection: 'column',
     alignItems: 'center',
-    marginTop:40
   },
   avatarIcon: {
-    marginBottom: 20,
+    marginBottom: 5,
   },
   menuItem: {
     flexDirection: 'row',
@@ -202,4 +183,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreenMovil;
+export default HomeScreenWeb;
