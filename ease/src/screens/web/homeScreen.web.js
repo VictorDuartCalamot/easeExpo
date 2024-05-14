@@ -11,7 +11,7 @@ import AddExpenseButton from '../../components/AddExpenseButton';
 
 const Stack = createStackNavigator();
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreenWeb = ({ navigation }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
@@ -141,4 +141,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default HomeScreenWeb;

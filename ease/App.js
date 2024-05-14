@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import LoginScreen  from './src/screens/login_screen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreenWeb from './src/screens/web/homeScreen.web';
+import HomeScreenMovil from './src/screens/movil/homeScreen.movil';
 import RegisterScreen from './src/screens/register_screen';
 import HomeScreen from './src/screens/home_screen';
 import SettingScreen from './src/screens/settings_screen';
@@ -35,14 +37,16 @@ export default function App() {
         <Stack.Screen name="ChatDetail" component={ChatDetail} options={{ headerShown: false }} />
         <Stack.Screen name="ChatClient" component={ChatViewClient} options={{ headerShown: false }} />
         <Stack.Screen name='Login' component={LoginScreen} options={{headerShown:false}}/>
-        <Stack.Screen name='Home'component={HomeScreen} options={{ headerShow: false}}/>
+        <Stack.Screen name='Home'component={HomeScreen} options={{ headerShown: false}}/>
+        <Stack.Screen name='HomeWeb'component={HomeScreenWeb} options={{ headerShown: false}}/>
+        <Stack.Screen name='HomeMovil'component={HomeScreenMovil} options={{ headerShown: false}}/>
         <Stack.Screen name='Register' component={RegisterScreen} options={{headerShown:false}}/>
         <Stack.Screen name='Setting' component={SettingScreen} options={{headerShown:false}}/>
-        <Stack.Screen name='Admin' component={MenuAdmin} options={{headerShown:false}}/>
-        <Stack.Screen name='UsersList' component={UsersList} options={{headerRight: AvatarUser}}/>
-        <Stack.Screen name='UserData' component={UserData} options={{headerRight: AvatarUser}}/>
-        <Stack.Screen name='Profile' component={ProfileScreen} options={{ headerRight: AvatarUser }}/>
-        <Stack.Screen name='Summary' component={SummaryScreen} options={{ headerRight: AvatarUser}}/>
+        <Stack.Screen name='Admin' component={MenuAdmin}  />
+        <Stack.Screen name='UsersList' component={UsersList}/>
+        <Stack.Screen name='UserData' component={UserData} />
+        <Stack.Screen name='Profile' component={ProfileScreen}/>
+        <Stack.Screen name='Summary' component={SummaryScreen}/>
         <Stack.Screen name='Support' component={SupportScreen} options={{headerShown:false}}/>
         <Stack.Screen name='HomeScreen' component={HomeScreen} options={{headerShown:false}}/>
         <Stack.Screen name='NewUserAdmin' component={NewUserAdmin} options={{headerShown:false}}/>

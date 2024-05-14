@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ImageBackground, TextInput, Image, Button, Alert, Platform } from "react-native";
+import { View, Text, StyleSheet, ImageBackground, TextInput, Image, Button, Alert, Platform,TouchableOpacity} from "react-native";
 import { loginUser } from "../../services/api_authentication";
 import {useNavigation} from '@react-navigation/native';
 
@@ -146,4 +146,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default LoginScreenMovil
+export default LoginScreenMovil;
