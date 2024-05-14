@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Modal, TextInput, Button, Alert } from "react-native";
 import { createExpense, getCategories, getSubCategories } from "../services/api_management";
 import { AntDesign } from "@expo/vector-icons";
-import SelectedOptionPicker from "selected-option-picker";
+import RNPickerSelect from "react-native-picker-select";
 
 const AddExpenseButton = () => {
     const [title, setTitle] = useState('');
@@ -13,59 +13,60 @@ const AddExpenseButton = () => {
     const [categories, setCategories] = useState([]);
     const [subCategories, setSubCategories] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
-    const [showCategoryPicker, setShowCategoryPicker] = useState(false);
-    const [showSubCategoryPicker, setShowSubCategoryPicker] = useState(false);
 
     useEffect(() => {
         fetchCategories();
     }, []);
 
     const fetchCategories = async () => {
-        try{
+        try {
             const response = await getCategories();
-            setCategories(response.data);
-        }catch(error){
+            setCategories(response);
+        } catch (error) {
             console.error("Error fetching categories: ", error);
         }
     };
 
     const fetchSubCategories = async (categoryId) => {
-        try{
+        try {
             const response = await getSubCategories({ category: categoryId });
-            setSubCategories(response.data);
-        }catch(error){
+            setSubCategories(response);
+        } catch (error) {
             console.error("Error fetching subcategories: ", error);
         }
     };
 
     const newExpense = async () => {
-        if(parseFloat(amount) <= 0){
+        const numericAmount = parseFloat(amount.replace(/,/g, '.'));
+
+        if(!numericAmount || isNaN(numericAmount) || numericAmount <= 0) {
             Alert.alert('Invalid Amount', 'Amount must be greater than zero');
             return;
-        }
-
+        };
+    
         const date = new Date();
         const newTime = date.toISOString().substring(11, 19).toString();
         const newDate = date.toISOString().substring(0, 10).toString();
-        createExpense({ 
-            title:title, 
-            descriptio:description, 
-            amount:amount, 
-            category:category, 
-            subCategory: subCategory,
-            newDate:newDate, 
-            newTime:newTime
-        });
-        setModalVisible(false);
-        console.log('New Expense Added: ');
-        console.log('Title:', title);
-        console.log('Description:', description);
-        console.log('Amount:', amount);
-        console.log('Category:', category);
-        console.log('Subcategory:', subCategory);
-        console.log('Date:', newDate);
-        console.log('Time:', newTime);
-    };
+        const expenseData = {
+            title: title,
+            description: description,
+            amount: numericAmount,
+            creation_date: newDate,
+            creation_time: newTime,
+            category: category,
+            subcategory: subCategory,
+        };
+    
+        console.log('Sending expense data:', expenseData);
+    
+        try {
+            const response = await createExpense(expenseData);
+            console.log('Expense created:', response);
+            setModalVisible(false);
+        } catch (error) {
+            console.error('Error creating expense:', error.response.data);
+        }
+    };    
 
     const handleCategoryChange = (categoryId) => {
         setCategory(categoryId);
@@ -78,10 +79,10 @@ const AddExpenseButton = () => {
 
     return (
         <View>
-            <AntDesign name="pluscircleo" size={24} color="black" onPress={handleAddExpense}/>
+            <AntDesign name="pluscircleo" size={24} color="black" onPress={handleAddExpense} />
             <Modal
-                animationType="slide" 
-                visible={modalVisible} 
+                animationType="slide"
+                visible={modalVisible}
                 onRequestClose={() => {
                     setModalVisible(false);
                 }}
@@ -107,34 +108,24 @@ const AddExpenseButton = () => {
                         value={amount}
                     />
                     <View style={styles.pickerContainer}>
-                        <Button title="Select Category" onPress={() => setShowCategoryPicker(true)} />
-                        {categories.length > 0 && (
-                            <SelectedOptionPicker
-                                data={categories.map(category => ({ label: category.name, value: category.id }))}
-                                showPicker={showCategoryPicker}
-                                onDonePress={() => setShowCategoryPicker(false)}
-                                onCancelPress={() => setShowCategoryPicker(false)}
-                                onItemChange={(option) => handleCategoryChange(option.value)}
-                            />
-                        )}
+                        <RNPickerSelect
+                            onValueChange={(value) => handleCategoryChange(value)}
+                            items={categories.map(category => ({ label: category.name, value: category.id }))}
+                        />
                     </View>
-                    <View style={styles.pickerContainer}>
-                        <Button title="Select Subcategory" onPress={() => setShowSubCategoryPicker(true)} />
-                        {subCategories.length > 0 && (
-                            <SelectedOptionPicker
-                                data={subCategories.map(subCategory => ({ label: subCategory.name, value: subCategory.id }))}
-                                showPicker={showSubCategoryPicker}
-                                onDonePress={() => setShowSubCategoryPicker(false)}
-                                onCancelPress={() => setShowSubCategoryPicker(false)}
-                                onItemChange={(option) => setSubCategory(option.value)}
+                    {subCategories.length > 0 && (
+                        <View style={styles.pickerContainer}>
+                            <RNPickerSelect
+                                onValueChange={(value) => setSubCategory(value)}
+                                items={subCategories.map(subCategory => ({ label: subCategory.name, value: subCategory.id }))}
                             />
-                        )}
+                        </View>
+                    )}
+                    <View style={styles.buttonContainer}>
+                        <Button title="Add Expense" onPress={newExpense} />
                     </View>
                     <View style={styles.buttonContainer}>
-                        <Button title="Add Expense" onPress={newExpense}/>
-                    </View>
-                    <View style={styles.buttonContainer}>
-                        <Button title="Cancel" onPress={() => setModalVisible(false)}/>
+                        <Button title="Cancel" onPress={() => setModalVisible(false)} />
                     </View>
                 </View>
             </Modal>

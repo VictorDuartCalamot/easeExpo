@@ -6,8 +6,7 @@ const Card = ({ user, onDelete, onUpdate, onActive, expanded, onPress }) => {
     const navigation = useNavigation();
     return (
         <TouchableOpacity onPress={onPress} style={styles.card}>
-            <Text style={styles.userName}>{user.id} .</Text>
-            <Text style={styles.userEmail}>{user.email}</Text>
+            <Text style={styles.userName}>{user.id}. {user.email}</Text>
             {expanded && (
                 <View style={styles.buttonsContainer}>
                     <TouchableOpacity onPress={onDelete} style={styles.button}>
@@ -33,10 +32,6 @@ const styles = StyleSheet.create({
     },
     userName: {
         fontSize: 16,
-        fontWeight: "bold",
-    },
-    userEmail:{
-        fontSize: 15,
     },
     buttonsContainer: {
         flexDirection: "row",

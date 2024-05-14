@@ -70,48 +70,7 @@ const HomeScreen = ({ navigation }) => {
           </View>
         )}
       </View>
-      <Button title="Add Expense" onPress={() => setModalVisible(true)} />
-      <Modal
-        animationType="slide"
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(false);
-        }}
-      >
-        <View style={styles.modalContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Title"
-            onChangeText={(text) => setTitle(text)}
-            value={title}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Description"
-            onChangeText={(text) => setDescription(text)}
-            value={description}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Amount"
-            keyboardType="numeric"
-            onChangeText={(text) => setAmount(text)}
-            value={amount}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Category"
-            onChangeText={(text) => setCategory(text)}
-            value={category}
-          />
-          <View style={styles.buttonContainer}>
-            <Button title="Add Expense" onPress={newExpense} />
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button title="Cancel" onPress={() => setModalVisible(false)} />
-          </View>
-        </View>
-      </Modal>
+      <AddExpenseButton/>
     </View>
   );
 };
