@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native
 import Card from "../../components/card";
 import { getusers, deleteUser, updateUserAccountStatus } from "../../services/api_authentication";
 import { useNavigation } from "@react-navigation/native";
-import { Feather } from "@expo/vector-icons";
+import { Feather, MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 function UsersList() {
     const navigation = useNavigation();
@@ -58,6 +58,14 @@ function UsersList() {
         navigation.navigate('NewUserAdmin');
     };
 
+    const handleAddCategory = () => {
+        navigation.navigate('NewCategory');
+    };
+
+    const handleAddSubCategory = () =>{
+        navigation.navigate('NewSubCategory');
+    }
+
     const toggleExpand = (index) => {
         setExpandedIndex(prevIndex => prevIndex === index ? null : index);
     };    
@@ -84,6 +92,12 @@ function UsersList() {
             />
             <TouchableOpacity style={styles.addButton} onPress={handleAddUser}>
                 <Feather name="plus" size={24} color="white"/>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.categoryButton} onPress={handleAddCategory}>
+                <MaterialIcons name="data-saver-on" size={24} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.subCategoryButton} onPress={handleAddSubCategory}>
+                <MaterialCommunityIcons name="database-plus-outline" size={24} color="white" />
             </TouchableOpacity>
         </View>
     );
@@ -112,6 +126,28 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         justifyContent: "center",
         alignItems: "center",
+    },
+    categoryButton: {
+        position: 'absolute',
+        bottom: 80,
+        right: 20,
+        backgroundColor: 'blue',
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    subCategoryButton: {
+        position: 'absolute',
+        bottom: 140,
+        right: 20,
+        backgroundColor: 'blue',
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
 

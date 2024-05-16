@@ -17,7 +17,12 @@ import SupportScreen from './src/screens/support_screen';
 import SplashScreen from './src/screens/splash_screen';
 import AvatarUser from './src/components/avatar_user';
 import NewUserAdmin from './src/components/newUser.admin';
-import AssistanceScreen from './src/components/chat';
+import NewCategory from './src/components/newCategory.admin';
+import NewSubCategory from './src/components/newSubCategory.admin';
+import ChatBot from './src/services/chatBot';
+import ChatViewAdmin from './src/screens/admin-screens/chat-view.admin';
+import ChatViewClient from './src/screens/chat-view.client';
+import ChatDetail from './src/screens/admin-screens/movil/chat-details.admin';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,9 +30,12 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='Splash'>
+      <Stack.Navigator initialRouteName='ChatAdmin'>
         <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Assistant" component={AssistanceScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="ChatBot" component={ChatBot} options={{ headerShown: false }} />
+        <Stack.Screen name="ChatAdmin" component={ChatViewAdmin} options={{ headerShown: false }} />
+        <Stack.Screen name="ChatDetail" component={ChatDetail} options={{ headerShown: false }} />
+        <Stack.Screen name="ChatClient" component={ChatViewClient} options={{ headerShown: false }} />
         <Stack.Screen name='Login' component={LoginScreen} options={{headerShown:false}}/>
         <Stack.Screen name='Home'component={HomeScreen} options={{ headerShown: false}}/>
         <Stack.Screen name='HomeWeb'component={HomeScreenWeb} options={{ headerShown: false}}/>
@@ -40,6 +48,10 @@ export default function App() {
         <Stack.Screen name='Profile' component={ProfileScreen}/>
         <Stack.Screen name='Summary' component={SummaryScreen}/>
         <Stack.Screen name='Support' component={SupportScreen} options={{headerShown:false}}/>
+        <Stack.Screen name='HomeScreen' component={HomeScreen} options={{headerShown:false}}/>
+        <Stack.Screen name='NewUserAdmin' component={NewUserAdmin} options={{headerShown:false}}/>
+        <Stack.Screen name='NewCategory' component={NewCategory} options={{headerShown:false}}/>
+        <Stack.Screen name='NewSubCategory' component={NewSubCategory} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
