@@ -46,25 +46,25 @@ const HomeScreenWeb = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <MaterialIcons name="home" size={24} color="black" onPress={() => setShowMenu(!showMenu)} style={styles.menuIcon} />
+      <MaterialIcons name="home" size={32} color="black" onPress={() => setShowMenu(!showMenu)} style={styles.menuIcon} />
       {showMenu && (
         <View style={styles.menu}>
         <View style={styles.menuItem}>
-          <MaterialIcons name="description" size={24} color="black" />
+          <MaterialIcons name="description" size={28} color="black" />
           <Text style={styles.menuText} onPress={() => { navigation.navigate('Summary'); setShowMenu(false); }}>Summary</Text>
         </View>
         </View>
       )}
       <View style={styles.avatarContainer}>
-        <MaterialIcons name="person" size={24} color="black" onPress={() => setShowAvatarMenu(!showAvatarMenu)} style={styles.avatarIcon} />
+        <MaterialIcons name="person" size={32} color="black" onPress={() => setShowAvatarMenu(!showAvatarMenu)} style={styles.avatarIcon} />
         {showAvatarMenu && (
           <View style={styles.menu1}>
             <View style={styles.menuItem}>
-              <MaterialIcons name="person" size={24} color="black" />
+              <MaterialIcons name="person" size={32} color="black" />
               <Text style={styles.menuText} onPress={() => { navigation.navigate('Profile'); setShowMenu(false); }}>Profile</Text>
             </View>
             <View style={styles.menuItem}>
-              <MaterialIcons name="exit-to-app" size={24} color="black" onPress={handleLogout} />
+              <MaterialIcons name="exit-to-app" size={32} color="black" onPress={handleLogout} />
               <Text style={styles.menuText} onPress={handleLogout}>Logout</Text>
             </View>
           </View>
@@ -154,6 +154,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     zIndex: 1,
+    marginTop:50,
   },
   menu1: {
     backgroundColor: 'white',
@@ -161,6 +162,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginVertical: 10,
     zIndex: 1,
+    marginTop:10,
   },
   avatarContainer: {
     position: 'absolute',
@@ -170,7 +172,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatarIcon: {
-    marginBottom: 5,
+    marginTop: 35
   },
   menuItem: {
     flexDirection: 'row',

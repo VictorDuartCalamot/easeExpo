@@ -1,49 +1,72 @@
-import React, { useState } from 'react';
-import { View, Text } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Button } from 'react-native';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import { getExpenses } from './api'; // Ajusta la ruta según la ubicación de tu archivo API
 
 const SummaryScreenWeb = () => {
   const [selectedDates, setSelectedDates] = useState([]);
+  const [firstSelectedDate, setFirstSelectedDate] = useState(null);
+  const [secondSelectedDate, setSecondSelectedDate] = useState(null);
   const [totalGastos, setTotalGastos] = useState(0);
 
   const handleDateChange = (date) => {
-    if (selectedDates.includes(date)) {
-      setSelectedDates(selectedDates.filter((d) => d !== date));
+    setSelectedDates(date);
+    if (date.length === 2) {
+      setFirstSelectedDate(date[0]);
+      setSecondSelectedDate(date[1]);
     } else {
-      setSelectedDates([...selectedDates, date]);
+      setFirstSelectedDate(null);
+      setSecondSelectedDate(null);
     }
   };
 
-  const calcularTotalGastos = () => {
-    // Simulando la obtención de los gastos totales de la API
-    const gastosTotales = selectedDates.reduce((total, date) => total + obtenerGastosPorFecha(date), 0);
-    setTotalGastos(gastosTotales);
+  const obtenerGastosEntreFechas = async () => {
+    try {
+      if (firstSelectedDate && secondSelectedDate) {
+        const response = await getExpenses({
+          start_date: firstSelectedDate.toISOString(),
+          end_date: secondSelectedDate.toISOString(),
+        });
+
+        // Calcular la suma de los gastos obtenidos
+        let totalGastosEntreFechas = 0;
+        response.forEach((expense) => {
+          totalGastosEntreFechas += expense.amount;
+        });
+
+        setTotalGastos(totalGastosEntreFechas);
+      } else {
+        setTotalGastos(0);
+      }
+    } catch (error) {
+      console.error('Error obteniendo gastos:', error);
+    }
   };
 
-  const obtenerGastosPorFecha = (date) => {
-    // Simulación de la obtención de los gastos de la API
-    // Aquí deberías hacer una llamada a tu API para obtener los gastos de la fecha
-    // Por simplicidad, aquí devolveremos un gasto aleatorio
-    return Math.floor(Math.random() * 100);
-  };
+  useEffect(() => {
+    obtenerGastosEntreFechas();
+  }, [firstSelectedDate, secondSelectedDate]);
 
   return (
     <View style={{ alignItems: 'center' }}>
-      <Text style={{ fontSize: 20, marginBottom: 20 }}>
-        Gastos totales seleccionados: ${totalGastos}
-      </Text>
       <Calendar
         selectRange
         value={selectedDates}
-        onChange={(dates) => {
-          setSelectedDates(dates);
-          calcularTotalGastos();
-        }}
-        onClickDay={handleDateChange}
+        onChange={handleDateChange}
       />
+      {firstSelectedDate && secondSelectedDate && (
+        <View style={{ marginTop: 20 }}>
+          <Text>
+            Gastos totales entre {firstSelectedDate.toLocaleDateString()} y {secondSelectedDate.toLocaleDateString()}:
+          </Text>
+          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+            ${totalGastos}
+          </Text>
+        </View>
+      )}
     </View>
-  ); 
+  );
 };
 
 export default SummaryScreenWeb;
