@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, Image } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, Image, ImageBackground } from 'react-native';
 import axios from 'axios'; // Importa Axios
 
 const SettingsScreen = () => {
@@ -22,35 +22,45 @@ const SettingsScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Image source={require('../../pictures/logo.png')} style={styles.logo} />
-      <Text style={styles.heading}>Configuración</Text>
-      <View style={styles.formContainer}>
-        <Text style={styles.label}>Introducir contraseña actual</Text>
-        <TextInput
-          style={styles.input}
-          value={currentPassword}
-          onChangeText={setCurrentPassword}
-          placeholder="Introducir contraseña actual"
-          secureTextEntry={true}
-        />
+    <ImageBackground 
+      source={require('../../pictures/fondo2.jpg')} 
+      style={styles.imageBackground}
+    >
+      <View style={styles.container}>
+        <Image source={require('../../pictures/logo.png')} style={styles.logo} />
+        <Text style={styles.heading}>Configuración</Text>
+        <View style={styles.formContainer}>
+          <Text style={styles.label}>Introducir contraseña actual</Text>
+          <TextInput
+            style={styles.input}
+            value={currentPassword}
+            onChangeText={setCurrentPassword}
+            placeholder="Introducir contraseña actual"
+            secureTextEntry={true}
+          />
+        </View>
+        <View style={styles.formContainer}>
+          <Text style={styles.label}>Nueva contraseña</Text>
+          <TextInput
+            style={styles.input}
+            value={newPassword}
+            onChangeText={setNewPassword}
+            placeholder="Nueva contraseña"
+            secureTextEntry={true}
+          />
+        </View>
+        <Button title="Guardar" onPress={handleChangePassword} />
       </View>
-      <View style={styles.formContainer}>
-        <Text style={styles.label}>Nueva contraseña</Text>
-        <TextInput
-          style={styles.input}
-          value={newPassword}
-          onChangeText={setNewPassword}
-          placeholder="Nueva contraseña"
-          secureTextEntry={true}
-        />
-      </View>
-      <Button title="Guardar" onPress={handleChangePassword} />
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  imageBackground: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',

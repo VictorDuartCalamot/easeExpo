@@ -1,72 +1,75 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text, Button, StyleSheet, ImageBackground } from 'react-native';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import { getExpenses } from './api'; // Ajusta la ruta según la ubicación de tu archivo API
+import { getExpenses } from '../../services/api_management';
 
 const SummaryScreenWeb = () => {
-  const [selectedDates, setSelectedDates] = useState([]);
-  const [firstSelectedDate, setFirstSelectedDate] = useState(null);
-  const [secondSelectedDate, setSecondSelectedDate] = useState(null);
-  const [totalGastos, setTotalGastos] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [userExpenses, setUserExpenses] = useState([]);
 
   const handleDateChange = (date) => {
-    setSelectedDates(date);
-    if (date.length === 2) {
-      setFirstSelectedDate(date[0]);
-      setSecondSelectedDate(date[1]);
-    } else {
-      setFirstSelectedDate(null);
-      setSecondSelectedDate(null);
-    }
+    setSelectedDate(date);
   };
 
-  const obtenerGastosEntreFechas = async () => {
+  const obtenerGastosUsuario = async (date) => {
     try {
-      if (firstSelectedDate && secondSelectedDate) {
-        const response = await getExpenses({
-          start_date: firstSelectedDate.toISOString(),
-          end_date: secondSelectedDate.toISOString(),
-        });
-
-        // Calcular la suma de los gastos obtenidos
-        let totalGastosEntreFechas = 0;
-        response.forEach((expense) => {
-          totalGastosEntreFechas += expense.amount;
-        });
-
-        setTotalGastos(totalGastosEntreFechas);
-      } else {
-        setTotalGastos(0);
-      }
+      const expenses = await getExpenses(date);
+      setUserExpenses(expenses);
     } catch (error) {
-      console.error('Error obteniendo gastos:', error);
+      console.error('Error obteniendo gastos del usuario:', error);
     }
   };
 
   useEffect(() => {
-    obtenerGastosEntreFechas();
-  }, [firstSelectedDate, secondSelectedDate]);
+    obtenerGastosUsuario(selectedDate);
+  }, []);
+
+  const obtenerGastosHoy = async () => {
+    const todayExpenses = await getExpenses(new Date());
+    setUserExpenses(todayExpenses);
+  };
 
   return (
-    <View style={{ alignItems: 'center' }}>
-      <Calendar
-        selectRange
-        value={selectedDates}
-        onChange={handleDateChange}
-      />
-      {firstSelectedDate && secondSelectedDate && (
-        <View style={{ marginTop: 20 }}>
-          <Text>
-            Gastos totales entre {firstSelectedDate.toLocaleDateString()} y {secondSelectedDate.toLocaleDateString()}:
-          </Text>
-          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
-            ${totalGastos}
-          </Text>
-        </View>
-      )}
-    </View>
+    <ImageBackground 
+      source={require('../../pictures/fondo2.jpg')} 
+      style={styles.imageBackground}
+    >
+      <View style={styles.container}>
+        <Calendar
+          value={selectedDate}
+          onChange={handleDateChange}
+        />
+        <Button title="Mostrar gastos del usuario logeado" onPress={() => obtenerGastosUsuario(selectedDate)} />
+        <Button title="Mostrar gastos de hoy" onPress={obtenerGastosHoy} />
+        {userExpenses.length > 0 && (
+          <View style={styles.expensesContainer}>
+            <Text>Gastos del usuario logeado en {selectedDate.toLocaleDateString()}:</Text>
+            {userExpenses.map((expense) => (
+              <Text key={expense.id}>
+                {expense.date}: ${expense.amount}
+              </Text>
+            ))}
+          </View>
+        )}
+      </View>
+    </ImageBackground>
   );
 };
+
+const styles = StyleSheet.create({
+  imageBackground: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  container: {
+    alignItems: 'center',
+    padding: 20,
+  },
+  expensesContainer: {
+    marginTop: 20,
+  },
+});
 
 export default SummaryScreenWeb;

@@ -92,9 +92,6 @@ const LoginScreenWeb = () => {
           <View style={styles.buttonContainer}>
             <Button title="Login" onPress={handleLogin} color="#3498db" />
           </View>
-          <View style={styles.buttonContainer}>
-            <Button title="Go to Home" onPress={handleGoToHome} color="#3498db" />
-          </View>
         </View>
       </ImageBackground>
     </View>
