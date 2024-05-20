@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Modal, TextInput, Button, Alert, Text } from 'react-native';
+import { View, StyleSheet, Modal, TextInput, Button, Alert, Text, ImageBackground } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -45,74 +45,76 @@ const HomeScreenWeb = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <MaterialIcons name="home" size={32} color="black" onPress={() => setShowMenu(!showMenu)} style={styles.menuIcon} />
-      {showMenu && (
-        <View style={styles.menu}>
-        <View style={styles.menuItem}>
-          <MaterialIcons name="description" size={28} color="black" />
-          <Text style={styles.menuText} onPress={() => { navigation.navigate('Summary'); setShowMenu(false); }}>Summary</Text>
-        </View>
-        </View>
-      )}
-      <View style={styles.avatarContainer}>
-        <MaterialIcons name="person" size={32} color="black" onPress={() => setShowAvatarMenu(!showAvatarMenu)} style={styles.avatarIcon} />
-        {showAvatarMenu && (
-          <View style={styles.menu1}>
-            <View style={styles.menuItem}>
-              <MaterialIcons name="person" size={32} color="black" />
-              <Text style={styles.menuText} onPress={() => { navigation.navigate('Profile'); setShowMenu(false); }}>Profile</Text>
-            </View>
-            <View style={styles.menuItem}>
-              <MaterialIcons name="exit-to-app" size={32} color="black" onPress={handleLogout} />
-              <Text style={styles.menuText} onPress={handleLogout}>Logout</Text>
-            </View>
+    <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.backgroundImage}>
+      <View style={styles.container}>
+        <MaterialIcons name="home" size={32} color="black" onPress={() => setShowMenu(!showMenu)} style={styles.menuIcon} />
+        {showMenu && (
+          <View style={styles.menu}>
+          <View style={styles.menuItem}>
+            <MaterialIcons name="description" size={28} color="black" />
+            <Text style={styles.menuText} onPress={() => { navigation.navigate('Summary'); setShowMenu(false); }}>Summary</Text>
+          </View>
           </View>
         )}
-      </View>
-      <Button title="Add Expense" onPress={() => setModalVisible(true)} />
-      <Modal
-        animationType="slide"
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(false);
-        }}
-      >
-        <View style={styles.modalContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Title"
-            onChangeText={(text) => setTitle(text)}
-            value={title}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Description"
-            onChangeText={(text) => setDescription(text)}
-            value={description}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Amount"
-            keyboardType="numeric"
-            onChangeText={(text) => setAmount(text)}
-            value={amount}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Category"
-            onChangeText={(text) => setCategory(text)}
-            value={category}
-          />
-          <View style={styles.buttonContainer}>
-            <Button title="Add Expense" onPress={newExpense} />
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button title="Cancel" onPress={() => setModalVisible(false)} />
-          </View>
+        <View style={styles.avatarContainer}>
+          <MaterialIcons name="person" size={32} color="black" onPress={() => setShowAvatarMenu(!showAvatarMenu)} style={styles.avatarIcon} />
+          {showAvatarMenu && (
+            <View style={styles.menu1}>
+              <View style={styles.menuItem}>
+                <MaterialIcons name="person" size={32} color="black" />
+                <Text style={styles.menuText} onPress={() => { navigation.navigate('Profile'); setShowMenu(false); }}>Profile</Text>
+              </View>
+              <View style={styles.menuItem}>
+                <MaterialIcons name="exit-to-app" size={32} color="black" onPress={handleLogout} />
+                <Text style={styles.menuText} onPress={handleLogout}>Logout</Text>
+              </View>
+            </View>
+          )}
         </View>
-      </Modal>
-    </View>
+        <Button title="Add Expense" onPress={() => setModalVisible(true)} />
+        <Modal
+          animationType="slide"
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(false);
+          }}
+        >
+          <View style={styles.modalContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Title"
+              onChangeText={(text) => setTitle(text)}
+              value={title}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Description"
+              onChangeText={(text) => setDescription(text)}
+              value={description}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Amount"
+              keyboardType="numeric"
+              onChangeText={(text) => setAmount(text)}
+              value={amount}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Category"
+              onChangeText={(text) => setCategory(text)}
+              value={category}
+            />
+            <View style={styles.buttonContainer}>
+              <Button title="Add Expense" onPress={newExpense} />
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button title="Cancel" onPress={() => setModalVisible(false)} />
+            </View>
+          </View>
+        </Modal>
+      </View>
+    </ImageBackground>
   );
 };
 
@@ -121,6 +123,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
   },
   modalContainer: {
     flex: 1,
@@ -169,7 +176,7 @@ const styles = StyleSheet.create({
     top: 20,
     right: 20,
     flexDirection: 'column',
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
   avatarIcon: {
     marginTop: 35

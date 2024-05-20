@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ImageBackground, TextInput, Image, Button, Alert, Platform, Dimensions } from 'react-native';
 import { loginUser } from "../../services/api_authentication";
 import { useNavigation } from '@react-navigation/native';
+import Support from ".././support_screen"
 
 const LoginScreenWeb = () => {
   const navigation = useNavigation();

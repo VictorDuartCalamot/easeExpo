@@ -1,34 +1,75 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground } from 'react-native';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import { getExpenses } from '../../services/api_management';
+import { getExpenses, getCategories, getSubCategories } from '../../services/api_management';
 
 const SummaryScreenWeb = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [userExpenses, setUserExpenses] = useState([]);
+  const [selectedStartDate, setSelectedStartDate] = useState(new Date());
+  const [selectedEndDate, setSelectedEndDate] = useState(new Date());
+  const [expenses, setExpenses] = useState([]);
+  const [categories, setCategories] = useState({});
+  const [subCategories, setSubCategories] = useState({});
 
   const handleDateChange = (date) => {
-    setSelectedDate(date);
-  };
-
-  const obtenerGastosUsuario = async (date) => {
-    try {
-      const expenses = await getExpenses(date);
-      setUserExpenses(expenses);
-    } catch (error) {
-      console.error('Error obteniendo gastos del usuario:', error);
+    if (Array.isArray(date)) {
+      setSelectedStartDate(date[0]);
+      setSelectedEndDate(date[1] || date[0]);
+    } else {
+      setSelectedStartDate(date);
+      setSelectedEndDate(date);
     }
   };
 
   useEffect(() => {
-    obtenerGastosUsuario(selectedDate);
+    const fetchExpenses = async () => {
+      const startDateString = selectedStartDate.toISOString().split('T')[0];
+      const endDateString = selectedEndDate.toISOString().split('T')[0];
+
+      try {
+        const expenseData = await getExpenses({ start_date: startDateString, end_date: endDateString });
+        setExpenses(expenseData);
+      } catch (error) {
+        console.error('Error fetching expenses:', error);
+      }
+    };
+
+    fetchExpenses();
+  }, [selectedStartDate, selectedEndDate]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const categoriesData = await getCategories();
+        const categoriesMap = {};
+        categoriesData.forEach(category => {
+          categoriesMap[category.id] = { name: category.name, color: category.HexColor };
+        });
+        setCategories(categoriesMap);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
   }, []);
 
-  const obtenerGastosHoy = async () => {
-    const todayExpenses = await getExpenses(new Date());
-    setUserExpenses(todayExpenses);
-  };
+  useEffect(() => {
+    const fetchSubCategories = async () => {
+      try {
+        const subCategoriesData = await getSubCategories();
+        const subCategoriesMap = {};
+        subCategoriesData.forEach(subCategory => {
+          subCategoriesMap[subCategory.id] = subCategory.name;
+        });
+        setSubCategories(subCategoriesMap);
+      } catch (error) {
+        console.error('Error fetching subcategories:', error);
+      }
+    };
+
+    fetchSubCategories();
+  }, []);
 
   return (
     <ImageBackground 
@@ -37,18 +78,37 @@ const SummaryScreenWeb = () => {
     >
       <View style={styles.container}>
         <Calendar
-          value={selectedDate}
+          selectRange
+          value={[selectedStartDate, selectedEndDate]}
           onChange={handleDateChange}
         />
-        <Button title="Mostrar gastos del usuario logeado" onPress={() => obtenerGastosUsuario(selectedDate)} />
-        <Button title="Mostrar gastos de hoy" onPress={obtenerGastosHoy} />
-        {userExpenses.length > 0 && (
+        {expenses.length > 0 && (
           <View style={styles.expensesContainer}>
-            <Text>Gastos del usuario logeado en {selectedDate.toLocaleDateString()}:</Text>
-            {userExpenses.map((expense) => (
-              <Text key={expense.id}>
-                {expense.date}: ${expense.amount}
-              </Text>
+            <Text style={styles.expensesTitle}>
+              Gastos entre {selectedStartDate.toLocaleDateString()} y {selectedEndDate.toLocaleDateString()}:
+            </Text>
+            {expenses.map((expense) => (
+              <View key={expense.id} style={styles.expenseItem}>
+                <Text>title: {expense.title}</Text>
+                <Text>Descripción: {expense.description}</Text>
+                <Text>Monto: ${expense.amount}</Text>
+                <View style={styles.categoryContainer}>
+                  <Text style={styles.redText}>
+                    Categoría: {categories[expense.category]?.name || 'no data'}
+                  </Text>
+                  {categories[expense.category]?.color && (
+                    <View 
+                      style={[
+                        styles.colorCircle, 
+                        { backgroundColor: categories[expense.category].color }
+                      ]} 
+                    />
+                  )}
+                </View>
+                <Text style={styles.redText}>
+                  Subcategoría: {subCategories[expense.subcategory] || 'no data'}
+                </Text>
+              </View>
             ))}
           </View>
         )}
@@ -69,6 +129,33 @@ const styles = StyleSheet.create({
   },
   expensesContainer: {
     marginTop: 20,
+    alignItems: 'center',
+  },
+  expensesTitle: {
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  expenseItem: {
+    marginBottom: 20,
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#000',
+    padding: 10,
+    borderRadius: 10,
+  },
+  redText: {
+    color: 'red',
+  },
+  categoryContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  colorCircle: {
+    width: 15,
+    height: 15,
+    borderRadius: 7.5,
+    marginLeft: 5,
   },
 });
 

@@ -46,7 +46,7 @@ export default function App() {
         <Stack.Screen name='UserData' component={UserData} options={{ headerShown: false }} />
         <Stack.Screen name='Profile' component={ProfileScreen} options={{ headerTransparent: true }} />
         <Stack.Screen name='Summary' component={SummaryScreen} options={{ headerTransparent: true }} />
-        <Stack.Screen name='Support' component={SupportScreen} options={{ headerShown: false }} />
+        <Stack.Screen name='Support' component={SupportScreen} options={{ headerTransparent: true}} />
         <Stack.Screen name='NewUserAdmin' component={NewUserAdmin} options={{ headerShown: false }} />
         <Stack.Screen name='NewCategory' component={NewCategory} options={{ headerShown: false }} />
         <Stack.Screen name='NewSubCategory' component={NewSubCategory} options={{ headerShown: false }} />

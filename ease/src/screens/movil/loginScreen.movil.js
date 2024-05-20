@@ -52,7 +52,7 @@ const LoginScreenWeb = () => {
             source={require('../../pictures/logo.png')}
             style={styles.imageLogo}
           />
-          <View style={styles.inputWrapper}>
+          <View>
             <TextInput
               placeholder="Enter Email"
               value={email}
@@ -61,7 +61,7 @@ const LoginScreenWeb = () => {
             />
             <View style={styles.inputLine}/>
           </View>
-          <View style={styles.inputWrapper}>
+          <View>
             <TextInput
               placeholder="Password"
               secureTextEntry
