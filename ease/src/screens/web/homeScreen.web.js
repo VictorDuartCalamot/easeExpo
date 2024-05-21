@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Dimensions, Image, ImageBackground } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, Image, ImageBackground, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { PieChart } from 'react-native-chart-kit';
 import { getExpenses, getIncomes } from '../../services/api_management';
@@ -16,9 +16,6 @@ const HomeScreenWeb = ({ navigation }) => {
 
   useEffect(() => {
     const fetchExpenses = async () => {
-      const today = new Date();
-      const dateString = today.toISOString().split('T')[0];
-
       try {
         const expenseData = await getExpenses({ start_date: '2024-05-20', end_date: '2024-05-20', start_time: '', end_time: '' });
         if (!Array.isArray(expenseData)) {
@@ -39,11 +36,8 @@ const HomeScreenWeb = ({ navigation }) => {
     };
 
     const fetchIncomes = async () => {
-      const today = new Date();
-      const dateString = today.toISOString().split('T')[0];
-
       try {
-        const incomeData = await getIncomes({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
+        const incomeData = await getIncomes({ start_date: '2024-05-20', end_date: '2024-05-20', start_time: '', end_time: '' });
         if (!Array.isArray(incomeData)) {
           console.error("Error: los datos de income no son un array");
           return;
@@ -90,26 +84,26 @@ const HomeScreenWeb = ({ navigation }) => {
       <View style={styles.container}>
         <Image source={require('../../pictures/logo.png')} style={styles.logo} />
         <View style={styles.iconColumn}>
-          <View style={styles.iconItem}>
+          <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('Summary')}>
             <MaterialIcons name="description" size={24} color="black" />
-            <Text style={styles.menuText} onPress={() => navigation.navigate('Summary')}>Summary</Text>
-          </View>
-          <View style={styles.iconItem}>
+            <Text style={styles.menuText}>Summary</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('Profile')}>
             <MaterialIcons name="person" size={24} color="black" />
-            <Text style={styles.menuText} onPress={() => navigation.navigate('Profile')}>Profile</Text>
-          </View>
-          <View style={styles.iconItem}>
-            <MaterialIcons name="exit-to-app" size={24} color="black" onPress={handleLogout} />
-            <Text style={styles.menuText} onPress={handleLogout}>Logout</Text>
-          </View>
+            <Text style={styles.menuText}>Profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconItem} onPress={handleLogout}>
+            <MaterialIcons name="exit-to-app" size={24} color="black" />
+            <Text style={styles.menuText}>Logout</Text>
+          </TouchableOpacity>
         </View>
         {chartData.length > 0 ? (
           <>
             <View style={styles.chartContainer}>
               <PieChart
                 data={chartData}
-                width={screenWidth}
-                height={220}
+                width={screenWidth * 0.8}  // Adjusted width to make the chart smaller
+                height={160}  // Adjusted height to make the chart smaller
                 chartConfig={{
                   backgroundColor: "#ffffff",
                   backgroundGradientFrom: "#ffffff",
@@ -149,11 +143,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    zIndex: 1, // Ensuring the main container is on top
   },
   chartContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    zIndex: 0, // Putting chart container below interactive elements
   },
   buttonsContainer: {
     position: 'absolute',
@@ -161,6 +157,7 @@ const styles = StyleSheet.create({
     right: 20,
     flexDirection: 'column',
     alignItems: 'flex-end',
+    zIndex: 2, // Ensuring buttons are on top
   },
   iconColumn: {
     flexDirection: 'column',
@@ -168,6 +165,7 @@ const styles = StyleSheet.create({
     left: 350,
     top: 100,
     alignItems: 'flex-start',
+    zIndex: 2, // Ensuring icons are on top
   },
   iconItem: {
     flexDirection: 'row',
@@ -185,6 +183,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 10,
+    zIndex: 2, // Ensuring logo is on top
   },
 });
 

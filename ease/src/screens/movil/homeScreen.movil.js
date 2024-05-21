@@ -3,14 +3,12 @@ import { View, StyleSheet, Text, Dimensions, Image, ImageBackground } from 'reac
 import { MaterialIcons } from '@expo/vector-icons';
 import { PieChart } from 'react-native-chart-kit';
 import { getExpenses, getIncomes } from '../../services/api_management';
-import { PieChart } from 'react-native-chart-kit';
-import { getExpenses, getIncomes } from '../../services/api_management';
 import AddExpenseButton from '../../components/AddExpenseButton';
 import AddIncomeTextInput from '../../components/AddIncomeTextInput';
 
 const screenWidth = Dimensions.get("window").width;
 
-const HomeScreenMovil = ({ navigation }) => {
+const HomeScreenWeb = ({ navigation }) => {
   const [expenses, setExpenses] = useState([]);
   const [incomes, setIncomes] = useState([]);
   const [chartData, setChartData] = useState([]);
@@ -22,7 +20,7 @@ const HomeScreenMovil = ({ navigation }) => {
       const dateString = today.toISOString().split('T')[0];
 
       try {
-        const expenseData = await getExpenses({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
+        const expenseData = await getExpenses({ start_date: '2024-05-20', end_date: '2024-05-20', start_time: '', end_time: '' });
         if (!Array.isArray(expenseData)) {
           console.error("Error: los datos de expense no son un array");
           return;
@@ -87,79 +85,71 @@ const HomeScreenMovil = ({ navigation }) => {
     setRefresh(!refresh);
   };
 
-  const handleAddExpense = () => {
-    setRefresh(!refresh);
-  };
-
-  const handleAddIncome = () => {
-    setRefresh(!refresh);
-  };
-
   return (
     <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
-    <View style={styles.container}>
-      <Image source={require('../../pictures/logo.png')} style={styles.logo} />
-      <View style={styles.iconColumn}>
-        <View style={styles.iconItem}>
-          <MaterialIcons name="description" size={24} color="black" />
-          <Text style={styles.menuText} onPress={() => navigation.navigate('Summary')}>Summary</Text>
-        </View>
-        <View style={styles.iconItem}>
-          <MaterialIcons name="person" size={24} color="black" />
-          <Text style={styles.menuText} onPress={() => navigation.navigate('Profile')}>Profile</Text>
-        </View>
-        <View style={styles.iconItem}>
-          <MaterialIcons name="exit-to-app" size={24} color="black" onPress={handleLogout} />
-          <Text style={styles.menuText} onPress={handleLogout}>Logout</Text>
-        </View>
-      </View>
-      {chartData.length > 0 ? (
-        <>
-          <View style={styles.chartContainer}>
-            <PieChart
-              data={chartData}
-              width={screenWidth}
-              height={220}
-              chartConfig={{
-                backgroundColor: "#ffffff",
-                backgroundGradientFrom: "#ffffff",
-                backgroundGradientTo: "#ffffff",
-                decimalPlaces: 2,
-                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-              }}
-              accessor={"population"}
-              backgroundColor={"transparent"}
-              paddingLeft={"15"}
-              center={[0, 0]}
-              absolute={false}
-            />
+      <View style={styles.container}>
+        <Image source={require('../../pictures/logo.png')} style={styles.logo} />
+        <View style={styles.iconColumn}>
+          <View style={styles.iconItem}>
+            <MaterialIcons name="description" size={24} color="black" />
+            <Text style={styles.menuText} onPress={() => navigation.navigate('Summary')}>Summary</Text>
           </View>
+          <View style={styles.iconItem}>
+            <MaterialIcons name="person" size={24} color="black" />
+            <Text style={styles.menuText} onPress={() => navigation.navigate('Profile')}>Profile</Text>
+          </View>
+          <View style={styles.iconItem}>
+            <MaterialIcons name="exit-to-app" size={24} color="black" onPress={handleLogout} />
+            <Text style={styles.menuText} onPress={handleLogout}>Logout</Text>
+          </View>
+        </View>
+        {chartData.length > 0 ? (
+          <>
+            <View style={styles.chartContainer}>
+              <PieChart
+                data={chartData}
+                width={screenWidth}
+                height={220}
+                chartConfig={{
+                  backgroundColor: "#ffffff",
+                  backgroundGradientFrom: "#ffffff",
+                  backgroundGradientTo: "#ffffff",
+                  decimalPlaces: 2,
+                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                }}
+                accessor={"population"}
+                backgroundColor={"transparent"}
+                paddingLeft={"15"}
+                center={[0, 0]}
+                absolute={false}
+              />
+            </View>
+            <View style={styles.buttonsContainer}>
+              <AddExpenseButton onPress={handleAddExpense} />
+              <AddIncomeTextInput onPress={handleAddIncome} />
+            </View>
+          </>
+        ) : (
           <View style={styles.buttonsContainer}>
             <AddExpenseButton onPress={handleAddExpense} />
             <AddIncomeTextInput onPress={handleAddIncome} />
           </View>
-        </>
-      ) : (
-        <View style={styles.buttonsContainer}>
-          <AddExpenseButton onPress={handleAddExpense} />
-          <AddIncomeTextInput onPress={handleAddIncome} />
-        </View>
-      )}
-    </View>
+        )}
+      </View>
     </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
   container: {
     flex: 1,
-  },
-  scrollContainer: {
-    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  chartContainer: {
   chartContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -169,12 +159,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     right: 20,
+    flexDirection: 'column',
+    alignItems: 'flex-end',
   },
   iconColumn: {
     flexDirection: 'column',
     position: 'absolute',
-    left:20,
-    top:100,// Posición ajustada para que esté más a la izquierda
+    left: 350,
+    top: 100,
     alignItems: 'flex-start',
   },
   iconItem: {
@@ -189,15 +181,11 @@ const styles = StyleSheet.create({
   logo: {
     position: 'absolute',
     top: 45,
-    left: 20,
+    left: 350,
     width: 50,
     height: 50,
-    borderRadius:10
-  },
-  background: {
-    flex: 1,
-    resizeMode: 'cover',
+    borderRadius: 10,
   },
 });
 
-export default HomeScreenMovil;
+export default HomeScreenWeb;
