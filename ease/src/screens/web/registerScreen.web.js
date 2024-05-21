@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
       height: '100vh',
       backgroundImage: 'url("../pictures/verde1.jpg")',
       marginTop: '-10vh',
+      marginBottom: '30',
     },
     esloganText: {
     position: "relative",

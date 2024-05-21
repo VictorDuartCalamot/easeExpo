@@ -103,7 +103,7 @@ const HomeScreenWeb = ({ navigation }) => {
               <PieChart
                 data={chartData}
                 width={screenWidth * 0.8}  // Adjusted width to make the chart smaller
-                height={160}  // Adjusted height to make the chart smaller
+                height={360}  // Adjusted height to make the chart smaller
                 chartConfig={{
                   backgroundColor: "#ffffff",
                   backgroundGradientFrom: "#ffffff",
@@ -113,7 +113,7 @@ const HomeScreenWeb = ({ navigation }) => {
                 }}
                 accessor={"population"}
                 backgroundColor={"transparent"}
-                paddingLeft={"15"}
+                paddingLeft={"20"}
                 center={[0, 0]}
                 absolute={false}
               />

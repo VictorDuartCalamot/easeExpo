@@ -30,26 +30,26 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName='SplashScreen'>
-        <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="ChatBot" component={ChatBot} options={{ headerShown: false }} />
-        <Stack.Screen name="ChatAdmin" component={ChatViewAdmin} options={{ headerShown: false }} />
-        <Stack.Screen name="ChatDetail" component={ChatDetail} options={{ headerShown: false }} />
-        <Stack.Screen name="ChatClient" component={ChatViewClient} options={{ headerShown: false }} />
-        <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
-        <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false }} />
-        <Stack.Screen name='HomeWeb' component={HomeScreenWeb} options={{ headerShown: false }} />
-        <Stack.Screen name='HomeMovil' component={HomeScreenMovil} options={{ headerShown: false }} />
-        <Stack.Screen name='Register' component={RegisterScreen} options={{ headerShown: false }} />
-        <Stack.Screen name='Setting' component={SettingScreen} options={{ headerShown: false }} />
-        <Stack.Screen name='Admin' component={AdminScreen} options={{ headerShown: false }} />
-        <Stack.Screen name='UsersList' component={UsersList} options={{ headerShown: false }} />
-        <Stack.Screen name='UserData' component={UserData} options={{ headerShown: false }} />
+        <Stack.Screen name="Splash" component={SplashScreen} options={{ headerTransparent: true }} />
+        <Stack.Screen name="ChatBot" component={ChatBot} options={{ headerTransparent: true }} />
+        <Stack.Screen name="ChatAdmin" component={ChatViewAdmin} options={{ headerTransparent: true }} />
+        <Stack.Screen name="ChatDetail" component={ChatDetail} options={{ headerTransparent: true }} />
+        <Stack.Screen name="ChatClient" component={ChatViewClient} options={{ headerTransparent: true }} />
+        <Stack.Screen name='Login' component={LoginScreen} options={{ headerTransparent: true }} />
+        <Stack.Screen name='Home' component={HomeScreen} options={{ headerTransparent: true }} />
+        <Stack.Screen name='HomeWeb' component={HomeScreenWeb} options={{ headerTransparent: true }} />
+        <Stack.Screen name='HomeMovil' component={HomeScreenMovil} options={{ headerTransparent: true }} />
+        <Stack.Screen name='Register' component={RegisterScreen} options={{ headerTransparent: true }} />
+        <Stack.Screen name='Setting' component={SettingScreen} options={{ headerTransparent: true }} />
+        <Stack.Screen name='Admin' component={AdminScreen} options={{ headerTransparent: true }} />
+        <Stack.Screen name='UsersList' component={UsersList} options={{ headerTransparent: true }} />
+        <Stack.Screen name='UserData' component={UserData} options={{ headerTransparent: true }} />
         <Stack.Screen name='Profile' component={ProfileScreen} options={{ headerTransparent: true }} />
         <Stack.Screen name='Summary' component={SummaryScreen} options={{ headerTransparent: true }} />
         <Stack.Screen name='Support' component={SupportScreen} options={{ headerTransparent: true}} />
-        <Stack.Screen name='NewUserAdmin' component={NewUserAdmin} options={{ headerShown: false }} />
-        <Stack.Screen name='NewCategory' component={NewCategory} options={{ headerShown: false }} />
-        <Stack.Screen name='NewSubCategory' component={NewSubCategory} options={{ headerShown: false }} />
+        <Stack.Screen name='NewUserAdmin' component={NewUserAdmin} options={{ headerTransparent: true }} />
+        <Stack.Screen name='NewCategory' component={NewCategory} options={{ headerTransparent: true }} />
+        <Stack.Screen name='NewSubCategory' component={NewSubCategory} options={{ headerTransparent: true }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
