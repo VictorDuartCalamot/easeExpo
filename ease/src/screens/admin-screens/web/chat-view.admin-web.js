@@ -1,33 +1,57 @@
-// ChatAdminWeb.js
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { GiftedChat } from 'react-native-gifted-chat';
+import { getOrCreateChat } from '../../../services/api_chat';
 
 function ChatAdminWeb() {
-    const [chats, setChats] = useState([
-        { id: 1, name: "Cliente 1" },
-        { id: 2, name: "Cliente 2" }
-    ]);  // Simula lista de chats
+    const [chats, setChats] = useState([]);
     const [activeChat, setActiveChat] = useState(null);
     const [messages, setMessages] = useState([]);
+    const websocketRef = useRef(null);
 
     useEffect(() => {
-        if (chats.length > 0) {
-            selectChat(chats[0].id);  // Establece el primer chat como activo por defecto
+        loadChats();
+
+        return () => {
+            if (websocketRef.current) {
+                websocketRef.current.close(); // Limpiar el WebSocket al desmontar el componente
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        if (activeChat) {
+            const wsUrl = `wss://easeapi.onrender.com/ws/chat/${activeChat}/`; // Nota: Asegúrate de que la URL sea 'wss' para WebSocket seguro.
+            websocketRef.current = new WebSocket(wsUrl);
+            websocketRef.current.onmessage = handleWebSocketMessages;
+            websocketRef.current.onopen = () => console.log('WebSocket Connected');
+            websocketRef.current.onerror = error => console.log('WebSocket Error', error);
+            websocketRef.current.onclose = () => console.log('WebSocket Closed');
         }
-    }, [chats]);
+    }, [activeChat]);
+
+    const loadChats = async () => {
+        const chatsData = await getOrCreateChat();
+        if (chatsData) {
+            setChats(chatsData);
+            selectChat(chatsData[0].id);
+        }
+    };
 
     const selectChat = (chatId) => {
         setActiveChat(chatId);
-        // Simulación de la carga de mensajes para el chat seleccionado
+        loadMessages(chatId);
+    };
+
+    const loadMessages = (chatId) => {
         const newMessages = [
             {
                 _id: Math.random(),
-                text: `Mensaje de ejemplo para ${chats.find(chat => chat.id === chatId).name}`,
+                text: `Mensaje inicial para el chat con ID ${chatId}`,
                 createdAt: new Date(),
                 user: {
                     _id: 2,
-                    name: chats.find(chat => chat.id === chatId).name,
+                    name: "Cliente",
                     avatar: 'https://placeimg.com/140/140/any',
                 },
             }
@@ -36,8 +60,16 @@ function ChatAdminWeb() {
     };
 
     const onSend = useCallback((newMessages = []) => {
+        if (websocketRef.current) {
+            websocketRef.current.send(JSON.stringify(newMessages[0]));
+        }
         setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages));
     }, []);
+
+    const handleWebSocketMessages = event => {
+        const message = JSON.parse(event.data);
+        setMessages(previousMessages => GiftedChat.append(previousMessages, message));
+    };
 
     return (
         <View style={styles.container}>

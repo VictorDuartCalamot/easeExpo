@@ -5,9 +5,8 @@ import { useNavigation } from "@react-navigation/native";
 import RNPickerSelect from 'react-native-picker-select';
 
 const typeOptions = [
-    { label: 'Ocio', value: 'ocio' },
-    { label: 'Trabajo', value: 'trabajo' },
-    { label: 'Personal', value: 'personal' },
+    { label: 'Expense', value: 'expense' },
+    { label: 'Income', value: 'income' },
 ];
 
 const colorOptions = [
