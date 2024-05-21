@@ -1,119 +1,141 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Modal, TextInput, Button, Alert, Text, ImageBackground } from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Text, Dimensions, Image, ImageBackground } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-
-import SummaryScreen from '../summary_screen';
-import SettingsScreen from '../settings_screen';
-import ProfileScreen from '../profile_screen'; // Importa la pantalla de perfil
-import { createExpense } from '../../services/api_management';
+import { PieChart } from 'react-native-chart-kit';
+import { getExpenses, getIncomes } from '../../services/api_management';
 import AddExpenseButton from '../../components/AddExpenseButton';
+import AddIncomeTextInput from '../../components/AddIncomeTextInput';
 
-const Stack = createStackNavigator();
+const screenWidth = Dimensions.get("window").width;
 
-const HomeScreenWeb = ({ navigation }) => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState('');
-  const [modalVisible, setModalVisible] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
-  const [showAvatarMenu, setShowAvatarMenu] = useState(false);
+const HomeScreenMovil = ({ navigation }) => {
+  const [expenses, setExpenses] = useState([]);
+  const [incomes, setIncomes] = useState([]);
+  const [chartData, setChartData] = useState([]);
+  const [refresh, setRefresh] = useState(false);
 
-  const newExpense = async () => {
-    if (parseFloat(amount) <= 0) {
-      Alert.alert('Invalid Amount', 'Amount must be greater than zero');
-      return;
-    }
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      const today = new Date();
+      const dateString = today.toISOString().split('T')[0];
 
-    const date = new Date();
-    const newTime = date.toISOString().substring(11, 19).toString();
-    const newDate = date.toISOString().substring(0, 10).toString();
-    createExpense({ title: title, description: description, amount: amount, category: category, newDate: newDate, newTime });
-    setModalVisible(false);
-    console.log('New Expense Added:');
-    console.log('Title:', title);
-    console.log('Description:', description);
-    console.log('Amount:', amount);
-    console.log('Category:', category);
-    console.log('Date:', newDate);
-    console.log('Time:', newTime);
-  };
+      try {
+        const expenseData = await getExpenses({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
+        if (!Array.isArray(expenseData)) {
+          console.error("Error: los datos de expense no son un array");
+          return;
+        }
+        const cleanedExpenseData = expenseData.map((exp, index) => ({
+          name: exp.title,
+          population: parseFloat(exp.amount),
+          color: `hsl(${index * 360 / expenseData.length}, 70%, 70%)`,
+          legendFontColor: "#7F7F7F",
+          legendFontSize: 15
+        }));
+        setExpenses(cleanedExpenseData);
+      } catch (error) {
+        console.error("Error fetching expenses: ", error);
+      }
+    };
+
+    const fetchIncomes = async () => {
+      const today = new Date();
+      const dateString = today.toISOString().split('T')[0];
+
+      try {
+        const incomeData = await getIncomes({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
+        if (!Array.isArray(incomeData)) {
+          console.error("Error: los datos de income no son un array");
+          return;
+        }
+        const cleanedIncomeData = incomeData.map((inc, index) => ({
+          name: inc.title,
+          population: parseFloat(inc.amount),
+          color: `hsl(${(index + expenses.length) * 360 / incomeData.length}, 70%, 70%)`,
+          legendFontColor: "#7F7F7F",
+          legendFontSize: 15
+        }));
+        setIncomes(cleanedIncomeData);
+      } catch (error) {
+        console.error('Error fetching income:', error);
+      }
+    };
+
+    const fetchAllData = async () => {
+      await fetchExpenses();
+      await fetchIncomes();
+    };
+
+    fetchAllData();
+  }, [refresh]);
+
+  useEffect(() => {
+    setChartData([...expenses, ...incomes]);
+  }, [expenses, incomes]);
 
   const handleLogout = () => {
     navigation.navigate('Login');
   };
 
+  const handleAddExpense = () => {
+    setRefresh(!refresh);
+  };
+
+  const handleAddIncome = () => {
+    setRefresh(!refresh);
+  };
+
   return (
-    <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.backgroundImage}>
-      <View style={styles.container}>
-        <MaterialIcons name="home" size={32} color="black" onPress={() => setShowMenu(!showMenu)} style={styles.menuIcon} />
-        {showMenu && (
-          <View style={styles.menu}>
-          <View style={styles.menuItem}>
-            <MaterialIcons name="description" size={28} color="black" />
-            <Text style={styles.menuText} onPress={() => { navigation.navigate('Summary'); setShowMenu(false); }}>Summary</Text>
-          </View>
-          </View>
-        )}
-        <View style={styles.avatarContainer}>
-          <MaterialIcons name="person" size={32} color="black" onPress={() => setShowAvatarMenu(!showAvatarMenu)} style={styles.avatarIcon} />
-          {showAvatarMenu && (
-            <View style={styles.menu1}>
-              <View style={styles.menuItem}>
-                <MaterialIcons name="person" size={32} color="black" />
-                <Text style={styles.menuText} onPress={() => { navigation.navigate('Profile'); setShowMenu(false); }}>Profile</Text>
-              </View>
-              <View style={styles.menuItem}>
-                <MaterialIcons name="exit-to-app" size={32} color="black" onPress={handleLogout} />
-                <Text style={styles.menuText} onPress={handleLogout}>Logout</Text>
-              </View>
-            </View>
-          )}
+    <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
+    <View style={styles.container}>
+      <Image source={require('../../pictures/logo.png')} style={styles.logo} />
+      <View style={styles.iconColumn}>
+        <View style={styles.iconItem}>
+          <MaterialIcons name="description" size={24} color="black" />
+          <Text style={styles.menuText} onPress={() => navigation.navigate('Summary')}>Summary</Text>
         </View>
-        <Button title="Add Expense" onPress={() => setModalVisible(true)} />
-        <Modal
-          animationType="slide"
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(false);
-          }}
-        >
-          <View style={styles.modalContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Title"
-              onChangeText={(text) => setTitle(text)}
-              value={title}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Description"
-              onChangeText={(text) => setDescription(text)}
-              value={description}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Amount"
-              keyboardType="numeric"
-              onChangeText={(text) => setAmount(text)}
-              value={amount}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Category"
-              onChangeText={(text) => setCategory(text)}
-              value={category}
-            />
-            <View style={styles.buttonContainer}>
-              <Button title="Add Expense" onPress={newExpense} />
-            </View>
-            <View style={styles.buttonContainer}>
-              <Button title="Cancel" onPress={() => setModalVisible(false)} />
-            </View>
-          </View>
-        </Modal>
+        <View style={styles.iconItem}>
+          <MaterialIcons name="person" size={24} color="black" />
+          <Text style={styles.menuText} onPress={() => navigation.navigate('Profile')}>Profile</Text>
+        </View>
+        <View style={styles.iconItem}>
+          <MaterialIcons name="exit-to-app" size={24} color="black" onPress={handleLogout} />
+          <Text style={styles.menuText} onPress={handleLogout}>Logout</Text>
+        </View>
       </View>
+      {chartData.length > 0 ? (
+        <>
+          <View style={styles.chartContainer}>
+            <PieChart
+              data={chartData}
+              width={screenWidth}
+              height={220}
+              chartConfig={{
+                backgroundColor: "#ffffff",
+                backgroundGradientFrom: "#ffffff",
+                backgroundGradientTo: "#ffffff",
+                decimalPlaces: 2,
+                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              }}
+              accessor={"population"}
+              backgroundColor={"transparent"}
+              paddingLeft={"15"}
+              center={[0, 0]}
+              absolute={false}
+            />
+          </View>
+          <View style={styles.buttonsContainer}>
+            <AddExpenseButton onPress={handleAddExpense} />
+            <AddIncomeTextInput onPress={handleAddIncome} />
+          </View>
+        </>
+      ) : (
+        <View style={styles.buttonsContainer}>
+          <AddExpenseButton onPress={handleAddExpense} />
+          <AddIncomeTextInput onPress={handleAddIncome} />
+        </View>
+      )}
+    </View>
     </ImageBackground>
   );
 };
@@ -124,72 +146,46 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backgroundImage: {
-    flex: 1,
-    resizeMode: 'cover',
-    justifyContent: 'center',
-  },
-  modalContainer: {
+  chartContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
   },
-  input: {
-    height: 40,
-    width: '80%',
-    margin: 12,
-    padding: 10,
-    borderWidth: 1,
-    borderRadius: 5,
-  },
-  buttonContainer: {
-    marginBottom: 5,
-    marginTop: 5,
-  },
-  menuIcon: {
+  buttonsContainer: {
     position: 'absolute',
-    top: 20,
-    left: 20,
-    marginTop:35
-  },
-  menu: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    backgroundColor: 'white',
-    borderRadius: 5,
-    padding: 10,
-    zIndex: 1,
-    marginTop:50,
-  },
-  menu1: {
-    backgroundColor: 'white',
-    borderRadius: 5,
-    padding: 10,
-    marginVertical: 10,
-    zIndex: 1,
-    marginTop:10,
-  },
-  avatarContainer: {
-    position: 'absolute',
-    top: 20,
+    bottom: 20,
     right: 20,
     flexDirection: 'column',
     alignItems: 'flex-end',
   },
-  avatarIcon: {
-    marginTop: 35
+  iconColumn: {
+    flexDirection: 'column',
+    position: 'absolute',
+    left:20,
+    top:100,// Posición ajustada para que esté más a la izquierda
+    alignItems: 'flex-start',
   },
-  menuItem: {
+  iconItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal:10,
+    marginVertical: 10,
   },
   menuText: {
-    marginTop: 5,
+    marginLeft: 5,
     fontSize: 16,
+  },
+  logo: {
+    position: 'absolute',
+    top: 45,
+    left: 20,
+    width: 50,
+    height: 50,
+    borderRadius:10
+  },
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
   },
 });
 
-export default HomeScreenWeb;
+export default HomeScreenMovil;

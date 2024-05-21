@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, Image, ImageBackground } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { PieChart } from 'react-native-chart-kit';
 import { getExpenses, getIncomes } from '../../services/api_management';
@@ -9,8 +9,6 @@ import AddIncomeTextInput from '../../components/AddIncomeTextInput';
 const screenWidth = Dimensions.get("window").width;
 
 const HomeScreenWeb = ({ navigation }) => {
-  const [showMenu, setShowMenu] = useState(false);
-  const [showAvatarMenu, setShowAvatarMenu] = useState(false);
   const [expenses, setExpenses] = useState([]);
   const [incomes, setIncomes] = useState([]);
   const [chartData, setChartData] = useState([]);
@@ -88,68 +86,65 @@ const HomeScreenWeb = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <MaterialIcons name="home" size={24} color="black" onPress={() => setShowMenu(!showMenu)} style={styles.menuIcon} />
-      {showMenu && (
-        <View style={styles.menu}>
-          <View style={styles.menuItem}>
+    <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
+      <View style={styles.container}>
+        <Image source={require('../../pictures/logo.png')} style={styles.logo} />
+        <View style={styles.iconColumn}>
+          <View style={styles.iconItem}>
             <MaterialIcons name="description" size={24} color="black" />
-            <Text style={styles.menuText} onPress={() => { navigation.navigate('Summary'); setShowMenu(false); }}>Summary</Text>
+            <Text style={styles.menuText} onPress={() => navigation.navigate('Summary')}>Summary</Text>
+          </View>
+          <View style={styles.iconItem}>
+            <MaterialIcons name="person" size={24} color="black" />
+            <Text style={styles.menuText} onPress={() => navigation.navigate('Profile')}>Profile</Text>
+          </View>
+          <View style={styles.iconItem}>
+            <MaterialIcons name="exit-to-app" size={24} color="black" onPress={handleLogout} />
+            <Text style={styles.menuText} onPress={handleLogout}>Logout</Text>
           </View>
         </View>
-      )}
-      <View style={styles.avatarContainer}>
-        <MaterialIcons name="person" size={24} color="black" onPress={() => setShowAvatarMenu(!showAvatarMenu)} style={styles.avatarIcon} />
-        {showAvatarMenu && (
-          <View style={styles.menu1}>
-            <View style={styles.menuItem}>
-              <MaterialIcons name="person" size={24} color="black" />
-              <Text style={styles.menuText} onPress={() => { navigation.navigate('Profile'); setShowAvatarMenu(false); }}>Profile</Text>
+        {chartData.length > 0 ? (
+          <>
+            <View style={styles.chartContainer}>
+              <PieChart
+                data={chartData}
+                width={screenWidth}
+                height={220}
+                chartConfig={{
+                  backgroundColor: "#ffffff",
+                  backgroundGradientFrom: "#ffffff",
+                  backgroundGradientTo: "#ffffff",
+                  decimalPlaces: 2,
+                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                }}
+                accessor={"population"}
+                backgroundColor={"transparent"}
+                paddingLeft={"15"}
+                center={[0, 0]}
+                absolute={false}
+              />
             </View>
-            <View style={styles.menuItem}>
-              <MaterialIcons name="exit-to-app" size={24} color="black" onPress={handleLogout} />
-              <Text style={styles.menuText} onPress={handleLogout}>Logout</Text>
+            <View style={styles.buttonsContainer}>
+              <AddExpenseButton onPress={handleAddExpense} />
+              <AddIncomeTextInput onPress={handleAddIncome} />
             </View>
-          </View>
-        )}
-      </View>
-      {chartData.length > 0 ? (
-        <>
-          <View style={styles.chartContainer}>
-            <PieChart
-              data={chartData}
-              width={screenWidth}
-              height={220}
-              chartConfig={{
-                backgroundColor: "#ffffff",
-                backgroundGradientFrom: "#ffffff",
-                backgroundGradientTo: "#ffffff",
-                decimalPlaces: 2,
-                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-              }}
-              accessor={"population"}
-              backgroundColor={"transparent"}
-              paddingLeft={"15"}
-              center={[0, 0]}
-              absolute={false}
-            />
-          </View>
+          </>
+        ) : (
           <View style={styles.buttonsContainer}>
             <AddExpenseButton onPress={handleAddExpense} />
             <AddIncomeTextInput onPress={handleAddIncome} />
           </View>
-        </>
-      ) : (
-        <View style={styles.buttonsContainer}>
-          <AddExpenseButton onPress={handleAddExpense} />
-          <AddIncomeTextInput onPress={handleAddIncome} />
-        </View>
-      )}
-    </View>
+        )}
+      </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -167,47 +162,29 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'flex-end',
   },
-  menuIcon: {
+  iconColumn: {
+    flexDirection: 'column',
     position: 'absolute',
-    top: 20,
-    left: 20,
+    left: 350,
+    top: 100,
+    alignItems: 'flex-start',
   },
-  menu: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    backgroundColor: 'white',
-    borderRadius: 5,
-    padding: 10,
-    zIndex: 1,
-  },
-  avatarContainer: {
-    position: 'absolute',
-    top: 20,
-    right: 20,
-  },
-  avatarIcon: {
-    marginBottom: 5,
-  },
-  avatarMenu: {
-    backgroundColor: 'white',
-    borderRadius: 5,
-    padding: 10,
-    marginVertical: 10,
-    position: 'absolute',
-    right: 0,
-    top: 30,
-    zIndex: 1,
-  },
-  menuItem: {
+  iconItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 10,
-    marginHorizontal: 10,
+    marginVertical: 10,
   },
   menuText: {
-    marginTop: 5,
+    marginLeft: 5,
     fontSize: 16,
+  },
+  logo: {
+    position: 'absolute',
+    top: 45,
+    left: 350,
+    width: 50,
+    height: 50,
+    borderRadius: 10,
   },
 });
 
