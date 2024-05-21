@@ -3,6 +3,8 @@ import { View, StyleSheet, Text, Dimensions, Image, ImageBackground } from 'reac
 import { MaterialIcons } from '@expo/vector-icons';
 import { PieChart } from 'react-native-chart-kit';
 import { getExpenses, getIncomes } from '../../services/api_management';
+import { PieChart } from 'react-native-chart-kit';
+import { getExpenses, getIncomes } from '../../services/api_management';
 import AddExpenseButton from '../../components/AddExpenseButton';
 import AddIncomeTextInput from '../../components/AddIncomeTextInput';
 
@@ -85,6 +87,14 @@ const HomeScreenMovil = ({ navigation }) => {
     setRefresh(!refresh);
   };
 
+  const handleAddExpense = () => {
+    setRefresh(!refresh);
+  };
+
+  const handleAddIncome = () => {
+    setRefresh(!refresh);
+  };
+
   return (
     <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
     <View style={styles.container}>
@@ -143,9 +153,13 @@ const HomeScreenMovil = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  chartContainer: {
   chartContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -155,8 +169,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     right: 20,
-    flexDirection: 'column',
-    alignItems: 'flex-end',
   },
   iconColumn: {
     flexDirection: 'column',

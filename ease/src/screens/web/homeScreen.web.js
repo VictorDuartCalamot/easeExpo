@@ -20,7 +20,7 @@ const HomeScreenWeb = ({ navigation }) => {
       const dateString = today.toISOString().split('T')[0];
 
       try {
-        const expenseData = await getExpenses({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
+        const expenseData = await getExpenses({ start_date: '2024-05-20', end_date: '2024-05-20', start_time: '', end_time: '' });
         if (!Array.isArray(expenseData)) {
           console.error("Error: los datos de expense no son un array");
           return;
