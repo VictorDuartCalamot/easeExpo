@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     position: 'absolute',
     left: 35,
-    top: 85,
+    top: 105,
     alignItems: 'flex-start',
     zIndex: 2, // Ensuring icons are on top
   },
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     position: 'absolute',
-    top: 25,
+    top: 40,
     left: 35,
     width: 50,
     height: 50,

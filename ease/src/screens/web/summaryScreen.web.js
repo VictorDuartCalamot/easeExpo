@@ -86,9 +86,9 @@ const SummaryScreenWeb = () => {
             </Text>
             {expenses.map((expense) => (
               <View key={expense.id} style={styles.expenseItem}>
-                <Text>title: {expense.title}</Text>
+                <Text>Title: {expense.title}</Text>
                 <Text>Descripción: {expense.description}</Text>
-                <Text>Monto: ${expense.amount}</Text>
+                <Text>Monto: €{expense.amount}</Text>
                 <View style={styles.categoryContainer}>
                   <Text style={styles.redText}>
                     Categoría: {categories[expense.category]?.name || 'no data'}
