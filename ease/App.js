@@ -50,6 +50,9 @@ export default function App() {
         <Stack.Screen name='NewUserAdmin' component={NewUserAdmin} options={{ headerTransparent: true }} />
         <Stack.Screen name='NewCategory' component={NewCategory} options={{ headerTransparent: true }} />
         <Stack.Screen name='NewSubCategory' component={NewSubCategory} options={{ headerTransparent: true }} />
+        <Stack.Screen name='Chat' component={Chat} options={{ headerTransparent: true }} />
+
+        
       </Stack.Navigator>
     </NavigationContainer>
   );

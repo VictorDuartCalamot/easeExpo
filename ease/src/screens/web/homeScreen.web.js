@@ -92,6 +92,10 @@ const HomeScreenWeb = ({ navigation }) => {
             <MaterialIcons name="person" size={24} color="black" />
             <Text style={styles.menuText}>Profile</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('ChatClient')}>
+            <MaterialIcons name="chat" size={24} color="black" />
+            <Text style={styles.menuText}>Chat</Text>
+          </TouchableOpacity>  
           <TouchableOpacity style={styles.iconItem} onPress={handleLogout}>
             <MaterialIcons name="exit-to-app" size={24} color="black" />
             <Text style={styles.menuText}>Logout</Text>
