@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ImageBackground } from 'react-native';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { getExpenses, getCategories, getSubCategories } from '../../services/api_management';
@@ -72,26 +72,23 @@ const SummaryScreenWeb = () => {
   }, []);
 
   return (
-    <ImageBackground 
-      source={require('../../pictures/fondo2.jpg')} 
-      style={styles.imageBackground}
-    >
-      <View style={styles.container}>
-        <Calendar
-          selectRange
-          value={[selectedStartDate, selectedEndDate]}
-          onChange={handleDateChange}
-        />
-        {expenses.length > 0 && (
+    <View style={styles.container}>
+      <Calendar
+        selectRange
+        value={[selectedStartDate, selectedEndDate]}
+        onChange={handleDateChange}
+      />
+      {expenses.length > 0 && (
+        <ScrollView style={styles.scrollView}>
           <View style={styles.expensesContainer}>
             <Text style={styles.expensesTitle}>
               Gastos entre {selectedStartDate.toLocaleDateString()} y {selectedEndDate.toLocaleDateString()}:
             </Text>
             {expenses.map((expense) => (
               <View key={expense.id} style={styles.expenseItem}>
-                <Text>title: {expense.title}</Text>
+                <Text>Title: {expense.title}</Text>
                 <Text>Descripción: {expense.description}</Text>
-                <Text>Monto: ${expense.amount}</Text>
+                <Text>Monto: €{expense.amount}</Text>
                 <View style={styles.categoryContainer}>
                   <Text style={styles.redText}>
                     Categoría: {categories[expense.category]?.name || 'no data'}
@@ -106,26 +103,25 @@ const SummaryScreenWeb = () => {
                   )}
                 </View>
                 <Text style={styles.redText}>
-                  Subcategoría: {subCategories[expense.subcategory] || 'no data'}
+                  Subcategoría: {subCategories[expense.subcategory]?.name || 'no data'}
                 </Text>
               </View>
             ))}
           </View>
-        )}
-      </View>
-    </ImageBackground>
+        </ScrollView>
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  imageBackground: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-  },
   container: {
     alignItems: 'center',
     padding: 20,
+    top: 50,
+  },
+  scrollView: {
+    maxHeight: '70%', // Establece la altura máxima del ScrollView
   },
   expensesContainer: {
     marginTop: 20,
