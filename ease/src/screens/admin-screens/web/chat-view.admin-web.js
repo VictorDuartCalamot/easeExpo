@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { GiftedChat } from 'react-native-gifted-chat';
-import { getOrCreateChat } from '../../../services/api_chat';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 function ChatAdminWeb() {
     const [chats, setChats] = useState([]);
@@ -11,59 +12,55 @@ function ChatAdminWeb() {
 
     useEffect(() => {
         loadChats();
-
-        return () => {
-            if (websocketRef.current) {
-                websocketRef.current.close(); // Limpiar el WebSocket al desmontar el componente
-            }
-        };
     }, []);
 
     useEffect(() => {
         if (activeChat) {
-            const wsUrl = `wss://easeapi.onrender.com/ws/chat/${activeChat}/`; // Nota: Asegúrate de que la URL sea 'wss' para WebSocket seguro.
-            websocketRef.current = new WebSocket(wsUrl);
-            websocketRef.current.onmessage = handleWebSocketMessages;
-            websocketRef.current.onopen = () => console.log('WebSocket Connected');
-            websocketRef.current.onerror = error => console.log('WebSocket Error', error);
-            websocketRef.current.onclose = () => console.log('WebSocket Closed');
+            connectWebSocket(activeChat);
         }
     }, [activeChat]);
 
     const loadChats = async () => {
-        const chatsData = await getOrCreateChat();
-        if (chatsData) {
-            setChats(chatsData);
-            selectChat(chatsData[0].id);
+        try {
+            const token = await AsyncStorage.getItem('Token');
+            const headers = {
+                'Authorization': `Token ${token}`,
+                'Content-Type': 'application/json'
+            };
+            const response = await axios.get('https://easeapi.onrender.com/api/chats/chat/', { headers });
+            console.log('Response:', response);
+            const chatsData = response.data;
+
+            if (Array.isArray(chatsData)) {
+                setChats(chatsData);
+            }
+        } catch (error) {
+            console.error(error);
         }
+    };
+
+    const connectWebSocket = (chatId) => {
+        if (websocketRef.current) {
+            websocketRef.current.close();
+        }
+
+        const token = AsyncStorage.getItem('Token');
+        const wsUrl = `wss://easeapi.onrender.com/ws/chat/${chatId}/?token=${token}`;
+        websocketRef.current = new WebSocket(wsUrl);
+        websocketRef.current.onopen = () => console.log('WebSocket Connected');
+        websocketRef.current.onerror = error => console.log('WebSocket Error', error);
+        websocketRef.current.onclose = () => console.log('WebSocket Closed');
+        websocketRef.current.onmessage = handleWebSocketMessages;
     };
 
     const selectChat = (chatId) => {
         setActiveChat(chatId);
-        loadMessages(chatId);
-    };
-
-    const loadMessages = (chatId) => {
-        const newMessages = [
-            {
-                _id: Math.random(),
-                text: `Mensaje inicial para el chat con ID ${chatId}`,
-                createdAt: new Date(),
-                user: {
-                    _id: 2,
-                    name: "Cliente",
-                    avatar: 'https://placeimg.com/140/140/any',
-                },
-            }
-        ];
-        setMessages(newMessages);
     };
 
     const onSend = useCallback((newMessages = []) => {
         if (websocketRef.current) {
             websocketRef.current.send(JSON.stringify(newMessages[0]));
         }
-        setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages));
     }, []);
 
     const handleWebSocketMessages = event => {
