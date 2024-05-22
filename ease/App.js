@@ -23,15 +23,17 @@ import ChatBot from './src/services/chatBot';
 import ChatViewAdmin from './src/screens/admin-screens/chat-view.admin';
 import ChatViewClient from './src/screens/chat-view.client';
 import ChatDetail from './src/screens/admin-screens/movil/chat-details.admin';
+import OpenIAChat from './src/services/api_ia';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='SplashScreen'>
+      <Stack.Navigator initialRouteName='ChatIA'>
         <Stack.Screen name="Splash" component={SplashScreen} options={{ headerTransparent: true }} />
         <Stack.Screen name="ChatBot" component={ChatBot} options={{ headerTransparent: true }} />
+        <Stack.Screen name="ChatIA" component={OpenIAChat} options={{ headerTransparent: true }} />
         <Stack.Screen name="ChatAdmin" component={ChatViewAdmin} options={{ headerTransparent: true }} />
         <Stack.Screen name="ChatDetail" component={ChatDetail} options={{ headerTransparent: true }} />
         <Stack.Screen name="ChatClient" component={ChatViewClient} options={{ headerTransparent: true }} />
