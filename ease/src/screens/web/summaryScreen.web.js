@@ -43,7 +43,7 @@ const SummaryScreenWeb = () => {
         const categoriesData = await getCategories();
         const categoriesMap = {};
         categoriesData.forEach(category => {
-          categoriesMap[category.id] = { name: category.name, color: category.HexColor };
+          categoriesMap[category.id] = { name: category.name, color: category.hexColor };
         });
         setCategories(categoriesMap);
       } catch (error) {
@@ -72,45 +72,45 @@ const SummaryScreenWeb = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Calendar
         selectRange
         value={[selectedStartDate, selectedEndDate]}
         onChange={handleDateChange}
       />
       {expenses.length > 0 && (
-        <ScrollView style={styles.scrollView}>
-          <View style={styles.expensesContainer}>
-            <Text style={styles.expensesTitle}>
-              Gastos entre {selectedStartDate.toLocaleDateString()} y {selectedEndDate.toLocaleDateString()}:
-            </Text>
-            {expenses.map((expense) => (
-              <View key={expense.id} style={styles.expenseItem}>
-                <Text>Title: {expense.title}</Text>
-                <Text>Descripción: {expense.description}</Text>
-                <Text>Monto: €{expense.amount}</Text>
-                <View style={styles.categoryContainer}>
-                  <Text style={styles.redText}>
-                    Categoría: {categories[expense.category]?.name || 'no data'}
-                  </Text>
-                  {categories[expense.category]?.color && (
-                    <View 
-                      style={[
-                        styles.colorCircle, 
-                        { backgroundColor: categories[expense.category].color }
-                      ]} 
-                    />
-                  )}
-                </View>
+        <View style={styles.expensesContainer}>
+          <Text style={styles.expensesTitle}>
+            Gastos entre {selectedStartDate.toLocaleDateString()} y {selectedEndDate.toLocaleDateString()}:
+          </Text>
+          {expenses.map((expense) => (
+            <View key={expense.id} style={styles.expenseItem}>
+              <Text>Title: {expense.title}</Text>
+              <Text>Descripción: {expense.description}</Text>
+              <Text>Monto: €{expense.amount}</Text>
+              <Text>Fecha: {expense.creation_date}</Text>
+              <Text>Hora: {expense.creation_time}</Text>
+              <View style={styles.categoryContainer}>
                 <Text style={styles.redText}>
-                  Subcategoría: {subCategories[expense.subcategory]?.name || 'no data'}
+                  Categoría: {categories[expense.category]?.name || 'no data'}
                 </Text>
+                {categories[expense.category]?.color && (
+                  <View 
+                    style={[
+                      styles.colorCircle, 
+                      { backgroundColor: categories[expense.category].color }
+                    ]} 
+                  />
+                )}
               </View>
-            ))}
-          </View>
-        </ScrollView>
+              <Text style={styles.redText}>
+                Subcategoría: {subCategories[expense.subcategory]?.name || 'no data'}
+              </Text>
+            </View>
+          ))}
+        </View>
       )}
-    </View>
+    </ScrollView>
   );
 };
 
@@ -118,10 +118,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     padding: 20,
-    top: 50,
-  },
-  scrollView: {
-    maxHeight: '70%', // Establece la altura máxima del ScrollView
+    paddingTop: 50,
   },
   expensesContainer: {
     marginTop: 20,
@@ -139,6 +136,7 @@ const styles = StyleSheet.create({
     borderColor: '#000',
     padding: 10,
     borderRadius: 10,
+    width: '90%',
   },
   redText: {
     color: 'red',
