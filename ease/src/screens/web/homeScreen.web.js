@@ -92,6 +92,10 @@ const HomeScreenWeb = ({ navigation }) => {
             <MaterialIcons name="person" size={24} color="black" />
             <Text style={styles.menuText}>Profile</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('ChatIA')}>
+            <MaterialIcons name="assistant" size={24} color="black" />
+            <Text style={styles.menuText}>Financer Assistant</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.iconItem} onPress={handleLogout}>
             <MaterialIcons name="exit-to-app" size={24} color="black" />
             <Text style={styles.menuText}>Logout</Text>
@@ -102,8 +106,8 @@ const HomeScreenWeb = ({ navigation }) => {
             <View style={styles.chartContainer}>
               <PieChart
                 data={chartData}
-                width={screenWidth * 0.8}  // Adjusted width to make the chart smaller
-                height={360}  // Adjusted height to make the chart smaller
+                width={screenWidth * 0.8}
+                height={360}
                 chartConfig={{
                   backgroundColor: "#ffffff",
                   backgroundGradientFrom: "#ffffff",
@@ -149,7 +153,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 0, // Putting chart container below interactive elements
+    zIndex: 0,
   },
   buttonsContainer: {
     position: 'absolute',
@@ -157,7 +161,7 @@ const styles = StyleSheet.create({
     right: 20,
     flexDirection: 'column',
     alignItems: 'flex-end',
-    zIndex: 2, // Ensuring buttons are on top
+    zIndex: 2,
   },
   iconColumn: {
     flexDirection: 'column',
@@ -165,7 +169,7 @@ const styles = StyleSheet.create({
     left: 35,
     top: 105,
     alignItems: 'flex-start',
-    zIndex: 2, // Ensuring icons are on top
+    zIndex: 2,
   },
   iconItem: {
     flexDirection: 'row',
@@ -183,7 +187,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 10,
-    zIndex: 2, // Ensuring logo is on top
+    zIndex: 2,
   },
 });
 

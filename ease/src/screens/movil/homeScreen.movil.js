@@ -43,7 +43,7 @@ const HomeScreenWeb = ({ navigation }) => {
       const dateString = today.toISOString().split('T')[0];
 
       try {
-        const incomeData = await getIncomes({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
+        const incomeData = await getIncomes({ start_date: '2024-05-20', end_date: '2024-05-20', start_time: '', end_time: '' });
         if (!Array.isArray(incomeData)) {
           console.error("Error: los datos de income no son un array");
           return;
@@ -98,6 +98,10 @@ const HomeScreenWeb = ({ navigation }) => {
             <MaterialIcons name="person" size={24} color="black" />
             <Text style={styles.menuText} onPress={() => navigation.navigate('Profile')}>Profile</Text>
           </View>
+          <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('ChatIA')}>
+            <MaterialIcons name="assistant" size={24} color="black" />
+            <Text style={styles.menuText}>Financer Assistant</Text>
+          </TouchableOpacity>
           <View style={styles.iconItem}>
             <MaterialIcons name="exit-to-app" size={24} color="black" onPress={handleLogout} />
             <Text style={styles.menuText} onPress={handleLogout}>Logout</Text>

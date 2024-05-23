@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { GiftedChat } from 'react-native-gifted-chat';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { getOneUser } from '../../../services/api_authentication';
 
 function ChatAdminWeb() {
     const [chats, setChats] = useState([]);
@@ -23,6 +24,7 @@ function ChatAdminWeb() {
     const loadChats = async () => {
         try {
             const token = await AsyncStorage.getItem('Token');
+            if (!token) throw new Error('Token not found');
             const headers = {
                 'Authorization': `Token ${token}`,
                 'Content-Type': 'application/json'
@@ -30,27 +32,42 @@ function ChatAdminWeb() {
             const response = await axios.get('https://easeapi.onrender.com/api/chats/chat/', { headers });
             console.log('Response:', response);
             const chatsData = response.data;
-
+    
             if (Array.isArray(chatsData)) {
-                setChats(chatsData);
+                const chatsWithUsernames = [];
+                for (const chat of chatsData) {
+                    if (chat.customer) {
+                        const userData = await getOneUser(chat.customer);
+                        chatsWithUsernames.push({ id: chat.id, username: userData.username });
+                    } else {
+                        console.error('Error: customer_id is undefined for chat:', chat);
+                    }
+                }
+                setChats(chatsWithUsernames);
             }
         } catch (error) {
-            console.error(error);
+            console.error('Error loading chats:', error);
         }
     };
 
-    const connectWebSocket = (chatId) => {
+    const connectWebSocket = async (chatId) => {
         if (websocketRef.current) {
             websocketRef.current.close();
         }
 
-        const token = AsyncStorage.getItem('Token');
-        const wsUrl = `wss://easeapi.onrender.com/ws/chat/${chatId}/?token=${token}`;
-        websocketRef.current = new WebSocket(wsUrl);
-        websocketRef.current.onopen = () => console.log('WebSocket Connected');
-        websocketRef.current.onerror = error => console.log('WebSocket Error', error);
-        websocketRef.current.onclose = () => console.log('WebSocket Closed');
-        websocketRef.current.onmessage = handleWebSocketMessages;
+        try {
+            const token = await AsyncStorage.getItem('Token');
+            if (!token) throw new Error('Token not found or expired');
+            const wsUrl = `wss://easeapi.onrender.com/ws/chat/${chatId}/?token=${token}`;
+            websocketRef.current = new WebSocket(wsUrl);
+
+            websocketRef.current.onopen = () => console.log('WebSocket Connected');
+            websocketRef.current.onerror = error => console.error('WebSocket Error:', error);
+            websocketRef.current.onclose = () => console.log('WebSocket Closed');
+            websocketRef.current.onmessage = handleWebSocketMessages;
+        } catch (error) {
+            console.error('Error connecting to WebSocket:', error);
+        }
     };
 
     const selectChat = (chatId) => {
@@ -71,16 +88,16 @@ function ChatAdminWeb() {
     return (
         <View style={styles.container}>
             <View style={styles.chatList}>
-                {chats.map(chat => (
-                    <TouchableOpacity key={chat.id} onPress={() => selectChat(chat.id)} style={styles.chatItem}>
-                        <Text>{chat.name}</Text>
+                {chats.map((chat, index) => (
+                    <TouchableOpacity key={index} onPress={() => selectChat(chat.id)} style={styles.chatItem}>
+                        <Text>{chat.username}</Text>
                     </TouchableOpacity>
                 ))}
             </View>
             <View style={styles.chatArea}>
                 <GiftedChat
                     messages={messages}
-                    onSend={newMessages => onSend(newMessages)}
+                    onSend={messages => onSend(messages)}
                     user={{
                         _id: 1,
                         name: "Admin"
@@ -99,7 +116,8 @@ const styles = StyleSheet.create({
     chatList: {
         flex: 1,
         borderRightWidth: 1,
-        borderColor: '#ccc'
+        borderColor: '#ccc',
+        marginTop: 40,
     },
     chatArea: {
         flex: 3
