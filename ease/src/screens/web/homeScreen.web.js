@@ -82,49 +82,55 @@ const HomeScreenWeb = ({ navigation }) => {
   return (
     <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
       <View style={styles.container}>
-        <Image source={require('../../pictures/logo.png')} style={styles.logo} />
-        <View style={styles.iconColumn}>
-          <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('Summary')}>
-            <MaterialIcons name="description" size={24} color="black" />
-            <Text style={styles.menuText}>Summary</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('Profile')}>
-            <MaterialIcons name="person" size={24} color="black" />
-            <Text style={styles.menuText}>Profile</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('Chat')}>
-            <MaterialIcons name="chat" size={24} color="black" />
-            <Text style={styles.menuText}>Chat</Text>
-          </TouchableOpacity>  
-          <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('ChatIA')}>
-            <MaterialIcons name="assistant" size={24} color="black" />
-            <Text style={styles.menuText}>Financer Assistant</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconItem} onPress={handleLogout}>
-            <MaterialIcons name="exit-to-app" size={24} color="black" />
-            <Text style={styles.menuText}>Logout</Text>
-          </TouchableOpacity>
+        <View style={styles.menuContainer}>
+          <Image source={require('../../pictures/logo.png')} style={styles.logo} />
+          <View style={styles.iconColumn}>
+            <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('Summary')}>
+              <MaterialIcons name="description" size={24} color="black" />
+              <Text style={styles.menuText}>Summary</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('Profile')}>
+              <MaterialIcons name="person" size={24} color="black" />
+              <Text style={styles.menuText}>Profile</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('Chat')}>
+              <MaterialIcons name="chat" size={24} color="black" />
+              <Text style={styles.menuText}>Chat</Text>
+            </TouchableOpacity>  
+            <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('ChatIA')}>
+              <MaterialIcons name="assistant" size={24} color="black" />
+              <Text style={styles.menuText}>Financer Assistant</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.logoutContainer}>
+            <TouchableOpacity style={styles.iconItem} onPress={handleLogout}>
+              <MaterialIcons name="exit-to-app" size={24} color="red" />
+              <Text style={styles.logoutText}>Logout</Text>
+            </TouchableOpacity>
+          </View>
         </View>
         {chartData.length > 0 ? (
           <>
             <View style={styles.chartContainer}>
-              <PieChart
-                data={chartData}
-                width={screenWidth * 0.8}
-                height={360}
-                chartConfig={{
-                  backgroundColor: "#ffffff",
-                  backgroundGradientFrom: "#ffffff",
-                  backgroundGradientTo: "#ffffff",
-                  decimalPlaces: 2,
-                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                }}
-                accessor={"population"}
-                backgroundColor={"transparent"}
-                paddingLeft={"20"}
-                center={[0, 0]}
-                absolute={false}
-              />
+              <View style={styles.chartBackground}>
+                <PieChart
+                  data={chartData}
+                  width={screenWidth * 0.7}  // Reduced width of the chart container
+                  height={360}
+                  chartConfig={{
+                    backgroundColor: "#ffffff",
+                    backgroundGradientFrom: "#ffffff",
+                    backgroundGradientTo: "#ffffff",
+                    decimalPlaces: 2,
+                    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                  }}
+                  accessor={"population"}
+                  backgroundColor={"transparent"}
+                  paddingLeft={"20"}
+                  center={[0, 0]}
+                  absolute={false}
+                />
+              </View>
             </View>
             <View style={styles.buttonsContainer}>
               <AddExpenseButton onPress={handleAddExpense} />
@@ -149,15 +155,35 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1, // Ensuring the main container is on top
+    flexDirection: 'row', // To align menu and content side by side
+  },
+  menuContainer: {
+    flex: 0.1,  // Adjusted width of the menu container
+    backgroundColor: 'white',
+    padding: 10,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+    elevation: 5, // For Android shadow
+    shadowColor: '#000', // For iOS shadow
+    shadowOffset: { width: 0, height: 2 }, // For iOS shadow
+    shadowOpacity: 0.8, // For iOS shadow
+    shadowRadius: 2, // For iOS shadow
+    justifyContent: 'space-between', // Align items and logout button
   },
   chartContainer: {
-    flex: 1,
+    flex: 0.9,  // Adjusted flex to match the reduced menu width
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 0,
+  },
+  chartBackground: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 10,
+    elevation: 5, // For Android shadow
+    shadowColor: '#000', // For iOS shadow
+    shadowOffset: { width: 0, height: 2 }, // For iOS shadow
+    shadowOpacity: 0.8, // For iOS shadow
+    shadowRadius: 2, // For iOS shadow
   },
   buttonsContainer: {
     position: 'absolute',
@@ -165,15 +191,10 @@ const styles = StyleSheet.create({
     right: 20,
     flexDirection: 'column',
     alignItems: 'flex-end',
-    zIndex: 2,
   },
   iconColumn: {
     flexDirection: 'column',
-    position: 'absolute',
-    left: 35,
-    top: 105,
     alignItems: 'flex-start',
-    zIndex: 2,
   },
   iconItem: {
     flexDirection: 'row',
@@ -183,15 +204,23 @@ const styles = StyleSheet.create({
   menuText: {
     marginLeft: 5,
     fontSize: 16,
+    alignItems:"center",
   },
   logo: {
-    position: 'absolute',
-    top: 40,
-    left: 35,
     width: 50,
     height: 50,
     borderRadius: 10,
-    zIndex: 2,
+    marginBottom: 20,
+    alignSelf: "center",
+  },
+  logoutContainer: {
+    marginTop: 'auto',
+    marginBottom: 10,
+  },
+  logoutText: {
+    marginLeft: 5,
+    fontSize: 16,
+    color: 'red',
   },
 });
 
