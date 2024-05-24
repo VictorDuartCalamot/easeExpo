@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { View, StyleSheet, TouchableOpacity, Text, TextInput, FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { getOneUser } from '../../../services/api_authentication';
@@ -8,7 +7,8 @@ import { getOneUser } from '../../../services/api_authentication';
 function ChatAdminWeb() {
     const [chats, setChats] = useState([]);
     const [activeChat, setActiveChat] = useState(null);
-    const [messages, setMessages] = useState([]);
+    const [messages, setMessages] = useState({});
+    const [inputMessage, setInputMessage] = useState('');
     const websocketRef = useRef(null);
 
     useEffect(() => {
@@ -30,7 +30,6 @@ function ChatAdminWeb() {
                 'Content-Type': 'application/json'
             };
             const response = await axios.get('https://easeapi.onrender.com/api/chats/chat/', { headers });
-            console.log('Response:', response);
             const chatsData = response.data;
     
             if (Array.isArray(chatsData)) {
@@ -58,13 +57,13 @@ function ChatAdminWeb() {
         try {
             const token = await AsyncStorage.getItem('Token');
             if (!token) throw new Error('Token not found or expired');
-            const wsUrl = `wss://easeapi.onrender.com/ws/chat/${chatId}/?token=${token}`;
+            const wsUrl = `wss://easeapi.onrender.com/ws/support/chat/${chatId}/?token=${token}`;
             websocketRef.current = new WebSocket(wsUrl);
 
             websocketRef.current.onopen = () => console.log('WebSocket Connected');
             websocketRef.current.onerror = error => console.error('WebSocket Error:', error);
             websocketRef.current.onclose = () => console.log('WebSocket Closed');
-            websocketRef.current.onmessage = handleWebSocketMessages;
+            websocketRef.current.onmessage = event => handleWebSocketMessages(event, chatId);
         } catch (error) {
             console.error('Error connecting to WebSocket:', error);
         }
@@ -74,16 +73,49 @@ function ChatAdminWeb() {
         setActiveChat(chatId);
     };
 
-    const onSend = useCallback((newMessages = []) => {
-        if (websocketRef.current) {
-            websocketRef.current.send(JSON.stringify(newMessages[0]));
-        }
-    }, []);
+    const onSend = useCallback(async () => {
+        if (!inputMessage.trim()) return;
 
-    const handleWebSocketMessages = event => {
-        const message = JSON.parse(event.data);
-        setMessages(previousMessages => GiftedChat.append(previousMessages, message));
-    };
+        if (websocketRef.current) {
+            const message = {
+                text: inputMessage.trim(),
+                timestamp: new Date().getTime(),
+                user: 'Admin'
+            };
+            websocketRef.current.send(JSON.stringify(message));
+            setInputMessage('');
+            console.log(setInputMessage());
+        }
+    }, [inputMessage]);
+
+    const handleWebSocketMessages = (event, chatId) => {
+        const rawMessages = JSON.parse(event.data);
+    
+        if (Array.isArray(rawMessages)) {
+            const formattedMessages = rawMessages.map(rawMessage => ({
+                _id: rawMessage.user ? rawMessage.user.toString() : new Date().getTime().toString(),
+                text: rawMessage.message || "",
+                createdAt: rawMessage.timestamp ? new Date(rawMessage.timestamp) : new Date(),
+                user: {
+                    _id: rawMessage.user || 'unknown',
+                    name: rawMessage.user || 'Unknown',
+                }
+            }));
+    
+            setMessages(prevMessages => ({
+                ...prevMessages,
+                [chatId]: [...(prevMessages[chatId] || []), ...formattedMessages]
+            }));
+        } else {
+            console.error(`Unexpected message format for chat ${chatId}:`, rawMessages);
+        }
+    };    
+
+    const renderItem = ({ item }) => (
+        <View style={styles.messageItem}>
+            <Text>{item.user.name}: {item.text}</Text>
+        </View>
+    );
 
     return (
         <View style={styles.container}>
@@ -95,14 +127,26 @@ function ChatAdminWeb() {
                 ))}
             </View>
             <View style={styles.chatArea}>
-                <GiftedChat
-                    messages={messages}
-                    onSend={messages => onSend(messages)}
-                    user={{
-                        _id: 1,
-                        name: "Admin"
-                    }}
-                />
+                {activeChat && (
+                    <>
+                        <FlatList
+                            data={messages[activeChat] || []}
+                            renderItem={renderItem}
+                            keyExtractor={(item, index) => index.toString()}
+                        />
+                        <View style={styles.inputContainer}>
+                            <TextInput
+                                style={styles.text}
+                                placeholder="Escribe tu mensaje..."
+                                value={inputMessage}
+                                onChangeText={setInputMessage}
+                            />
+                            <TouchableOpacity style={styles.sendButton} onPress={onSend}>
+                                <Text style={styles.sendButtonText}>Enviar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </>
+                )}
             </View>
         </View>
     );
@@ -111,22 +155,53 @@ function ChatAdminWeb() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: 'row'
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     chatList: {
         flex: 1,
         borderRightWidth: 1,
         borderColor: '#ccc',
-        marginTop: 40,
-    },
-    chatArea: {
-        flex: 3
+        padding: 10,
     },
     chatItem: {
         padding: 10,
         borderBottomWidth: 1,
-        borderBottomColor: '#ccc'
-    }
+        borderColor: '#eee',
+    },
+    chatArea: {
+        flex: 3,
+        padding: 10,
+    },
+    messageItem: {
+        padding: 10,
+        borderBottomWidth: 1,
+        borderColor: '#eee',
+    },
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    text: {
+        flex: 1,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        marginRight: 10,
+    },
+    sendButton: {
+        backgroundColor: 'blue',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+    },
+    sendButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+    },
 });
 
 export default ChatAdminWeb;
