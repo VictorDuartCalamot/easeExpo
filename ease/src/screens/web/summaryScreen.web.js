@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView,ImageBackground } from 'react-native';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { getExpenses, getCategories, getSubCategories } from '../../services/api_management';
@@ -74,6 +74,7 @@ const SummaryScreenWeb = () => {
   }, [selectedCategory]);
 
   return (
+    <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
     <ScrollView contentContainerStyle={styles.container}>
       <Calendar
         selectRange
@@ -120,6 +121,7 @@ const SummaryScreenWeb = () => {
         </View>
       )}
     </ScrollView>
+    </ImageBackground>
   );
 };
 
