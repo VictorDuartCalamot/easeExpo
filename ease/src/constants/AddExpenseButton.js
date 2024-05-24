@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Modal, TextInput, Button, Alert } from "react-native";
+import { View, StyleSheet, Modal, TextInput, Button, Alert, Text, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
 import { createExpense, getCategories, getSubCategories } from "../services/api_management";
 import { AntDesign } from "@expo/vector-icons";
 import RNPickerSelect from "react-native-picker-select";
@@ -80,70 +80,95 @@ const AddExpenseButton = () => {
 
     return (
         <View>
-            <AntDesign name="pluscircleo" size={24} color="black" onPress={handleAddExpense} />
+            <TouchableOpacity style={styles.addButton} onPress={handleAddExpense}>
+                <AntDesign name="pluscircleo" size={24} color="black" />
+                <Text style={styles.addButtonText}>Add Expense</Text>
+            </TouchableOpacity>
             <Modal
                 animationType="slide"
+                transparent={true}
                 visible={modalVisible}
-                onRequestClose={() => {
-                    setModalVisible(false);
-                }}
+                onRequestClose={() => setModalVisible(false)}
             >
-                <View style={styles.modalContainer}>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Title"
-                        onChangeText={setTitle}
-                        value={title}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Description"
-                        onChangeText={setDescription}
-                        value={description}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Amount"
-                        keyboardType="numeric"
-                        onChangeText={setAmount}
-                        value={amount}
-                    />
-                    <View style={styles.pickerContainer}>
-                        <RNPickerSelect
-                            onValueChange={(value) => handleCategoryChange(value)}
-                            items={categories.map(category => ({ label: category.name, value: category.id }))}
-                        />
+                <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+                    <View style={styles.modalBackground}>
+                        <TouchableWithoutFeedback>
+                            <View style={styles.modalContainer}>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Title"
+                                    onChangeText={setTitle}
+                                    value={title}
+                                />
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Description"
+                                    onChangeText={setDescription}
+                                    value={description}
+                                />
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Amount"
+                                    keyboardType="numeric"
+                                    onChangeText={setAmount}
+                                    value={amount}
+                                />
+                                <View style={styles.pickerContainer}>
+                                    <RNPickerSelect
+                                        onValueChange={(value) => handleCategoryChange(value)}
+                                        items={categories.map(category => ({ label: category.name, value: category.id }))}
+                                    />
+                                </View>
+                                {subCategories.length > 0 && (
+                                    <View style={styles.pickerContainer}>
+                                        <RNPickerSelect
+                                            onValueChange={(value) => setSubCategory(value)}
+                                            items={subCategories.map(subCategory => ({ label: subCategory.name, value: subCategory.id }))}
+                                        />
+                                    </View>
+                                )}
+                                <View style={styles.buttonContainer}>
+                                    <Button title="Add Expense" onPress={newExpense} />
+                                </View>
+                                <View style={styles.buttonContainer}>
+                                    <Button title="Cancel" onPress={() => setModalVisible(false)} />
+                                </View>
+                            </View>
+                        </TouchableWithoutFeedback>
                     </View>
-                    {subCategories.length > 0 && (
-                        <View style={styles.pickerContainer}>
-                            <RNPickerSelect
-                                onValueChange={(value) => setSubCategory(value)}
-                                items={subCategories.map(subCategory => ({ label: subCategory.name, value: subCategory.id }))}
-                            />
-                        </View>
-                    )}
-                    <View style={styles.buttonContainer}>
-                        <Button title="Add Expense" onPress={newExpense} />
-                    </View>
-                    <View style={styles.buttonContainer}>
-                        <Button title="Cancel" onPress={() => setModalVisible(false)} />
-                    </View>
-                </View>
+                </TouchableWithoutFeedback>
             </Modal>
         </View>
     )
 };
 
 const styles = StyleSheet.create({
-    modalContainer: {
+    addButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    addButtonText: {
+        marginLeft: 5,
+        fontSize: 16,
+        color: 'black',
+    },
+    modalBackground: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContainer: {
+        width: '80%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
         backgroundColor: 'white',
+        borderRadius: 10,
     },
     input: {
         height: 40,
-        width: '80%',
+        width: '100%',
         margin: 12,
         padding: 10,
         borderWidth: 1,
