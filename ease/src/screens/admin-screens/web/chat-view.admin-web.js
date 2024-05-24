@@ -4,13 +4,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { getOneUser } from '../../../services/api_authentication';
 
-function ChatClientWeb() {
+function ChatAdmintWeb() {
     const [chats, setChats] = useState([]);
     const [activeChat, setActiveChat] = useState(null);
     const [messages, setMessages] = useState({});
     const [inputMessage, setInputMessage] = useState('');
     const websocketRef = useRef(null);
-    const reconnectInterval = useRef(5000); // 5 seconds initial reconnection interval
 
     useEffect(() => {
         loadChats();
@@ -72,16 +71,11 @@ function ChatClientWeb() {
 
             websocketRef.current.onopen = () => {
                 console.log('WebSocket Connected');
-                reconnectInterval.current = 5000; // Reset reconnection interval
             };
             websocketRef.current.onerror = error => console.error('WebSocket Error:', error);
             websocketRef.current.onmessage = event => handleWebSocketMessages(event, chatId);
             websocketRef.current.onclose = event => {
                 console.log(`WebSocket Disconnected. Code: ${event.code}, Reason: ${event.reason}`);
-                if (websocketRef.current && websocketRef.current.readyState !== WebSocket.CONNECTING) {
-                    setTimeout(() => connectWebSocket(chatId), reconnectInterval.current);
-                    reconnectInterval.current = Math.min(reconnectInterval.current * 2, 60000); // Increment interval up to 1 minute
-                }
             };
         } catch (error) {
             console.error('Error connecting to WebSocket:', error);
@@ -101,7 +95,7 @@ function ChatClientWeb() {
                     "message": inputMessage.trim(),
                 };
                 websocketRef.current.send(JSON.stringify(message));
-                console.log('Message sent: ', websocketRef.current.send);
+                console.log('Message sent: ', message);
                 setInputMessage('');
             } catch (error) {
                 console.error('Error sending message: ', error);
@@ -246,4 +240,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ChatClientWeb;
+export default ChatAdmintWeb;

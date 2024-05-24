@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { View, StyleSheet, TouchableOpacity, Text, TextInput, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { getOneUser } from '../../../services/api_authentication';
 
 function ChatDetail({ route }) {
     const { chatId } = route.params;
     const [messages, setMessages] = useState([]);
+    const [inputMessage, setInputMessage] = useState('');
     const websocketRef = useRef(null);
 
     useEffect(() => {
-        loadMessages();
-        connectWebSocket();
+        connectWebSocket(chatId);
 
         return () => {
             if (websocketRef.current) {
@@ -19,106 +20,149 @@ function ChatDetail({ route }) {
         };
     }, [chatId]);
 
-    const loadMessages = async () => {
+    const connectWebSocket = async (chatId) => {
         try {
             const token = await AsyncStorage.getItem('Token');
-            if (!token) throw new Error('Token not found');
-            const headers = {
-                'Authorization': `Token ${token}`,
-                'Content-Type': 'application/json'
-            };
-
-            const response = await axios.get(`https://easeapi.onrender.com/api/chats/chat/${chatId}/messages/`, { headers });
-            const messagesData = response.data;
-
-            const formattedMessages = messagesData.map(msg => ({
-                _id: msg.id,
-                text: msg.message,
-                createdAt: new Date(msg.timestamp),
-                user: {
-                    _id: msg.user,
-                    name: msg.user_name,
-                    avatar: 'https://placeimg.com/140/140/any',
-                },
-            }));
-
-            setMessages(formattedMessages);
-        } catch (error) {
-            console.error('Error loading messages:', error);
-        }
-    };
-
-    const connectWebSocket = async () => {
-        try {
-            const token = await AsyncStorage.getItem('Token');
-            if (!token) throw new Error('Token not found');
+            if (!token) throw new Error('Token not found or expired');
             const wsUrl = `wss://easeapi.onrender.com/ws/support/chat/${chatId}/?token=${token}`;
-            websocketRef.current = new WebSocket(wsUrl);
 
-            websocketRef.current.onopen = () => console.log('WebSocket Connected');
+            if (websocketRef.current) {
+                websocketRef.current.close();
+            }
+
+            websocketRef.current = new WebSocket(wsUrl);
+            console.log("WebSocket URL: ", wsUrl);
+
+            websocketRef.current.onopen = () => {
+                console.log('WebSocket Connected');
+            };
             websocketRef.current.onerror = error => console.error('WebSocket Error:', error);
-            websocketRef.current.onclose = () => console.log('WebSocket Closed');
             websocketRef.current.onmessage = event => handleWebSocketMessages(event);
+            websocketRef.current.onclose = event => {
+                console.log(`WebSocket Disconnected. Code: ${event.code}, Reason: ${event.reason}`);
+            };
         } catch (error) {
             console.error('Error connecting to WebSocket:', error);
         }
     };
 
-    const handleWebSocketMessages = (event) => {
-        const rawMessages = JSON.parse(event.data);
+    const onSend = useCallback(() => {
+        if (!inputMessage.trim()) return;
 
-        if (Array.isArray(rawMessages)) {
-            const formattedMessages = rawMessages.map(rawMessage => ({
-                _id: rawMessage.user ? rawMessage.user.toString() : new Date().getTime().toString(),
+        if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
+            try {
+                const message = {
+                    message: inputMessage.trim(),
+                };
+                websocketRef.current.send(JSON.stringify(message));
+                console.log('Message sent: ', message);
+                setInputMessage('');
+            } catch (error) {
+                console.error('Error sending message: ', error);
+            }
+        } else {
+            console.error('WebSocket is not open. Current state: ', websocketRef.current.readyState);
+        }
+    }, [inputMessage]);
+
+    const handleWebSocketMessages = (event) => {
+        const rawMessage = JSON.parse(event.data);
+        console.log('Received message: ', rawMessage);
+    
+        let formattedMessages = [];
+    
+        if (Array.isArray(rawMessage)) {
+            formattedMessages = rawMessage.map(msg => ({
+                id: msg.id || new Date().getTime().toString(),
+                text: msg.message || "",
+                createdAt: msg.timestamp ? new Date(msg.timestamp) : new Date(),
+                user: {
+                    id: msg.user || 'unknown',
+                    name: msg.user || 'Unknown',
+                }
+            }));
+        } else if (rawMessage.message) {
+            formattedMessages = [{
+                id: rawMessage.id || new Date().getTime().toString(),
                 text: rawMessage.message || "",
                 createdAt: rawMessage.timestamp ? new Date(rawMessage.timestamp) : new Date(),
                 user: {
-                    _id: rawMessage.user || 'unknown',
+                    id: rawMessage.user || 'unknown',
                     name: rawMessage.user || 'Unknown',
                 }
-            }));
-
-            setMessages(prevMessages => GiftedChat.append(prevMessages, formattedMessages));
+            }];
         } else {
-            console.error(`Unexpected message format:`, rawMessages);
+            console.error('Unexpected message format:', rawMessage);
+            return;
         }
-    };
+    
+        setMessages(prevMessages => [...prevMessages, ...formattedMessages]);
+    };    
 
-    const onSend = useCallback(async (newMessages = []) => {
-        try {
-            const token = await AsyncStorage.getItem('Token');
-            if (!token) throw new Error('Token not found');
-            const headers = {
-                'Authorization': `Token ${token}`,
-                'Content-Type': 'application/json'
-            };
-
-            const url = `https://easeapi.onrender.com/api/chats/chat/${chatId}/messages/`;
-
-            const messageData = newMessages[0];
-
-            const response = await axios.post(url, {
-                message: messageData.text,
-                timestamp: new Date().getTime(),
-                user: 'Admin'
-            }, { headers });
-
-            setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages));
-        } catch (error) {
-            console.error('Error sending message:', error);
-        }
-    }, [chatId]);
+    const renderItem = ({ item }) => (
+        <View style={styles.messageItem}>
+            <Text>{item.user.name}: {item.text}</Text>
+        </View>
+    );
 
     return (
-        <GiftedChat
-            messages={messages}
-            onSend={newMessages => onSend(newMessages)}
-            user={{
-                _id: 1,
-                name: "Admin"
-            }}
-        />
+        <View style={styles.container}>
+            <FlatList
+                data={messages}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
+            />
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={styles.inputContainer}
+            >
+                <TextInput
+                    style={styles.text}
+                    placeholder="Escribe tu mensaje..."
+                    value={inputMessage}
+                    onChangeText={setInputMessage}
+                />
+                <TouchableOpacity style={styles.sendButton} onPress={onSend}>
+                    <Text style={styles.sendButtonText}>Enviar</Text>
+                </TouchableOpacity>
+            </KeyboardAvoidingView>
+        </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 10,
+    },
+    messageItem: {
+        padding: 10,
+        borderBottomWidth: 1,
+        borderColor: '#eee',
+    },
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    text: {
+        flex: 1,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        marginRight: 10,
+    },
+    sendButton: {
+        backgroundColor: 'blue',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+    },
+    sendButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+    },
+});
 
 export default ChatDetail;

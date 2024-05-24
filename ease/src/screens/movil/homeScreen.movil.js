@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Dimensions, Image, ImageBackground } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, Image, ImageBackground,TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { PieChart } from 'react-native-chart-kit';
 import { getExpenses, getIncomes } from '../../services/api_management';
