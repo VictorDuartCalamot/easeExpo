@@ -112,17 +112,32 @@ function ChatPrueba() {
     }, [inputMessage]);    
 
     const handleWebSocketMessages = (event, chatId) => {
-        const rawMessage = JSON.parse(event.data);
-        console.log('Received message: ', rawMessage);
-    
-        if (rawMessage.message) {
-            const formattedMessage = {
+        const rawMessages = JSON.parse(event.data);
+        console.log('Received message: ', rawMessages);
+        
+        if (Array.isArray(rawMessages)) {
+            const formattedMessages = rawMessages.map(rawMessage => ({
                 _id: rawMessage.user ? rawMessage.user.toString() : new Date().getTime().toString(),
                 text: rawMessage.message || "",
                 createdAt: rawMessage.timestamp ? new Date(rawMessage.timestamp) : new Date(),
                 user: {
                     _id: rawMessage.user || 'unknown',
                     name: rawMessage.user || 'Unknown',
+                }
+            }));
+    
+            setMessages(prevMessages => ({
+                ...prevMessages,
+                [chatId]: [...(prevMessages[chatId] || []), ...formattedMessages]
+            }));
+        } else if (rawMessages.message) {
+            const formattedMessage = {
+                _id: rawMessages.user ? rawMessages.user.toString() : new Date().getTime().toString(),
+                text: rawMessages.message || "",
+                createdAt: rawMessages.timestamp ? new Date(rawMessages.timestamp) : new Date(),
+                user: {
+                    _id: rawMessages.user || 'unknown',
+                    name: rawMessages.user || 'Unknown',
                 }
             };
     
@@ -131,7 +146,7 @@ function ChatPrueba() {
                 [chatId]: [...(prevMessages[chatId] || []), formattedMessage]
             }));
         } else {
-            console.error(`Unexpected message format for chat ${chatId}:`, rawMessage);
+            console.error(`Unexpected message format for chat ${chatId}:`, rawMessages);
         }
     };    
 
