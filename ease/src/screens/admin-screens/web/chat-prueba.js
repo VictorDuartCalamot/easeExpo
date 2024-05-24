@@ -172,7 +172,6 @@ function ChatPrueba() {
                             data={messages[activeChat] || []}
                             renderItem={renderItem}
                             keyExtractor={(item, index) => index.toString()}
-                            inverted
                         />
                         <KeyboardAvoidingView
                             behavior={Platform.OS === "ios" ? "padding" : "height"}
