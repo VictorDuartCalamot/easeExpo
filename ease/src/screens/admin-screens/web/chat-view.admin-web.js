@@ -31,7 +31,7 @@ function ChatAdminWeb() {
             };
             const response = await axios.get('https://easeapi.onrender.com/api/chats/chat/', { headers });
             const chatsData = response.data;
-    
+
             if (Array.isArray(chatsData)) {
                 const chatsWithUsernames = [];
                 for (const chat of chatsData) {
@@ -55,16 +55,10 @@ function ChatAdminWeb() {
             if (!token) throw new Error('Token not found or expired');
             const wsUrl = `wss://easeapi.onrender.com/ws/support/chat/${chatId}/?token=${token}`;
 
-            // Solo cierra la conexión si no está activa para el chatId actual
-            if (websocketRef.current && activeChat !== chatId) {
-                websocketRef.current.close();
-            }
-
             websocketRef.current = new WebSocket(wsUrl);
 
             websocketRef.current.onopen = () => console.log('WebSocket Connected');
             websocketRef.current.onerror = error => console.error('WebSocket Error:', error);
-            websocketRef.current.onclose = () => console.log('WebSocket Closed');
             websocketRef.current.onmessage = event => handleWebSocketMessages(event, chatId);
 
         } catch (error) {
@@ -73,13 +67,16 @@ function ChatAdminWeb() {
     };
 
     const selectChat = (chatId) => {
+        if (websocketRef.current) {
+            websocketRef.current.close();
+        }
         setActiveChat(chatId);
     };
 
     const onSend = useCallback(async () => {
         if (!inputMessage.trim()) return;
 
-        if (websocketRef.current) {
+        if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
             const message = {
                 text: inputMessage.trim(),
                 timestamp: new Date().getTime(),
@@ -87,12 +84,14 @@ function ChatAdminWeb() {
             };
             websocketRef.current.send(JSON.stringify(message));
             setInputMessage('');
+        } else {
+            console.error('WebSocket is not open');
         }
     }, [inputMessage]);
 
     const handleWebSocketMessages = (event, chatId) => {
         const rawMessages = JSON.parse(event.data);
-    
+
         if (Array.isArray(rawMessages)) {
             const formattedMessages = rawMessages.map(rawMessage => ({
                 _id: rawMessage.user ? rawMessage.user.toString() : new Date().getTime().toString(),
@@ -103,7 +102,7 @@ function ChatAdminWeb() {
                     name: rawMessage.user || 'Unknown',
                 }
             }));
-    
+
             setMessages(prevMessages => ({
                 ...prevMessages,
                 [chatId]: [...(prevMessages[chatId] || []), ...formattedMessages]
@@ -111,7 +110,7 @@ function ChatAdminWeb() {
         } else {
             console.error(`Unexpected message format for chat ${chatId}:`, rawMessages);
         }
-    };    
+    };
 
     const renderItem = ({ item }) => (
         <View style={styles.messageItem}>
