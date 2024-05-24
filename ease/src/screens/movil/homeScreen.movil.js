@@ -101,7 +101,7 @@ const HomeScreenWeb = ({ navigation }) => {
           <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('ChatIA')}>
             <MaterialIcons name="assistant" size={24} color="black" />
             <Text style={styles.menuText}>Financer Assistant</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> 
           <View style={styles.iconItem}>
             <MaterialIcons name="exit-to-app" size={24} color="black" onPress={handleLogout} />
             <Text style={styles.menuText} onPress={handleLogout}>Logout</Text>
