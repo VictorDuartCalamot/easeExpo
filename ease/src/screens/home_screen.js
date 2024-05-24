@@ -1,13 +1,8 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import { Platform } from 'react-native';
 
-
-const HomeScreen = () => {
-  return (
-    <View>
-      <Text>Home Screen</Text>
-    </View>
-  );
-};
+const HomeScreen = Platform.select({
+  web: () => require('./web/homeScreen.web').default,
+  default: () => require('./movil/homeScreen.movil').default,
+})();
 
 export default HomeScreen;

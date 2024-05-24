@@ -1,12 +1,8 @@
-import React from "react";
-import { View, Text } from "react-native";
+import { Platform } from 'react-native';
 
-const ProfileScreen = () => {
-    return (
-        <View>
-            <Text>Profile Screen</Text>
-        </View>
-    )
-}
+const profileScreen = Platform.select({
+  web: () => require('./web/profileScreen.web').default,
+  default: () => require('./movil/profileScreen.movil').default,
+})();
 
-export default ProfileScreen;
+export default profileScreen;
