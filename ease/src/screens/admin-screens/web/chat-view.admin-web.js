@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, TextInput, FlatList } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, TextInput, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { getOneUser } from '../../../services/api_authentication';
@@ -50,20 +50,23 @@ function ChatAdminWeb() {
     };
 
     const connectWebSocket = async (chatId) => {
-        if (websocketRef.current) {
-            websocketRef.current.close();
-        }
-
         try {
             const token = await AsyncStorage.getItem('Token');
             if (!token) throw new Error('Token not found or expired');
             const wsUrl = `wss://easeapi.onrender.com/ws/support/chat/${chatId}/?token=${token}`;
+
+            // Solo cierra la conexión si no está activa para el chatId actual
+            if (websocketRef.current && activeChat !== chatId) {
+                websocketRef.current.close();
+            }
+
             websocketRef.current = new WebSocket(wsUrl);
 
             websocketRef.current.onopen = () => console.log('WebSocket Connected');
             websocketRef.current.onerror = error => console.error('WebSocket Error:', error);
             websocketRef.current.onclose = () => console.log('WebSocket Closed');
             websocketRef.current.onmessage = event => handleWebSocketMessages(event, chatId);
+
         } catch (error) {
             console.error('Error connecting to WebSocket:', error);
         }
@@ -84,7 +87,6 @@ function ChatAdminWeb() {
             };
             websocketRef.current.send(JSON.stringify(message));
             setInputMessage('');
-            console.log(setInputMessage());
         }
     }, [inputMessage]);
 
@@ -133,8 +135,12 @@ function ChatAdminWeb() {
                             data={messages[activeChat] || []}
                             renderItem={renderItem}
                             keyExtractor={(item, index) => index.toString()}
+                            inverted
                         />
-                        <View style={styles.inputContainer}>
+                        <KeyboardAvoidingView
+                            behavior={Platform.OS === "ios" ? "padding" : "height"}
+                            style={styles.inputContainer}
+                        >
                             <TextInput
                                 style={styles.text}
                                 placeholder="Escribe tu mensaje..."
@@ -144,7 +150,7 @@ function ChatAdminWeb() {
                             <TouchableOpacity style={styles.sendButton} onPress={onSend}>
                                 <Text style={styles.sendButtonText}>Enviar</Text>
                             </TouchableOpacity>
-                        </View>
+                        </KeyboardAvoidingView>
                     </>
                 )}
             </View>
@@ -156,14 +162,13 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     chatList: {
         flex: 1,
         borderRightWidth: 1,
         borderColor: '#ccc',
         padding: 10,
+        marginTop: 45,
     },
     chatItem: {
         padding: 10,
@@ -173,6 +178,7 @@ const styles = StyleSheet.create({
     chatArea: {
         flex: 3,
         padding: 10,
+        justifyContent: 'space-between',
     },
     messageItem: {
         padding: 10,

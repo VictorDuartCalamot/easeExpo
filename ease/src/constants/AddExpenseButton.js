@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Modal, TextInput, Button, Alert } from "react-native";
-import { createIncome, getCategories } from "../services/api_management";
+import { createExpense, getCategories, getSubCategories } from "../services/api_management";
+import { AntDesign } from "@expo/vector-icons";
 import RNPickerSelect from "react-native-picker-select";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-const AddIncomeTextInput = () => {
+const AddExpenseButton = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
     const [category, setCategory] = useState('');
+    const [subCategory, setSubCategory] = useState('');
     const [categories, setCategories] = useState([]);
+    const [subCategories, setSubCategories] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
@@ -19,54 +21,66 @@ const AddIncomeTextInput = () => {
     const fetchCategories = async () => {
         try {
             const response = await getCategories();
-            setCategories(response);
+            const expenseCategories = response.filter(category => category.type === 'expense');
+            setCategories(expenseCategories);
         } catch (error) {
             console.error("Error fetching categories: ", error);
         }
     };
 
-    const newIncome = async () => {
+    const fetchSubCategories = async (categoryId) => {
+        try {
+            const response = await getSubCategories({ category_id: categoryId });
+            setSubCategories(response);
+        } catch (error) {
+            console.error("Error fetching subcategories: ", error);
+        }
+    };
+
+    const newExpense = async () => {
         const numericAmount = parseFloat(amount.replace(/,/g, '.'));
 
         if (!numericAmount || isNaN(numericAmount) || numericAmount <= 0) {
             Alert.alert('Invalid Amount', 'Amount must be greater than zero');
             return;
-        };
+        }
 
         const date = new Date();
-        const newTime = date.toISOString().substring(11, 19);
-        const newDate = date.toISOString().substring(0, 10);
-        const incomeData = {
+        const newTime = date.toISOString().substring(11, 19).toString();
+        const newDate = date.toISOString().substring(0, 10).toString();
+        const expenseData = {
             title: title,
             description: description,
             amount: numericAmount,
             creation_date: newDate,
             creation_time: newTime,
             category: category,
+            subcategory: subCategory,
         };
 
-        console.log('Sending income data: ', incomeData);
+        console.log('Sending expense data:', expenseData);
 
         try {
-            const response = await createIncome(incomeData);
-            console.log('Income created', response);
+            const response = await createExpense(expenseData);
+            console.log('Expense created:', response);
             setModalVisible(false);
         } catch (error) {
-            console.error('Error creating income:', error);
+            console.error('Error creating expense:', error.response.data);
         }
     };
 
     const handleCategoryChange = (categoryId) => {
         setCategory(categoryId);
+        fetchSubCategories(categoryId);
     };
 
-    const handleAddIncome = () => {
+    const handleAddExpense = () => {
         setModalVisible(true);
     };
 
     return (
         <View>
-            <MaterialCommunityIcons name="card-plus-outline" size={24} color="black" onPress={handleAddIncome} />
+            <AntDesign name="pluscircleo" size={24} color="black" onPress={handleAddExpense} />
             <Modal
                 animationType="slide"
                 visible={modalVisible}
@@ -100,8 +114,16 @@ const AddIncomeTextInput = () => {
                             items={categories.map(category => ({ label: category.name, value: category.id }))}
                         />
                     </View>
+                    {subCategories.length > 0 && (
+                        <View style={styles.pickerContainer}>
+                            <RNPickerSelect
+                                onValueChange={(value) => setSubCategory(value)}
+                                items={subCategories.map(subCategory => ({ label: subCategory.name, value: subCategory.id }))}
+                            />
+                        </View>
+                    )}
                     <View style={styles.buttonContainer}>
-                        <Button title="Add Income" onPress={newIncome} />
+                        <Button title="Add Expense" onPress={newExpense} />
                     </View>
                     <View style={styles.buttonContainer}>
                         <Button title="Cancel" onPress={() => setModalVisible(false)} />
@@ -109,7 +131,7 @@ const AddIncomeTextInput = () => {
                 </View>
             </Modal>
         </View>
-    );
+    )
 };
 
 const styles = StyleSheet.create({
@@ -137,4 +159,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default AddIncomeTextInput;
+export default AddExpenseButton;

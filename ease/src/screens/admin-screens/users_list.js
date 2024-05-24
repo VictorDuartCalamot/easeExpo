@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
-import Card from "../../components/card";
+import Card from "../../constants/card";
 import { getusers, deleteUser, updateUserAccountStatus } from "../../services/api_authentication";
 import { useNavigation } from "@react-navigation/native";
 import { Feather, MaterialIcons, MaterialCommunityIcons, AntDesign } from "@expo/vector-icons";

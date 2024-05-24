@@ -3,8 +3,8 @@ import { View, StyleSheet, Text, Dimensions, Image, ImageBackground } from 'reac
 import { MaterialIcons } from '@expo/vector-icons';
 import { PieChart } from 'react-native-chart-kit';
 import { getExpenses, getIncomes } from '../../services/api_management';
-import AddExpenseButton from '../../components/AddExpenseButton';
-import AddIncomeTextInput from '../../components/AddIncomeTextInput';
+import AddExpenseButton from '../../constants/AddExpenseButton';
+import AddIncomeTextInput from '../../constants/AddIncomeTextInput';
 
 const screenWidth = Dimensions.get("window").width;
 

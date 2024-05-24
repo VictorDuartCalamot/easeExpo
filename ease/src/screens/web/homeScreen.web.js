@@ -3,10 +3,16 @@ import { View, StyleSheet, Text, Dimensions, Image, ImageBackground, TouchableOp
 import { MaterialIcons } from '@expo/vector-icons';
 import { PieChart } from 'react-native-chart-kit';
 import { getExpenses, getIncomes } from '../../services/api_management';
-import AddExpenseButton from '../../components/AddExpenseButton';
-import AddIncomeTextInput from '../../components/AddIncomeTextInput';
+import AddExpenseButton from '../../constants/AddExpenseButton';
+import AddIncomeTextInput from '../../constants/AddIncomeTextInput';
 
 const screenWidth = Dimensions.get("window").width;
+
+// Función para generar un color hexadecimal aleatorio
+const getRandomColor = () => {
+  // Genera un color hexadecimal aleatorio
+  return '#' + Math.floor(Math.random() * 16777215).toString(16);
+};
 
 const HomeScreenWeb = ({ navigation }) => {
   const [expenses, setExpenses] = useState([]);
@@ -15,9 +21,10 @@ const HomeScreenWeb = ({ navigation }) => {
   const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
+    const currentDate = new Date().toISOString().split('T')[0];
     const fetchExpenses = async () => {
       try {
-        const expenseData = await getExpenses({ start_date: '2024-05-20', end_date: '2024-05-20', start_time: '', end_time: '' });
+        const expenseData = await getExpenses({ start_date: currentDate, end_date: currentDate, start_time: '', end_time: '' });
         if (!Array.isArray(expenseData)) {
           console.error("Error: los datos de expense no son un array");
           return;
@@ -25,7 +32,7 @@ const HomeScreenWeb = ({ navigation }) => {
         const cleanedExpenseData = expenseData.map((exp, index) => ({
           name: exp.title,
           population: parseFloat(exp.amount),
-          color: `hsl(${index * 360 / expenseData.length}, 70%, 70%)`,
+          color: getRandomColor(), // Usamos la función para generar un color aleatorio
           legendFontColor: "#7F7F7F",
           legendFontSize: 15
         }));
@@ -37,7 +44,7 @@ const HomeScreenWeb = ({ navigation }) => {
 
     const fetchIncomes = async () => {
       try {
-        const incomeData = await getIncomes({ start_date: '2024-05-20', end_date: '2024-05-20', start_time: '', end_time: '' });
+        const incomeData = await getIncomes({ start_date: currentDate, end_date: currentDate, start_time: '', end_time: '' });
         if (!Array.isArray(incomeData)) {
           console.error("Error: los datos de income no son un array");
           return;
@@ -45,7 +52,7 @@ const HomeScreenWeb = ({ navigation }) => {
         const cleanedIncomeData = incomeData.map((inc, index) => ({
           name: inc.title,
           population: parseFloat(inc.amount),
-          color: `hsl(${(index + expenses.length) * 360 / incomeData.length}, 70%, 70%)`,
+          color: getRandomColor(), // Usamos la función para generar un color aleatorio
           legendFontColor: "#7F7F7F",
           legendFontSize: 15
         }));
@@ -93,7 +100,7 @@ const HomeScreenWeb = ({ navigation }) => {
               <MaterialIcons name="person" size={24} color="black" />
               <Text style={styles.menuText}>Profile</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('Chat')}>
+            <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('ChatClient')}>
               <MaterialIcons name="chat" size={24} color="black" />
               <Text style={styles.menuText}>Chat</Text>
             </TouchableOpacity>  
@@ -115,7 +122,7 @@ const HomeScreenWeb = ({ navigation }) => {
               <View style={styles.chartBackground}>
                 <PieChart
                   data={chartData}
-                  width={screenWidth * 0.7}  // Reduced width of the chart container
+                  width={screenWidth * 0.7}
                   height={360}
                   chartConfig={{
                     backgroundColor: "#ffffff",
