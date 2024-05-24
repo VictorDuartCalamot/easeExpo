@@ -67,7 +67,7 @@ function UsersList() {
     };
 
     const handleChatAdmin = () => {
-        navigation.navigate('ChatClient');
+        navigation.navigate('ChatAdmin');
     };
 
     const toggleExpand = (index) => {
