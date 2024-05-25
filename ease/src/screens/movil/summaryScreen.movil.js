@@ -21,7 +21,7 @@ const SummaryScreenMobile = () => {
         subCategoryName: subCategories[expense.subcategory]?.name || 'no data',
         subCategoryColor: subCategories[expense.subcategory]?.color || 'no data',
       }));
-      setExpenses(enrichedExpenses);
+      setExpenses(enrichedExpenses.reverse());
     } catch (error) {
       console.error('Error fetching expenses:', error);
     }
@@ -57,6 +57,30 @@ const SummaryScreenMobile = () => {
       handleFetchExpenses();
     } else {
       console.warn('Please select both start and end dates.');
+    }
+  };
+  const handleDeleteExpense = async (expenseId) => {
+    try {
+      await deleteExpense(expenseId);
+      const updatedExpenses = expenses.filter(expense => expense.id !== expenseId);
+      setExpenses(updatedExpenses);
+    } catch (error) {
+      console.error('Error deleting expense:', error);
+    }
+  };
+
+  const handleModifyExpense = async (expenseId, newData) => {
+    try {
+      await modifyExpense(expenseId, newData);
+      const updatedExpenses = expenses.map(expense => {
+        if (expense.id === expenseId) {
+          return { ...expense, ...newData };
+        }
+        return expense;
+      });
+      setExpenses(updatedExpenses);
+    } catch (error) {
+      console.error('Error modifying expense:', error);
     }
   };
 
@@ -158,7 +182,14 @@ const SummaryScreenMobile = () => {
                       />
                     )}
                   </View>
-                  <FontAwesome5 name="trash-alt" size={20} color="red" style={styles.icon} />
+                  <View style={styles.iconContainer}>
+                    <TouchableOpacity onPress={() => handleDeleteExpense(expense.id)}>
+                      <FontAwesome5 name="trash-alt" size={20} color="red" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleModifyExpense(expense.id, { /* your new data here */ })}>
+                      <FontAwesome5 name="edit" size={20} color="blue" />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               ))}
             </View>
@@ -254,10 +285,17 @@ const styles = StyleSheet.create({
     borderRadius: 7.5,
     marginLeft: 5,
   },
+  iconContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 10,
+  },
   icon: {
     marginRight: 10,
     marginTop: 10,
   },
+  
 });
 
 export default SummaryScreenMobile;
