@@ -3,8 +3,8 @@ import { View, StyleSheet, Text, Dimensions } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { PieChart } from 'react-native-chart-kit';
 import { getExpenses, getIncomes } from '../../services/api_management';
-import AddExpenseButton from '../../components/AddExpenseButton';
-import AddIncomeTextInput from '../../components/AddIncomeTextInput';
+import AddExpenseButtonWeb from '../../constants/AddExpenseButtonWeb';
+import AddIncomeTextInputWeb from '../../constants/AddIncomeTextInputWeb';
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -116,36 +116,42 @@ const HomeScreenWeb = ({ navigation }) => {
       {chartData.length > 0 ? (
         <>
           <View style={styles.chartContainer}>
-            <PieChart
-              data={chartData}
-              width={screenWidth}
-              height={220}
-              chartConfig={{
-                backgroundColor: "#ffffff",
-                backgroundGradientFrom: "#ffffff",
-                backgroundGradientTo: "#ffffff",
-                decimalPlaces: 2,
-                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-              }}
-              accessor={"population"}
-              backgroundColor={"transparent"}
-              paddingLeft={"15"}
-              center={[0, 0]}
-              absolute={false}
-            />
+            <View style={styles.chartBackground}>
+              <PieChart
+                data={chartData}
+                width={screenWidth * 0.7}  // Reduced width of the chart container
+                height={360}
+                chartConfig={{
+                  backgroundColor: "#ffffff",
+                  backgroundGradientFrom: "#ffffff",
+                  backgroundGradientTo: "#ffffff",
+                  decimalPlaces: 2,
+                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                }}
+                accessor={"population"}
+                backgroundColor={"transparent"}
+                paddingLeft={"20"}
+                center={[0, 0]}
+                absolute={false}
+              />
+            </View>
+            {/* Ajustes para centrar los iconos */}
+            <View style={styles.centeredButtonsContainer}>
+              <AddExpenseButtonWeb onPress={handleAddExpense} />
+              <View style={{width:10}}/>
+              <View style={{ width: 20, marginTop:440}} /> {/* Espacio horizontal entre iconos */}
+              <AddIncomeTextInputWeb onPress={handleAddIncome} />
+              <View style={{width:10}}/>
+            </View>
           </View>
+        ) : (
           <View style={styles.buttonsContainer}>
-            <AddExpenseButton onPress={handleAddExpense} />
-            <AddIncomeTextInput onPress={handleAddIncome} />
+            <AddExpenseButtonWeb onPress={handleAddExpense} />
+            <AddIncomeTextInputWeb onPress={handleAddIncome} />
           </View>
-        </>
-      ) : (
-        <View style={styles.buttonsContainer}>
-          <AddExpenseButton onPress={handleAddExpense} />
-          <AddIncomeTextInput onPress={handleAddIncome} />
-        </View>
-      )}
-    </View>
+        )}
+      </View>
+    </ImageBackground>
   );
 };
 

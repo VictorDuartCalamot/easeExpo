@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { GiftedChat } from 'react-native-gifted-chat';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, ScrollView, StyleSheet } from 'react-native';
+import { getOrCreateChat } from '../../services/api_chat';
 
 function ChatClientWeb() {
     const [messages, setMessages] = useState([]);
@@ -20,9 +20,26 @@ function ChatClientWeb() {
         ]);
     }, []);
 
-    const onSend = useCallback((newMessages = []) => {
-        setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages));
-    }, []);
+  const initializeChat = async () => {
+    try {
+      const chatDetails = await getOrCreateChat();
+      console.log('Chat initialized:', chatDetails);
+      // Envía el mensaje inicial automáticamente al abrir el chat
+      handleMessageReceived({ text: '¿Qué necesitas?', sender: 'bot' });
+    } catch (error) {
+      console.error('Error initializing chat:', error);
+    }
+  };
+
+  const handleMessageReceived = (message) => {
+    setMessages(prevMessages => [...prevMessages, message]);
+  };
+
+  const handleSendMessage = () => {
+    const message = { text: inputMessage, sender: 'me' };
+    handleMessageReceived(message);
+    setInputMessage('');
+  };
 
     return (
         <View style={styles.container}>
