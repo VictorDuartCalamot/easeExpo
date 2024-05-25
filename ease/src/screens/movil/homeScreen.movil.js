@@ -155,13 +155,10 @@ const HomeScreenWeb = ({ navigation }) => {
   }}
   labelRadius={5} // Ajusta este valor según tu preferencia
 />
-
-
             </View>
           ) : (
-            <View style={styles.buttonsContainer}>
-              <AddExpenseButton onPress={handleAddExpense} />
-              <AddIncomeTextInput onPress={handleAddIncome} />
+            <View style={styles.centeredButtonsContainer}>
+              <Text></Text>
             </View>
           )}
           <View style={styles.centeredButtonsContainer}>
