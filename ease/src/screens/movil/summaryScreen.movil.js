@@ -1,41 +1,24 @@
-
-import { Calendar } from 'react-native-calendars';
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, TextInput } from 'react-native';
 import { getExpenses, getCategories, getSubCategories } from '../../services/api_management';
+import CalendarPicker from 'react-native-calendar-picker';
 
-const SummaryScreenWeb = () => {
-  const [selectedStartDate, setSelectedStartDate] = useState(new Date());
-  const [selectedEndDate, setSelectedEndDate] = useState(new Date());
+const SummaryScreenMobile = () => {
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [expenses, setExpenses] = useState([]);
   const [categories, setCategories] = useState({});
   const [subCategories, setSubCategories] = useState({});
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
-  const handleDateChange = (date) => {
-    if (Array.isArray(date)) {
-      setSelectedStartDate(date[0]);
-      setSelectedEndDate(date[1] || date[0]);
-    } else {
-      setSelectedStartDate(date);
-      setSelectedEndDate(date);
+  const handleFetchExpenses = async () => {
+    try {
+      const expenseData = await getExpenses({ start_date: startDate, end_date: endDate });
+      setExpenses(expenseData);
+    } catch (error) {
+      console.error('Error fetching expenses:', error);
     }
   };
-
-  useEffect(() => {
-    const fetchExpenses = async () => {
-      const startDateString = selectedStartDate.toISOString().split('T')[0];
-      const endDateString = selectedEndDate.toISOString().split('T')[0];
-
-      try {
-        const expenseData = await getExpenses({ start_date: startDateString, end_date: endDateString });
-        setExpenses(expenseData);
-      } catch (error) {
-        console.error('Error fetching expenses:', error);
-      }
-    };
-
-    fetchExpenses();
-  }, [selectedStartDate, selectedEndDate]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -43,7 +26,7 @@ const SummaryScreenWeb = () => {
         const categoriesData = await getCategories();
         const categoriesMap = {};
         categoriesData.forEach(category => {
-          categoriesMap[category.id] = { name: category.name, color: category.HexColor };
+          categoriesMap[category.id] = { name: category.name, color: category.hexColor };
         });
         setCategories(categoriesMap);
       } catch (error) {
@@ -55,73 +38,145 @@ const SummaryScreenWeb = () => {
   }, []);
 
   useEffect(() => {
-    const fetchSubCategories = async () => {
+    const fetchSubCategories = async (categoryId) => {
       try {
-        const subCategoriesData = await getSubCategories();
-        const subCategoriesMap = {};
-        subCategoriesData.forEach(subCategory => {
-          subCategoriesMap[subCategory.id] = subCategory.name;
-        });
-        setSubCategories(subCategoriesMap);
+        if (categoryId) {
+          const response = await getSubCategories({ category: categoryId });
+          setSubCategories(response);
+        } else {
+          setSubCategories({});
+        }
       } catch (error) {
-        console.error('Error fetching subcategories:', error);
+        console.error("Error fetching subcategories: ", error);
       }
     };
 
-    fetchSubCategories();
-  }, []);
+    fetchSubCategories(selectedCategory);
+  }, [selectedCategory]);
+
+  const handleSearch = () => {
+    if (startDate && endDate) {
+      handleFetchExpenses();
+    } else {
+      console.warn('Please select both start and end dates.');
+    }
+  };
 
   return (
-    <View style={styles.container}>
-      <Calendar
-        selectRange
-        value={[selectedStartDate, selectedEndDate]}
-        onChange={handleDateChange}
-      />
-      {expenses.length > 0 && (
-        <ScrollView style={styles.scrollView}>
+    <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <CalendarPicker
+          onDateChange={(date, type) => {
+            console.log(date);
+          }}
+          todayBackgroundColor="#f2e6ff"
+          selectedDayColor="#7300e6"
+          selectedDayTextColor="#FFFFFF"
+          onMonthChange={(date) => {
+            console.log('month changed', date);
+          }}
+          style={{marginTop: 20}} // Adjusted marginTop for calendar
+        />
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Fecha de inicio:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="YYYY-MM-DD"
+            onChangeText={text => setStartDate(text)}
+            value={startDate}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Fecha de fin:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="YYYY-MM-DD"
+            onChangeText={text => setEndDate(text)}
+            value={endDate}
+          />
+        </View>
+        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+          <Text style={styles.searchButtonText}>Buscar</Text>
+        </TouchableOpacity>
+        {expenses.length > 0 && (
           <View style={styles.expensesContainer}>
             <Text style={styles.expensesTitle}>
-              Gastos entre {selectedStartDate.toLocaleDateString()} y {selectedEndDate.toLocaleDateString()}:
+              Gastos entre {startDate} y {endDate}:
             </Text>
-            {expenses.map((expense) => (
-              <View key={expense.id} style={styles.expenseItem}>
-                <Text>title: {expense.title}</Text>
-                <Text>Descripción: {expense.description}</Text>
-                <Text>Monto: ${expense.amount}</Text>
-                <View style={styles.categoryContainer}>
+            <View style={styles.columnsContainer}>
+              {expenses.map((expense, index) => (
+                <View key={expense.id} style={[styles.expenseItem, index % 2 !== 0 && styles.newRow]}>
+                  <Text style={styles.blueText}>Title:</Text>
+                  <Text>{expense.title}</Text>
+                  <Text style={styles.blueText}>Descripción:</Text>
+                  <Text>{expense.description}</Text>
+                  <Text style={styles.blueText}>Monto:</Text>
+                  <Text>€{expense.amount}</Text>
+                  <Text style={styles.blueText}>Fecha:</Text>
+                  <Text>{expense.creation_date}</Text>
+                  <Text style={styles.blueText}>Hora:</Text>
+                  <Text>{expense.creation_time}</Text>
+                  <View style={styles.categoryContainer}>
+                    <Text style={[styles.blueText, styles.redText]}>
+                      Categoría: {categories[expense.category]?.name || 'no data'}
+                    </Text>
+                    {categories[expense.category]?.color && (
+                      <View 
+                        style={[
+                          styles.colorCircle, 
+                          { backgroundColor: categories[expense.category].color }
+                        ]} 
+                      />
+                    )}
+                  </View>
                   <Text style={styles.redText}>
-                    Categoría: {categories[expense.category]?.name || 'no data'}
+                    Subcategoría: {subCategories[expense.subcategory]?.name || 'no data'}
                   </Text>
-                  {categories[expense.category]?.color && (
-                    <View 
-                      style={[
-                        styles.colorCircle, 
-                        { backgroundColor: categories[expense.category].color }
-                      ]} 
-                    />
-                  )}
                 </View>
-                <Text style={styles.redText}>
-                  Subcategoría: {subCategories[expense.subcategory]?.name || 'no data'}
-                </Text>
-              </View>
-            ))}
+              ))}
+            </View>
           </View>
-        </ScrollView>
-      )}
-    </View>
+        )}
+      </ScrollView>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
   container: {
     alignItems: 'center',
     padding: 20,
-    top: 50,
+    paddingTop: 50,
+    flexGrow: 1,
   },
-  scrollView: {
-    maxHeight: '70%', // Establece la altura máxima del ScrollView
+  inputContainer: {
+    marginBottom: 10,
+  },
+  label: {
+    marginBottom: 5,
+    color: '#FFFFFF',
+  },
+  input: {
+    backgroundColor: '#FFFFFF',
+    padding: 10,
+    borderRadius: 5,
+    width: '100%',
+  },
+  searchButton: {
+    backgroundColor: '#50cebb',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignSelf: 'center',
+    marginVertical: 10,
+  },
+  searchButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
   expensesContainer: {
     marginTop: 20,
@@ -130,18 +185,35 @@ const styles = StyleSheet.create({
   expensesTitle: {
     fontWeight: 'bold',
     marginBottom: 10,
+    color: '#FFFFFF',
+  },
+  columnsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
   expenseItem: {
     marginBottom: 20,
-    alignItems: 'center',
+    alignItems: 'flex-start',
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#000',
     padding: 10,
     borderRadius: 10,
+    width: '47%', // Establecer un ancho fijo
+    maxHeight: 250, // Establecer una altura máxima
+    overflow: 'hidden', // Ocultar contenido que supere la altura máxima
+  },
+  
+  newRow: {
+    marginTop: 20, // Margin between rows
   },
   redText: {
     color: 'red',
+  },
+  blueText: {
+    color: 'blue',
+    fontWeight: 'bold',
   },
   categoryContainer: {
     flexDirection: 'row',
@@ -155,5 +227,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SummaryScreenWeb;
-
+export default SummaryScreenMobile;

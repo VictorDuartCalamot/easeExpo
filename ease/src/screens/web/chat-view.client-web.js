@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, ScrollView, StyleSheet } from 'react-native';
 import { getOrCreateChat } from '../../services/api_chat';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ChatScreen = () => {
   const [messages, setMessages] = useState([]);
@@ -15,36 +14,21 @@ const ChatScreen = () => {
     try {
       const chatDetails = await getOrCreateChat();
       console.log('Chat initialized:', chatDetails);
-      // Cargar mensajes guardados localmente al iniciar el chat
-      const savedMessages = await AsyncStorage.getItem('messages');
-      if (savedMessages) {
-        setMessages(JSON.parse(savedMessages));
-      }
+      // Envía el mensaje inicial automáticamente al abrir el chat
+      handleMessageReceived({ text: '¿Qué necesitas?', sender: 'bot' });
     } catch (error) {
       console.error('Error initializing chat:', error);
     }
   };
 
-  const saveMessage = async (message) => {
-    try {
-      const newMessages = [...messages, message];
-      setMessages(newMessages);
-      // Guardar mensajes localmente
-      await AsyncStorage.setItem('messages', JSON.stringify(newMessages));
-    } catch (error) {
-      console.error('Error saving message:', error);
-    }
+  const handleMessageReceived = (message) => {
+    setMessages(prevMessages => [...prevMessages, message]);
   };
 
-  const handleSendMessage = async () => {
-    try {
-      // Enviar el mensaje utilizando la API
-      // Aquí simulamos el envío del mensaje y lo guardamos localmente
-      saveMessage({ text: inputMessage, sender: 'me' });
-      setInputMessage('');
-    } catch (error) {
-      console.error('Error sending message:', error);
-    }
+  const handleSendMessage = () => {
+    const message = { text: inputMessage, sender: 'me' };
+    handleMessageReceived(message);
+    setInputMessage('');
   };
 
   return (
