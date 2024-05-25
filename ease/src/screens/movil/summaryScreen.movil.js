@@ -67,8 +67,26 @@ const SummaryScreenMobile = () => {
     <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
       <ScrollView contentContainerStyle={styles.container}>
         <CalendarPicker
+          allowRangeSelection={true}
+          selectedStartDate={startDate}
+          selectedEndDate={endDate}
           onDateChange={(date, type) => {
-            console.log(date);
+            if (date) {
+              const formattedDate = date.toISOString().slice(0, 10);
+              if (!startDate && !endDate) {
+                setStartDate(formattedDate);
+                setEndDate(formattedDate);
+              } else if (type === 'START_DATE') {
+                setStartDate(formattedDate);
+                setEndDate(null);
+              } else if (type === 'END_DATE') {
+                setEndDate(formattedDate);
+              } else if (startDate && endDate) {
+                setStartDate(formattedDate);
+                setEndDate(formattedDate);
+              }
+              console.log(formattedDate, type);
+            }
           }}
           todayBackgroundColor="#f2e6ff"
           selectedDayColor="#7300e6"
@@ -151,6 +169,7 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: 'center',
+    marginTop: 40,
     padding: 20,
     paddingTop: 50,
     flexGrow: 1,
