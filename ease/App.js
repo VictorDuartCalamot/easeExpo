@@ -21,9 +21,9 @@ import NewCategory from './src/constants/newCategory.admin';
 import NewSubCategory from './src/constants/newSubCategory.admin';
 import ChatViewAdmin from './src/screens/admin-screens/chat-view.admin';
 import ChatViewClient from './src/screens/chat-view.client';
-import ChatDetail from './src/screens/admin-screens/movil/chat-details.admin';
 import OpenIAChat from './src/services/api_ia';
 import ChatPrueba from './src/screens/admin-screens/web/chat-prueba';
+import ChatDetails from './src/screens/admin-screens/movil/chat-details.admin';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,7 +35,7 @@ export default function App() {
         <Stack.Screen name="ChatIA" component={OpenIAChat} options={{ headerTransparent: true }} />
         <Stack.Screen name="ChatPrueba" component={ChatPrueba} options={{ headerTransparent: true }} />
         <Stack.Screen name="ChatAdmin" component={ChatViewAdmin} options={{ headerTransparent: true }} />
-        <Stack.Screen name="ChatDetail" component={ChatDetail} options={{ headerTransparent: true }} />
+        <Stack.Screen name="ChatDetails" component={ChatDetails} options={{ headerTransparent: true }} />
         <Stack.Screen name="ChatClient" component={ChatViewClient} options={{ headerTransparent: true }} />
         <Stack.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
         <Stack.Screen name='Home' component={HomeScreen} options={{ headerShown: false }} />

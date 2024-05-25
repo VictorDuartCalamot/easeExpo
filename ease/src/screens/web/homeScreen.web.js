@@ -134,11 +134,9 @@ const HomeScreenWeb = ({ navigation }) => {
             <View style={styles.centeredButtonsContainer}>
               <AddExpenseButton onPress={handleAddExpense} />
               <View style={{width:10}}/>
-              <Text> Add Expense</Text> 
-              <View style={{ width: 20, marginTop:70}} /> {/* Espacio horizontal entre iconos */}
+              <View style={{ width: 20, marginTop:440}} /> {/* Espacio horizontal entre iconos */}
               <AddIncomeTextInput onPress={handleAddIncome} />
               <View style={{width:10}}/>
-              <Text> Add Income</Text>
             </View>
           </View>
         ) : (
