@@ -89,7 +89,7 @@ const HomeScreenWeb = ({ navigation }) => {
     <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
       <View style={styles.container}>
         <TouchableOpacity onPress={() => setIsMenuOpen(!isMenuOpen)} style={styles.menuButton}>
-          <MaterialIcons name="menu" size={24} color="black" />
+          <MaterialIcons name="menu" size={30} color="black" />
         </TouchableOpacity>
         {isMenuOpen && (
           <View style={styles.menuDropdown}>
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   },
   menuButton: {
     position: 'absolute',
-    marginTop: 20,
+    marginTop: 30,
     left: 0,
     zIndex: 2, // Asegura que el botón esté por encima del menú desplegable
     padding: 10,
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   menuDropdown: {
     position: 'absolute',
     left: 0,
-    top: 60,
+    top: 70,
     backgroundColor: 'white',
     paddingVertical: 20,
     paddingHorizontal: 10,
