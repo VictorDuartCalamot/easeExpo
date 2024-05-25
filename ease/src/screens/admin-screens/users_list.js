@@ -64,7 +64,7 @@ function UsersList() {
 
     const handleAddSubCategory = () =>{
         navigation.navigate('NewSubCategory');
-    }
+    };
 
     const toggleExpand = (index) => {
         setExpandedIndex(prevIndex => prevIndex === index ? null : index);
