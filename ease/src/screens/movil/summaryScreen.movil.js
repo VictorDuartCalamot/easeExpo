@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, TextInput } from 'react-native';
 import { getExpenses, getCategories, getSubCategories } from '../../services/api_management';
 import CalendarPicker from 'react-native-calendar-picker';
+import { FontAwesome5 } from '@expo/vector-icons'; // Importa el icono necesario
 
 const SummaryScreenMobile = () => {
   const [startDate, setStartDate] = useState('');
@@ -75,7 +76,7 @@ const SummaryScreenMobile = () => {
           onMonthChange={(date) => {
             console.log('month changed', date);
           }}
-          style={{marginTop: 20}} // Adjusted marginTop for calendar
+          style={{marginTop: 20}} // Ajustado marginTop para el calendario
         />
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Fecha de inicio:</Text>
@@ -132,6 +133,7 @@ const SummaryScreenMobile = () => {
                   <Text style={styles.redText}>
                     Subcategoría: {subCategories[expense.subcategory]?.name || 'no data'}
                   </Text>
+                  <FontAwesome5 name="trash-alt" size={20} color="red" style={styles.icon} />
                 </View>
               ))}
             </View>
@@ -200,13 +202,13 @@ const styles = StyleSheet.create({
     borderColor: '#000',
     padding: 10,
     borderRadius: 10,
-    width: '47%', // Establecer un ancho fijo
-    maxHeight: 250, // Establecer una altura máxima
+    width: '300', // Establecer un ancho fijo
+    maxHeight: 270, // Establecer una altura máxima
     overflow: 'hidden', // Ocultar contenido que supere la altura máxima
+    position: 'relative', // Posicionamiento relativo para el icono
   },
-  
   newRow: {
-    marginTop: 20, // Margin between rows
+    marginTop: 20, // Margen entre filas
   },
   redText: {
     color: 'red',
@@ -225,6 +227,11 @@ const styles = StyleSheet.create({
     borderRadius: 7.5,
     marginLeft: 5,
   },
+  icon: {
+    marginRight:10, // Alinea el icono a la derecha
+    marginTop:10,
+  },
 });
 
 export default SummaryScreenMobile;
+
