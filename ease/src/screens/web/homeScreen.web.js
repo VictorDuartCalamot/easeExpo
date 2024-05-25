@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, Image, ImageBackground, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { PieChart } from 'react-native-chart-kit';
 import { getExpenses, getIncomes } from '../../services/api_management';
@@ -9,20 +9,26 @@ import AddIncomeTextInputWeb from '../../constants/AddIncomeTextInputWeb';
 const screenWidth = Dimensions.get("window").width;
 
 const HomeScreenWeb = ({ navigation }) => {
-  const [showMenu, setShowMenu] = useState(false);
-  const [showAvatarMenu, setShowAvatarMenu] = useState(false);
   const [expenses, setExpenses] = useState([]);
   const [incomes, setIncomes] = useState([]);
   const [chartData, setChartData] = useState([]);
   const [refresh, setRefresh] = useState(false);
 
+  const getRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
   useEffect(() => {
     const fetchExpenses = async () => {
       const today = new Date();
       const dateString = today.toISOString().split('T')[0];
-
       try {
-        const expenseData = await getExpenses({ start_date: '2024-05-20', end_date: '2024-05-20', start_time: '', end_time: '' });
+        const expenseData = await getExpenses({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
         if (!Array.isArray(expenseData)) {
           console.error("Error: los datos de expense no son un array");
           return;
@@ -30,7 +36,7 @@ const HomeScreenWeb = ({ navigation }) => {
         const cleanedExpenseData = expenseData.map((exp, index) => ({
           name: exp.title,
           population: parseFloat(exp.amount),
-          color: `hsl(${index * 360 / expenseData.length}, 70%, 70%)`,
+          color: getRandomColor(),
           legendFontColor: "#7F7F7F",
           legendFontSize: 15
         }));
@@ -43,7 +49,6 @@ const HomeScreenWeb = ({ navigation }) => {
     const fetchIncomes = async () => {
       const today = new Date();
       const dateString = today.toISOString().split('T')[0];
-
       try {
         const incomeData = await getIncomes({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
         if (!Array.isArray(incomeData)) {
@@ -53,7 +58,7 @@ const HomeScreenWeb = ({ navigation }) => {
         const cleanedIncomeData = incomeData.map((inc, index) => ({
           name: inc.title,
           population: parseFloat(inc.amount),
-          color: `hsl(${(index + expenses.length) * 360 / incomeData.length}, 70%, 70%)`,
+          color: getRandomColor(),
           legendFontColor: "#7F7F7F",
           legendFontSize: 15
         }));
@@ -88,33 +93,36 @@ const HomeScreenWeb = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <MaterialIcons name="home" size={24} color="black" onPress={() => setShowMenu(!showMenu)} style={styles.menuIcon} />
-      {showMenu && (
-        <View style={styles.menu}>
-          <View style={styles.menuItem}>
-            <MaterialIcons name="description" size={24} color="black" />
-            <Text style={styles.menuText} onPress={() => { navigation.navigate('Summary'); setShowMenu(false); }}>Summary</Text>
+    <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
+      <View style={styles.container}>
+        <View style={styles.menuContainer}>
+          <Image source={require('../../pictures/logo.png')} style={styles.logo} />
+          <View style={styles.iconColumn}>
+            <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('Summary')}>
+              <MaterialIcons name="description" size={24} color="black" />
+              <Text style={styles.menuText}>Summary</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('Profile')}>
+              <MaterialIcons name="person" size={24} color="black" />
+              <Text style={styles.menuText}>Profile</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('ChatClient')}>
+              <MaterialIcons name="chat" size={24} color="black" />
+              <Text style={styles.menuText}>Chat</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('ChatIA')}>
+              <MaterialIcons name="assistant" size={24} color="black" />
+              <Text style={styles.menuText}>Financer Assistant</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.logoutContainer}>
+            <TouchableOpacity style={styles.iconItem} onPress={handleLogout}>
+              <MaterialIcons name="exit-to-app" size={24} color="red" />
+              <Text style={styles.logoutText}>Logout</Text>
+            </TouchableOpacity>
           </View>
         </View>
-      )}
-      <View style={styles.avatarContainer}>
-        <MaterialIcons name="person" size={24} color="black" onPress={() => setShowAvatarMenu(!showAvatarMenu)} style={styles.avatarIcon} />
-        {showAvatarMenu && (
-          <View style={styles.menu1}>
-            <View style={styles.menuItem}>
-              <MaterialIcons name="person" size={24} color="black" />
-              <Text style={styles.menuText} onPress={() => { navigation.navigate('Profile'); setShowAvatarMenu(false); }}>Profile</Text>
-            </View>
-            <View style={styles.menuItem}>
-              <MaterialIcons name="exit-to-app" size={24} color="black" onPress={handleLogout} />
-              <Text style={styles.menuText} onPress={handleLogout}>Logout</Text>
-            </View>
-          </View>
-        )}
-      </View>
-      {chartData.length > 0 ? (
-        <>
+        {chartData.length > 0 ? (
           <View style={styles.chartContainer}>
             <View style={styles.chartBackground}>
               <PieChart
@@ -156,15 +164,41 @@ const HomeScreenWeb = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
   container: {
     flex: 1,
+    flexDirection: 'row', // To align menu and content side by side
+  },
+  menuContainer: {
+    flex: 0.1,  // Adjusted width of the menu container
+    backgroundColor: 'white',
+    padding: 10,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+    elevation: 5, // For Android shadow
+    shadowColor: '#000', // For iOS shadow
+    shadowOffset: { width: 0, height: 2 }, // For iOS shadow
+    shadowOpacity: 0.8, // For iOS shadow
+    shadowRadius: 2, // For iOS shadow
+    justifyContent: 'space-between', // Align items and logout button
+  },
+  chartContainer: {
+    flex: 0.9,  // Adjusted flex to match the reduced menu width
     justifyContent: 'center',
     alignItems: 'center',
   },
-  chartContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  chartBackground: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 10,
+    elevation: 5, // For Android shadow
+    shadowColor: '#000', // For iOS shadow
+    shadowOffset: { width: 0, height: 2 }, // For iOS shadow
+    shadowOpacity: 0.8, // For iOS shadow
+    shadowRadius: 2, // For iOS shadow
   },
   buttonsContainer: {
     position: 'absolute',
@@ -173,47 +207,42 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'flex-end',
   },
-  menuIcon: {
+  centeredButtonsContainer: {
     position: 'absolute',
-    top: 20,
-    left: 20,
+    bottom: 20,
+    flexDirection: 'row',
+    justifyContent: 'center', // Alineación horizontal centrada
+    alignItems:"center"
   },
-  menu: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    backgroundColor: 'white',
-    borderRadius: 5,
-    padding: 10,
-    zIndex: 1,
+  iconColumn: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
   },
-  avatarContainer: {
-    position: 'absolute',
-    top: 20,
-    right: 20,
-  },
-  avatarIcon: {
-    marginBottom: 5,
-  },
-  avatarMenu: {
-    backgroundColor: 'white',
-    borderRadius: 5,
-    padding: 10,
-    marginVertical: 10,
-    position: 'absolute',
-    right: 0,
-    top: 30,
-    zIndex: 1,
-  },
-  menuItem: {
+  iconItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 10,
-    marginHorizontal: 10,
+    marginVertical: 10,
   },
   menuText: {
-    marginTop: 5,
+    marginLeft: 5,
     fontSize: 16,
+    alignItems:"center",
+  },
+  logo: {
+    width: 50,
+    height: 50,
+    borderRadius: 10,
+    marginBottom: 20,
+    alignSelf: "center",
+  },
+  logoutContainer: {
+    marginTop: 'auto',
+    marginBottom: 10,
+  },
+  logoutText: {
+    marginLeft: 5,
+    fontSize: 16,
+    color: 'red',
   },
 });
 

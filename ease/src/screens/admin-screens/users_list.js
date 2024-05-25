@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native
 import Card from "../../components/card";
 import { getusers, deleteUser, updateUserAccountStatus } from "../../services/api_authentication";
 import { useNavigation } from "@react-navigation/native";
-import { Feather, MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Feather, MaterialIcons, MaterialCommunityIcons, AntDesign } from "@expo/vector-icons";
 
 function UsersList() {
     const navigation = useNavigation();
@@ -87,7 +87,6 @@ function UsersList() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Users List</Text>
             <FlatList
                 data={users}
                 renderItem={renderItem}
@@ -103,6 +102,9 @@ function UsersList() {
             <TouchableOpacity style={styles.subCategoryButton} onPress={handleAddSubCategory}>
                 <MaterialCommunityIcons name="database-plus-outline" size={24} color="white" />
             </TouchableOpacity>
+            <TouchableOpacity style={styles.chatButton} onPress={handleChatAdmin}>
+                <AntDesign name="wechat" size={24} color="white"/>
+            </TouchableOpacity>
         </View>
     );
 }
@@ -112,6 +114,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+        marginTop: 60
     },
     title: {
         fontSize: 24,
@@ -145,6 +148,17 @@ const styles = StyleSheet.create({
     subCategoryButton: {
         position: 'absolute',
         bottom: 140,
+        right: 20,
+        backgroundColor: 'blue',
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    chatButton:{
+        position: 'absolute',
+        bottom: 200,
         right: 20,
         backgroundColor: 'blue',
         width: 50,
