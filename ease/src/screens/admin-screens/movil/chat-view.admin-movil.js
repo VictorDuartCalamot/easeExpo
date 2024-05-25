@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { useNavigation } from "@react-navigation/native";
+import { View, StyleSheet, TouchableOpacity, Text, FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { getOneUser } from '../../../services/api_authentication';
+import { useNavigation } from '@react-navigation/native';
 
 function ChatAdminMovil() {
-    const navigation = useNavigation();
     const [chats, setChats] = useState([]);
+    const navigation = useNavigation();
 
     useEffect(() => {
         loadChats();
@@ -25,16 +25,17 @@ function ChatAdminMovil() {
             const chatsData = response.data;
 
             if (Array.isArray(chatsData)) {
-                const chatsWithUsernames = [];
-                for (const chat of chatsData) {
+                const chatsWithUsernames = await Promise.all(chatsData.map(async (chat) => {
                     if (chat.customer) {
                         const userData = await getOneUser(chat.customer);
-                        chatsWithUsernames.push({ id: chat.id, username: userData.username });
+                        return { id: chat.id, username: userData.username };
                     } else {
                         console.error('Error: customer_id is undefined for chat:', chat);
+                        return null;
                     }
-                }
-                setChats(chatsWithUsernames);
+                }));
+
+                setChats(chatsWithUsernames.filter(chat => chat !== null));
             }
         } catch (error) {
             console.error('Error loading chats:', error);
@@ -42,16 +43,22 @@ function ChatAdminMovil() {
     };
 
     const selectChat = (chatId) => {
-        navigation.navigate('ChatDetail', { chatId });
+        navigation.navigate('ChatDetails', { chatId });
     };
+
+    const renderItem = ({ item }) => (
+        <TouchableOpacity onPress={() => selectChat(item.id)} style={styles.chatItem}>
+            <Text>{item.username}</Text>
+        </TouchableOpacity>
+    );
 
     return (
         <View style={styles.container}>
-            {chats.map(chat => (
-                <TouchableOpacity key={chat.id} onPress={() => selectChat(chat.id)} style={styles.chatItem}>
-                    <Text>{chat.username}</Text>
-                </TouchableOpacity>
-            ))}
+            <FlatList
+                data={chats}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id.toString()}
+            />
         </View>
     );
 }
@@ -59,13 +66,14 @@ function ChatAdminMovil() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20
+        padding: 10,
+        marginTop: 50,
     },
     chatItem: {
         padding: 10,
         borderBottomWidth: 1,
-        borderBottomColor: '#ccc'
-    }
+        borderColor: '#eee',
+    },
 });
 
 export default ChatAdminMovil;
