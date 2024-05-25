@@ -13,6 +13,13 @@ const HomeScreenMovil = ({ navigation }) => {
   const [incomes, setIncomes] = useState([]);
   const [chartData, setChartData] = useState([]);
   const [refresh, setRefresh] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+
+  const handleMenuItemPress = (screen) => {
+    navigation.navigate(screen);
+    setIsMenuOpen(false); // Cierra el menú después de navegar
+  };
 
   const getRandomColor = () => {
     const letters = '0123456789ABCDEF';
@@ -96,30 +103,44 @@ const HomeScreenMovil = ({ navigation }) => {
 
   return (
     <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
-      <View style={styles.container}>
-        <Image source={require('../../pictures/logo.png')} style={styles.logo} />
-        <View style={styles.iconColumn}>
-          <View style={styles.iconItem}>
-            <MaterialIcons name="description" size={24} color="black" />
-            <Text style={styles.menuText} onPress={() => navigation.navigate('Summary')}>Summary</Text>
-          </View>
-          <View style={styles.iconItem}>
-            <MaterialIcons name="person" size={24} color="black" />
-            <Text style={styles.menuText} onPress={() => navigation.navigate('Profile')}>Profile</Text>
-          </View>
-          <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('ChatIA')}>
-            <MaterialIcons name="assistant" size={24} color="black" />
-            <Text style={styles.menuText}>Financer Assistant</Text>
-          </TouchableOpacity> 
-          <TouchableOpacity style={styles.iconItem}>
-              <AntDesign name="wechat" size={24} color="black"/>
-              <Text style={styles.menuText} onPress={() => navigation.navigate('ChatClient')}>Chat</Text>
+    <View style={styles.container}>
+      <TouchableOpacity onPress={() => setIsMenuOpen(!isMenuOpen)} style={styles.menuButton}>
+        <MaterialIcons name="menu" size={24} color="black" />
+      </TouchableOpacity>
+      {isMenuOpen && (
+        <View style={styles.menuDropdown}>
+          <TouchableOpacity onPress={() => handleMenuItemPress('Summary')}>
+            <View style={styles.menuItem}>
+              <MaterialIcons name="description" size={24} color="black" />
+              <Text style={styles.menuText}>Summary</Text>
+            </View>
           </TouchableOpacity>
-          <View style={styles.iconItem}>
-            <MaterialIcons name="exit-to-app" size={24} color="black" onPress={handleLogout} />
-            <Text style={styles.menuText} onPress={handleLogout}>Logout</Text>
-          </View>
+          <TouchableOpacity onPress={() => handleMenuItemPress('Profile')}>
+            <View style={styles.menuItem}>
+              <MaterialIcons name="person" size={24} color="black" />
+              <Text style={styles.menuText}>Profile</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleMenuItemPress('ChatClient')}>
+            <View style={styles.menuItem}>
+              <MaterialIcons name="chat" size={24} color="black" />
+              <Text style={styles.menuText}>Chat</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleMenuItemPress('ChatIA')}>
+            <View style={styles.menuItem}>
+              <MaterialIcons name="assistant" size={24} color="black" />
+              <Text style={styles.menuText}>Chat IA</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleLogout}>
+            <View style={styles.menuItem}>
+              <MaterialIcons name="exit-to-app" size={24} color="red" />
+              <Text style={[styles.menuText, { color: 'red' }]}>Logout</Text>
+            </View>
+          </TouchableOpacity>
         </View>
+      )}
         {chartData.length > 0 ? (
           <>
             <View style={styles.chartContainer}>
@@ -164,44 +185,70 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    position: 'relative',
+  },
+  menuButton: {
+    position: 'absolute',
+    marginTop: 20,
+    left: 0,
+    zIndex: 2, // Asegura que el botón esté por encima del menú desplegable
+    padding: 10,
+  },
+  menuDropdown: {
+    position: 'absolute',
+    left: 0,
+    top: 60,
+    backgroundColor: 'white',
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    zIndex: 1, // Asegura que el menú esté por encima de otros elementos
+    elevation: 5, // Para sombra en Android
+    shadowColor: '#000', // Para sombra en iOS
+    shadowOffset: { width: 0, height: 2 }, // Para sombra en iOS
+    shadowOpacity: 0.8, // Para sombra en iOS
+    shadowRadius: 2, // Para sombra en iOS
+  },
+  menuItem: {
+    flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 10,
+  },
+  menuText: {
+    fontSize: 16,
+    marginLeft: 10,
   },
   chartContainer: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
   },
-  buttonsContainer: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-    flexDirection: 'column',
-    alignItems: 'flex-end',
+  chartBackground: {
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 10,
+    elevation: 3,
+    marginTop: 20,
   },
-  iconColumn: {
-    flexDirection: 'column',
-    position: 'absolute',
-    left: 35,
-    top: 100,
-    alignItems: 'flex-start',
-  },
-  iconItem: {
+  centeredButtonsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 10,
+    marginTop: 10,
   },
-  menuText: {
-    marginLeft: 5,
-    fontSize: 16,
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems:"center",
+    left:80, 
+    marginTop:400,
   },
   logo: {
-    position: 'absolute',
-    top: 45,
-    left: 35,
-    width: 50,
-    height: 50,
-    borderRadius: 10,
+    width: 70, // Ajusta el tamaño del logo
+    height: 70,
+    resizeMode: 'contain', // Para que el logo mantenga su proporción
+    marginTop:-150, // Espacio entre el logo y el gráfico
+    borderRadius:30,
   },
 });
 

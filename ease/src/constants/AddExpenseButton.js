@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Modal, TextInput, Button, Alert, Text, TouchableOpacity, } from "react-native";
+import { View, StyleSheet, Modal, TextInput, Button, Alert, TouchableOpacity,Text } from "react-native";
 import { createExpense, getCategories, getSubCategories } from "../services/api_management";
 import { AntDesign } from "@expo/vector-icons";
 import RNPickerSelect from "react-native-picker-select";
@@ -80,94 +80,73 @@ const AddExpenseButton = () => {
 
     return (
         <View>
-            <TouchableOpacity style={styles.addButton} onPress={handleAddExpense}>
+             <TouchableOpacity style={styles.addButton} onPress={handleAddExpense}>
                 <AntDesign name="pluscircleo" size={24} color="blue" />
                 <Text style={styles.addText}>  Add Expense</Text>
-
             </TouchableOpacity>
-           <Modal
-    animationType="slide"
-    visible={modalVisible}
-    onRequestClose={() => {
-        setModalVisible(false);
-    }}
-    transparent={true}
->
-    <View style={[styles.modalContainer, styles.modalContent]}>
-        <TextInput
-            style={styles.input}
-            placeholder="Title"
-            onChangeText={setTitle}
-            value={title}
-        />
-        <TextInput
-            style={styles.input}
-            placeholder="Description"
-            onChangeText={setDescription}
-            value={description}
-        />
-        <TextInput
-            style={styles.input}
-            placeholder="Amount"
-            keyboardType="numeric"
-            onChangeText={setAmount}
-            value={amount}
-        />
-        <View style={styles.pickerContainer}>
-            <RNPickerSelect
-                onValueChange={(value) => handleCategoryChange(value)}
-                items={categories.map(category => ({ label: category.name, value: category.id }))}
-            />
-        </View>
-        {subCategories.length > 0 && (
-            <View style={styles.pickerContainer}>
-                <RNPickerSelect
-                    onValueChange={(value) => setSubCategory(value)}
-                    items={subCategories.map(subCategory => ({ label: subCategory.name, value: subCategory.id }))}
-                />
-            </View>
-        )}
-        <View style={styles.buttonContainer}>
-            <Button title="Add Expense" onPress={newExpense} />
-        </View>
-        <View style={styles.buttonContainer}>
-            <Button title="Cancel" onPress={() => setModalVisible(false)} />
-        </View>
-    </View>
-</Modal>
-
+            <Modal
+                animationType="slide"
+                visible={modalVisible}
+                onRequestClose={() => {
+                    setModalVisible(false);
+                }}
+            >
+                <View style={styles.modalContainer}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Title"
+                        onChangeText={setTitle}
+                        value={title}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Description"
+                        onChangeText={setDescription}
+                        value={description}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Amount"
+                        keyboardType="numeric"
+                        onChangeText={setAmount}
+                        value={amount}
+                    />
+                    <View style={styles.pickerContainer}>
+                        <RNPickerSelect
+                            onValueChange={(value) => handleCategoryChange(value)}
+                            items={categories.map(category => ({ label: category.name, value: category.id }))}
+                        />
+                    </View>
+                    {subCategories.length > 0 && (
+                        <View style={styles.pickerContainer}>
+                            <RNPickerSelect
+                                onValueChange={(value) => setSubCategory(value)}
+                                items={subCategories.map(subCategory => ({ label: subCategory.name, value: subCategory.id }))}
+                            />
+                        </View>
+                    )}
+                    <View style={styles.buttonContainer}>
+                        <Button title="Add Expense" onPress={newExpense} />
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <Button title="Cancel" onPress={() => setModalVisible(false)} />
+                    </View>
+                </View>
+            </Modal>
         </View>
     )
 };
 
 const styles = StyleSheet.create({
-    addButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: 'transparent',
-        padding: 10,
-    },
-    addText: {
-        color: 'blue',
-        marginRight: 5,
-    },
     modalContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    modalContainer: {
-        width: '80%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
         backgroundColor: 'white',
-        borderRadius: 10,
     },
     input: {
         height: 40,
-        width: '100%',
+        width: '80%',
         margin: 12,
         padding: 10,
         borderWidth: 1,
@@ -180,6 +159,16 @@ const styles = StyleSheet.create({
     buttonContainer: {
         marginBottom: 5,
         marginTop: 5,
+    },
+    addText: {
+        color: 'blue',
+        marginRight: 5,
+    },
+    addButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'transparent',
+        padding: 10,
     },
 });
 
