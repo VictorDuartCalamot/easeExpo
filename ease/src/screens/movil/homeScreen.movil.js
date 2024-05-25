@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Dimensions, Image, ImageBackground, TouchableOpacity } from 'react-native';
-import { MaterialIcons, AntDesign } from '@expo/vector-icons';
+import { View, StyleSheet, Text, Dimensions, ImageBackground, TouchableOpacity } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { PieChart } from 'react-native-chart-kit';
 import { getExpenses, getIncomes } from '../../services/api_management';
 import AddExpenseButton from '../../constants/AddExpenseButton';
@@ -14,7 +14,6 @@ const HomeScreenMovil = ({ navigation }) => {
   const [chartData, setChartData] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
 
   const handleMenuItemPress = (screen) => {
     navigation.navigate(screen);
@@ -103,64 +102,67 @@ const HomeScreenMovil = ({ navigation }) => {
 
   return (
     <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
-    <View style={styles.container}>
-      <TouchableOpacity onPress={() => setIsMenuOpen(!isMenuOpen)} style={styles.menuButton}>
-        <MaterialIcons name="menu" size={24} color="black" />
-      </TouchableOpacity>
-      {isMenuOpen && (
-        <View style={styles.menuDropdown}>
-          <TouchableOpacity onPress={() => handleMenuItemPress('Summary')}>
-            <View style={styles.menuItem}>
-              <MaterialIcons name="description" size={24} color="black" />
-              <Text style={styles.menuText}>Summary</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleMenuItemPress('Profile')}>
-            <View style={styles.menuItem}>
-              <MaterialIcons name="person" size={24} color="black" />
-              <Text style={styles.menuText}>Profile</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleMenuItemPress('ChatClient')}>
-            <View style={styles.menuItem}>
-              <MaterialIcons name="chat" size={24} color="black" />
-              <Text style={styles.menuText}>Chat</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleMenuItemPress('ChatIA')}>
-            <View style={styles.menuItem}>
-              <MaterialIcons name="assistant" size={24} color="black" />
-              <Text style={styles.menuText}>Chat IA</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleLogout}>
-            <View style={styles.menuItem}>
-              <MaterialIcons name="exit-to-app" size={24} color="red" />
-              <Text style={[styles.menuText, { color: 'red' }]}>Logout</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      )}
+      <View style={styles.container}>
+        <TouchableOpacity onPress={() => setIsMenuOpen(!isMenuOpen)} style={styles.menuButton}>
+          <MaterialIcons name="menu" size={24} color="black" />
+        </TouchableOpacity>
+        {isMenuOpen && (
+          <View style={styles.menuDropdown}>
+            <TouchableOpacity onPress={() => handleMenuItemPress('Summary')}>
+              <View style={styles.menuItem}>
+                <MaterialIcons name="description" size={24} color="black" />
+                <Text style={styles.menuText}>Summary</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleMenuItemPress('Profile')}>
+              <View style={styles.menuItem}>
+                <MaterialIcons name="person" size={24} color="black" />
+                <Text style={styles.menuText}>Profile</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleMenuItemPress('ChatClient')}>
+              <View style={styles.menuItem}>
+                <MaterialIcons name="chat" size={24} color="black" />
+                <Text style={styles.menuText}>Chat</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleMenuItemPress('ChatIA')}>
+              <View style={styles.menuItem}>
+                <MaterialIcons name="assistant" size={24} color="black" />
+                <Text style={styles.menuText}>Chat IA</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleLogout}>
+              <View style={styles.menuItem}>
+                <MaterialIcons name="exit-to-app" size={24} color="red" />
+                <Text style={[styles.menuText, { color: 'red' }]}>Logout</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
         {chartData.length > 0 ? (
           <>
             <View style={styles.chartContainer}>
-              <PieChart
-                data={chartData}
-                width={screenWidth}
-                height={220}
-                chartConfig={{
-                  backgroundColor: "#ffffff",
-                  backgroundGradientFrom: "#ffffff",
-                  backgroundGradientTo: "#ffffff",
-                  decimalPlaces: 2,
-                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                }}
-                accessor={"population"}
-                backgroundColor={"transparent"}
-                paddingLeft={"15"}
-                center={[0, 0]}
-                absolute={false}
-              />
+              <Text style={styles.chartTitle}>Grafica de gastos e ingresos</Text>
+              <View style={styles.chartBackground}>
+                <PieChart
+                  data={chartData}
+                  width={screenWidth - 40}
+                  height={220}
+                  chartConfig={{
+                    backgroundColor: "#ffffff",
+                    backgroundGradientFrom: "#ffffff",
+                    backgroundGradientTo: "#ffffff",
+                    decimalPlaces: 2,
+                    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                  }}
+                  accessor={"population"}
+                  backgroundColor={"transparent"}
+                  paddingLeft={"15"}
+                  center={[0, 0]}
+                  absolute={false}
+                />
+              </View>
             </View>
             <View style={styles.buttonsContainer}>
               <AddExpenseButton onPress={handleAddExpense} />
@@ -229,7 +231,17 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     elevation: 3,
-    marginTop: 20,
+    marginVertical: 20,
+    width: 400,
+    alignItems: 'center',
+    left: 130
+  },
+  chartTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+    left:130  
   },
   centeredButtonsContainer: {
     flexDirection: 'row',
@@ -239,16 +251,16 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    alignItems:"center",
-    left:80, 
-    marginTop:400,
+    alignItems: 'center',
+    marginTop: 400,
+    right:75
   },
   logo: {
     width: 70, // Ajusta el tamaño del logo
     height: 70,
     resizeMode: 'contain', // Para que el logo mantenga su proporción
-    marginTop:-150, // Espacio entre el logo y el gráfico
-    borderRadius:30,
+    marginTop: -150, // Espacio entre el logo y el gráfico
+    borderRadius: 30,
   },
 });
 
