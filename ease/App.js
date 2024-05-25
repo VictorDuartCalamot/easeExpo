@@ -19,10 +19,10 @@ import AvatarUser from './src/components/avatar_user';
 import NewUserAdmin from './src/components/newUser.admin';
 import NewCategory from './src/components/newCategory.admin';
 import NewSubCategory from './src/components/newSubCategory.admin';
-import ChatBot from './src/services/chatBot';
 import ChatViewAdmin from './src/screens/admin-screens/chat-view.admin';
 import ChatViewClient from './src/screens/chat-view.client';
 import ChatDetails from './src/screens/admin-screens/movil/chat-details.admin';
+import FinancerAssistant from './src/services/api_ia';
 
 const Stack = createNativeStackNavigator();
 
@@ -31,7 +31,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName='SplashScreen'>
         <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="ChatBot" component={ChatBot} options={{ headerShown: false }} />
+        <Stack.Screen name="Financer Asistant" component={FinancerAssistant} options={{ headerTransparent: true }} />
         <Stack.Screen name="ChatAdmin" component={ChatViewAdmin} options={{ headerTransparent: true }} />
         <Stack.Screen name="ChatDetails" component={ChatDetails} options={{ headerTransparent: true }} />
         <Stack.Screen name="ChatClient" component={ChatViewClient} options={{ headerTransparent: true }} />
