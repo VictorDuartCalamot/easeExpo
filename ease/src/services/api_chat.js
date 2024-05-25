@@ -4,12 +4,14 @@ const BASE_URL = 'https://easeapi.onrender.com/api';
 
 export const getOrCreateChat = async () => {
     try {
-        const token = await AsyncStorage.getItem('Token'); // Corregido: añadido "const" para token
+        token = await AsyncStorage.getItem('Token')
         const headers = {
-            'Authorization': `Token ${token}`,
-            'Content-Type': 'application/json'
+        'Authorization': `Token ${token}`,
+        'Content-Type': 'application/json'
         };
-        const response = await axios.post(`${BASE_URL}/chats/get-or-create/`, null, { headers }); // Pasar headers como parte del objeto de configuración
+        const response = await axios.post(`${BASE_URL}/chats/get-or-create/`, {headers
+        // Aquí puedes enviar datos adicionales si tu lógica de backend lo requiere
+        });
         if (response.status === 200) {
             console.log('Chat found or created successfully:', response.data);
             return response.data;  // Retorna los detalles del chat

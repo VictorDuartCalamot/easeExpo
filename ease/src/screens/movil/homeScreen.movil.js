@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Dimensions, Image, ImageBackground,TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { PieChart } from 'react-native-chart-kit';
 import { getExpenses, getIncomes } from '../../services/api_management';
-import AddExpenseButton from '../../constants/AddExpenseButton';
-import AddIncomeTextInput from '../../constants/AddIncomeTextInput';
+import AddExpenseButton from '../../components/AddExpenseButton';
+import AddIncomeTextInput from '../../components/AddIncomeTextInput';
 
 const screenWidth = Dimensions.get("window").width;
 
-const HomeScreenWeb = ({ navigation }) => {
+const HomeScreenMobile = ({ navigation }) => {
+  const [showMenu, setShowMenu] = useState(false);
+  const [showAvatarMenu, setShowAvatarMenu] = useState(false);
   const [expenses, setExpenses] = useState([]);
   const [incomes, setIncomes] = useState([]);
   const [chartData, setChartData] = useState([]);
@@ -43,7 +45,7 @@ const HomeScreenWeb = ({ navigation }) => {
       const dateString = today.toISOString().split('T')[0];
 
       try {
-        const incomeData = await getIncomes({ start_date: '2024-05-20', end_date: '2024-05-20', start_time: '', end_time: '' });
+        const incomeData = await getIncomes({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
         if (!Array.isArray(incomeData)) {
           console.error("Error: los datos de income no son un array");
           return;
@@ -86,71 +88,68 @@ const HomeScreenWeb = ({ navigation }) => {
   };
 
   return (
-    <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
-      <View style={styles.container}>
-        <Image source={require('../../pictures/logo.png')} style={styles.logo} />
-        <View style={styles.iconColumn}>
-          <View style={styles.iconItem}>
+    <View style={styles.container}>
+      <MaterialIcons name="home" size={24} color="black" onPress={() => setShowMenu(!showMenu)} style={styles.menuIcon} />
+      {showMenu && (
+        <View style={styles.menu}>
+          <View style={styles.menuItem}>
             <MaterialIcons name="description" size={24} color="black" />
-            <Text style={styles.menuText} onPress={() => navigation.navigate('Summary')}>Summary</Text>
-          </View>
-          <View style={styles.iconItem}>
-            <MaterialIcons name="person" size={24} color="black" />
-            <Text style={styles.menuText} onPress={() => navigation.navigate('Profile')}>Profile</Text>
-          </View>
-          <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('ChatIA')}>
-            <MaterialIcons name="assistant" size={24} color="black" />
-            <Text style={styles.menuText}>Financer Assistant</Text>
-          </TouchableOpacity> 
-          <View style={styles.iconItem}>
-            <MaterialIcons name="exit-to-app" size={24} color="black" onPress={handleLogout} />
-            <Text style={styles.menuText} onPress={handleLogout}>Logout</Text>
+            <Text style={styles.menuText} onPress={() => { navigation.navigate('Summary'); setShowMenu(false); }}>Summary</Text>
           </View>
         </View>
-        {chartData.length > 0 ? (
-          <>
-            <View style={styles.chartContainer}>
-              <PieChart
-                data={chartData}
-                width={screenWidth}
-                height={220}
-                chartConfig={{
-                  backgroundColor: "#ffffff",
-                  backgroundGradientFrom: "#ffffff",
-                  backgroundGradientTo: "#ffffff",
-                  decimalPlaces: 2,
-                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                }}
-                accessor={"population"}
-                backgroundColor={"transparent"}
-                paddingLeft={"15"}
-                center={[0, 0]}
-                absolute={false}
-              />
+      )}
+      <View style={styles.avatarContainer}>
+        <MaterialIcons name="person" size={24} color="black" onPress={() => setShowAvatarMenu(!showAvatarMenu)} style={styles.avatarIcon} />
+        {showAvatarMenu && (
+          <View style={styles.menu1}>
+            <View style={styles.menuItem}>
+              <MaterialIcons name="person" size={24} color="black" />
+              <Text style={styles.menuText} onPress={() => { navigation.navigate('Profile'); setShowAvatarMenu(false); }}>Profile</Text>
             </View>
-            <View style={styles.buttonsContainer}>
-              <AddExpenseButton onPress={handleAddExpense} />
-              <AddIncomeTextInput onPress={handleAddIncome} />
+            <View style={styles.menuItem}>
+              <MaterialIcons name="exit-to-app" size={24} color="black" onPress={handleLogout} />
+              <Text style={styles.menuText} onPress={handleLogout}>Logout</Text>
             </View>
-          </>
-        ) : (
-          <View style={styles.buttonsContainer}>
-            <AddExpenseButton onPress={handleAddExpense} />
-            <AddIncomeTextInput onPress={handleAddIncome} />
           </View>
         )}
       </View>
-    </ImageBackground>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {chartData.length > 0 ? (
+          <View style={styles.chartContainer}>
+            <PieChart
+              data={chartData}
+              width={screenWidth}
+              height={220}
+              chartConfig={{
+                backgroundColor: "#ffffff",
+                backgroundGradientFrom: "#ffffff",
+                backgroundGradientTo: "#ffffff",
+                decimalPlaces: 2,
+                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              }}
+              accessor={"population"}
+              backgroundColor={"transparent"}
+              paddingLeft={"15"}
+              center={[0, 0]}
+              absolute={false}
+            />
+          </View>
+        ) : null}
+        <View style={styles.buttonsContainer}>
+          <AddExpenseButton onPress={handleAddExpense} />
+          <AddIncomeTextInput onPress={handleAddIncome} />
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    resizeMode: 'cover',
-  },
   container: {
     flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -160,36 +159,50 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonsContainer: {
+    marginVertical: 20,
+    alignItems: 'center',
+  },
+  menuIcon: {
     position: 'absolute',
-    bottom: 20,
+    top: 20,
+    left: 20,
+  },
+  menu: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    backgroundColor: 'white',
+    borderRadius: 5,
+    padding: 10,
+    zIndex: 1,
+  },
+  avatarContainer: {
+    position: 'absolute',
+    top: 20,
     right: 20,
-    flexDirection: 'column',
-    alignItems: 'flex-end',
   },
-  iconColumn: {
-    flexDirection: 'column',
+  avatarIcon: {
+    marginBottom: 5,
+  },
+  avatarMenu: {
+    backgroundColor: 'white',
+    borderRadius: 5,
+    padding: 10,
+    marginVertical: 10,
     position: 'absolute',
-    left: 35,
-    top: 100,
-    alignItems: 'flex-start',
+    right: 0,
+    top: 30,
+    zIndex: 1,
   },
-  iconItem: {
+  menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 10,
+    marginHorizontal: 10,
   },
   menuText: {
-    marginLeft: 5,
+    marginLeft: 10,
     fontSize: 16,
-  },
-  logo: {
-    position: 'absolute',
-    top: 45,
-    left: 35,
-    width: 50,
-    height: 50,
-    borderRadius: 10,
   },
 });
 
-export default HomeScreenWeb;
+export default HomeScreenMobile;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground } from 'react-native';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { getExpenses, getCategories, getSubCategories } from '../../services/api_management';
@@ -10,7 +10,6 @@ const SummaryScreenWeb = () => {
   const [expenses, setExpenses] = useState([]);
   const [categories, setCategories] = useState({});
   const [subCategories, setSubCategories] = useState({});
-  const [selectedCategory, setSelectedCategory] = useState(null);
 
   const handleDateChange = (date) => {
     if (Array.isArray(date)) {
@@ -44,7 +43,7 @@ const SummaryScreenWeb = () => {
         const categoriesData = await getCategories();
         const categoriesMap = {};
         categoriesData.forEach(category => {
-          categoriesMap[category.id] = { name: category.name, color: category.hexColor };
+          categoriesMap[category.id] = { name: category.name, color: category.HexColor };
         });
         setCategories(categoriesMap);
       } catch (error) {
@@ -56,25 +55,28 @@ const SummaryScreenWeb = () => {
   }, []);
 
   useEffect(() => {
-    const fetchSubCategories = async (categoryId) => {
+    const fetchSubCategories = async () => {
       try {
-        if (categoryId) {
-          const response = await getSubCategories({ category: categoryId });
-          setSubCategories(response);
-        } else {
-          setSubCategories({});
-        }
+        const subCategoriesData = await getSubCategories();
+        const subCategoriesMap = {};
+        subCategoriesData.forEach(subCategory => {
+          subCategoriesMap[subCategory.id] = subCategory.name;
+        });
+        setSubCategories(subCategoriesMap);
       } catch (error) {
-        console.error("Error fetching subcategories: ", error);
+        console.error('Error fetching subcategories:', error);
       }
     };
 
-    fetchSubCategories(selectedCategory);
-  }, [selectedCategory]);
+    fetchSubCategories();
+  }, []);
 
   return (
-    <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
-      <ScrollView contentContainerStyle={styles.container}>
+    <ImageBackground 
+      source={require('../../pictures/fondo2.jpg')} 
+      style={styles.imageBackground}
+    >
+      <View style={styles.container}>
         <Calendar
           selectRange
           value={[selectedStartDate, selectedEndDate]}
@@ -85,55 +87,45 @@ const SummaryScreenWeb = () => {
             <Text style={styles.expensesTitle}>
               Gastos entre {selectedStartDate.toLocaleDateString()} y {selectedEndDate.toLocaleDateString()}:
             </Text>
-            <View style={styles.columnsContainer}>
-              {expenses.map((expense, index) => (
-                <View key={expense.id} style={[styles.expenseItem, index % 4 === 0 && styles.newColumn]}>
-                  <Text style={styles.blueText}>Title:</Text>
-                  <Text>{expense.title}</Text>
-                  <Text style={styles.blueText}>Descripción:</Text>
-                  <Text>{expense.description}</Text>
-                  <Text style={styles.blueText}>Monto:</Text>
-                  <Text>€{expense.amount}</Text>
-                  <Text style={styles.blueText}>Fecha:</Text>
-                  <Text>{expense.creation_date}</Text>
-                  <Text style={styles.blueText}>Hora:</Text>
-                  <Text>{expense.creation_time}</Text>
-                  <View style={styles.categoryContainer}>
-                    <Text style={[styles.blueText, styles.redText]}>
-                      Categoría: {categories[expense.category]?.name || 'no data'}
-                    </Text>
-                    {categories[expense.category]?.color && (
-                      <View 
-                        style={[
-                          styles.colorCircle, 
-                          { backgroundColor: categories[expense.category].color }
-                        ]} 
-                      />
-                    )}
-                  </View>
+            {expenses.map((expense) => (
+              <View key={expense.id} style={styles.expenseItem}>
+                <Text>title: {expense.title}</Text>
+                <Text>Descripción: {expense.description}</Text>
+                <Text>Monto: ${expense.amount}</Text>
+                <View style={styles.categoryContainer}>
                   <Text style={styles.redText}>
-                    Subcategoría: {subCategories[expense.subcategory]?.name || 'no data'}
+                    Categoría: {categories[expense.category]?.name || 'no data'}
                   </Text>
+                  {categories[expense.category]?.color && (
+                    <View 
+                      style={[
+                        styles.colorCircle, 
+                        { backgroundColor: categories[expense.category].color }
+                      ]} 
+                    />
+                  )}
                 </View>
-              ))}
-            </View>
+                <Text style={styles.redText}>
+                  Subcategoría: {subCategories[expense.subcategory] || 'no data'}
+                </Text>
+              </View>
+            ))}
           </View>
         )}
-      </ScrollView>
+      </View>
     </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  background: {
+  imageBackground: {
     flex: 1,
-    resizeMode: 'cover',
+    width: '100%',
+    height: '100%',
   },
   container: {
     alignItems: 'center',
     padding: 20,
-    paddingTop: 50,
-    flexGrow: 1,
   },
   expensesContainer: {
     marginTop: 20,
@@ -143,31 +135,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  columnsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-  },
   expenseItem: {
     marginBottom: 20,
-    alignItems: 'flex-start',
+    alignItems: 'center',
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#000',
     padding: 10,
     borderRadius: 10,
-    width: 350,
-    marginRight: 20,
-  },
-  newColumn: {
-    marginLeft: 10,
   },
   redText: {
     color: 'red',
-  },
-  blueText: {
-    color: 'blue',
-    fontWeight: 'bold',
   },
   categoryContainer: {
     flexDirection: 'row',
