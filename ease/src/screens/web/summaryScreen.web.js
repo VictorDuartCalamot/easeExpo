@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ImageBackground, TouchableOpacity } from 'react-native';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import { getExpenses, getCategories, getSubCategories } from '../../services/api_management';
+import { getExpenses, getCategories, getSubCategories, deleteExpense, modifyExpense } from '../../services/api_management';
+import { FontAwesome5 } from '@expo/vector-icons'; // Importa los iconos necesarios
 
 const SummaryScreenWeb = () => {
   const [selectedStartDate, setSelectedStartDate] = useState(new Date());
@@ -19,6 +20,31 @@ const SummaryScreenWeb = () => {
     } else {
       setSelectedStartDate(date);
       setSelectedEndDate(date);
+    }
+  };
+
+  const handleDeleteExpense = async (expenseId) => {
+    try {
+      await deleteExpense(expenseId);
+      const updatedExpenses = expenses.filter(expense => expense.id !== expenseId);
+      setExpenses(updatedExpenses);
+    } catch (error) {
+      console.error('Error deleting expense:', error);
+    }
+  };
+
+  const handleModifyExpense = async (expenseId, newData) => {
+    try {
+      await modifyExpense(expenseId, newData);
+      const updatedExpenses = expenses.map(expense => {
+        if (expense.id === expenseId) {
+          return { ...expense, ...newData };
+        }
+        return expense;
+      });
+      setExpenses(updatedExpenses);
+    } catch (error) {
+      console.error('Error modifying expense:', error);
     }
   };
 
@@ -88,6 +114,14 @@ const SummaryScreenWeb = () => {
             <View style={styles.columnsContainer}>
               {expenses.map((expense, index) => (
                 <View key={expense.id} style={[styles.expenseItem, index % 4 === 0 && styles.newColumn]}>
+                  <View style={styles.iconContainer}>
+                    <TouchableOpacity onPress={() => handleDeleteExpense(expense.id)}>
+                      <FontAwesome5 name="trash-alt" size={20} color="red" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleModifyExpense(expense.id)}>
+                      <FontAwesome5 name="edit" size={20} color="blue" />
+                    </TouchableOpacity>
+                  </View>
                   <Text style={styles.blueText}>Title:</Text>
                   <Text>{expense.title}</Text>
                   <Text style={styles.blueText}>Descripción:</Text>
@@ -158,6 +192,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: 350,
     marginRight: 20,
+    position: 'relative', // Para posicionar los iconos correctamente
   },
   newColumn: {
     marginLeft: 10,
@@ -179,6 +214,14 @@ const styles = StyleSheet.create({
     borderRadius: 7.5,
     marginLeft: 5,
   },
+    iconContainer: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    flexDirection: 'row',
+  },
 });
 
 export default SummaryScreenWeb;
+
+ 
