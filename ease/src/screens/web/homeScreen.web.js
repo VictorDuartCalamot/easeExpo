@@ -3,8 +3,8 @@ import { View, StyleSheet, Text, Dimensions, Image, ImageBackground, TouchableOp
 import { MaterialIcons } from '@expo/vector-icons';
 import { PieChart } from 'react-native-chart-kit';
 import { getExpenses, getIncomes } from '../../services/api_management';
-import AddExpenseButton from '../../constants/AddExpenseButton';
-import AddIncomeTextInput from '../../constants/AddIncomeTextInput';
+import AddExpenseButtonWeb from '../../constants/AddExpenseButtonWeb';
+import AddIncomeTextInputWeb from '../../constants/AddIncomeTextInputWeb';
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -132,17 +132,17 @@ const HomeScreenWeb = ({ navigation }) => {
             </View>
             {/* Ajustes para centrar los iconos */}
             <View style={styles.centeredButtonsContainer}>
-              <AddExpenseButton onPress={handleAddExpense} />
+              <AddExpenseButtonWeb onPress={handleAddExpense} />
               <View style={{width:10}}/>
               <View style={{ width: 20, marginTop:440}} /> {/* Espacio horizontal entre iconos */}
-              <AddIncomeTextInput onPress={handleAddIncome} />
+              <AddIncomeTextInputWeb onPress={handleAddIncome} />
               <View style={{width:10}}/>
             </View>
           </View>
         ) : (
           <View style={styles.buttonsContainer}>
-            <AddExpenseButton onPress={handleAddExpense} />
-            <AddIncomeTextInput onPress={handleAddIncome} />
+            <AddExpenseButtonWeb onPress={handleAddExpense} />
+            <AddIncomeTextInputWeb onPress={handleAddIncome} />
           </View>
         )}
       </View>

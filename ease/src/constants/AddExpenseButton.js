@@ -85,55 +85,57 @@ const AddExpenseButton = () => {
                 <Text style={styles.addText}>  Add Expense</Text>
 
             </TouchableOpacity>
-            <Modal
-                animationType="slide"
-                visible={modalVisible}
-                onRequestClose={() => {
-                    setModalVisible(false);
-                }}
-            >
-                <View style={styles.modalContainer}>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Title"
-                        onChangeText={setTitle}
-                        value={title}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Description"
-                        onChangeText={setDescription}
-                        value={description}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Amount"
-                        keyboardType="numeric"
-                        onChangeText={setAmount}
-                        value={amount}
-                    />
-                    <View style={styles.pickerContainer}>
-                        <RNPickerSelect
-                            onValueChange={(value) => handleCategoryChange(value)}
-                            items={categories.map(category => ({ label: category.name, value: category.id }))}
-                        />
-                    </View>
-                    {subCategories.length > 0 && (
-                        <View style={styles.pickerContainer}>
-                            <RNPickerSelect
-                                onValueChange={(value) => setSubCategory(value)}
-                                items={subCategories.map(subCategory => ({ label: subCategory.name, value: subCategory.id }))}
-                            />
-                        </View>
-                    )}
-                    <View style={styles.buttonContainer}>
-                        <Button title="Add Expense" onPress={newExpense} />
-                    </View>
-                    <View style={styles.buttonContainer}>
-                        <Button title="Cancel" onPress={() => setModalVisible(false)} />
-                    </View>
-                </View>
-            </Modal>
+           <Modal
+    animationType="slide"
+    visible={modalVisible}
+    onRequestClose={() => {
+        setModalVisible(false);
+    }}
+    transparent={true}
+>
+    <View style={[styles.modalContainer, styles.modalContent]}>
+        <TextInput
+            style={styles.input}
+            placeholder="Title"
+            onChangeText={setTitle}
+            value={title}
+        />
+        <TextInput
+            style={styles.input}
+            placeholder="Description"
+            onChangeText={setDescription}
+            value={description}
+        />
+        <TextInput
+            style={styles.input}
+            placeholder="Amount"
+            keyboardType="numeric"
+            onChangeText={setAmount}
+            value={amount}
+        />
+        <View style={styles.pickerContainer}>
+            <RNPickerSelect
+                onValueChange={(value) => handleCategoryChange(value)}
+                items={categories.map(category => ({ label: category.name, value: category.id }))}
+            />
+        </View>
+        {subCategories.length > 0 && (
+            <View style={styles.pickerContainer}>
+                <RNPickerSelect
+                    onValueChange={(value) => setSubCategory(value)}
+                    items={subCategories.map(subCategory => ({ label: subCategory.name, value: subCategory.id }))}
+                />
+            </View>
+        )}
+        <View style={styles.buttonContainer}>
+            <Button title="Add Expense" onPress={newExpense} />
+        </View>
+        <View style={styles.buttonContainer}>
+            <Button title="Cancel" onPress={() => setModalVisible(false)} />
+        </View>
+    </View>
+</Modal>
+
         </View>
     )
 };
