@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { getOneUser } from '../../../services/api_authentication';
 
-function ChatClientWeb() {
+function ChatPrueba() {
     const [chats, setChats] = useState([]);
     const [activeChat, setActiveChat] = useState(null);
     const [messages, setMessages] = useState({});
@@ -246,4 +246,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ChatClientWeb;
+export default ChatPrueba;

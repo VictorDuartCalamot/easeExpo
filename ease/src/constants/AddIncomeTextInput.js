@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Modal, TextInput, Button, Alert } from "react-native";
+import { View, StyleSheet, Modal, TextInput, Button, Alert, TouchableOpacity, Text } from "react-native";
 import { createIncome, getCategories } from "../services/api_management";
 import RNPickerSelect from "react-native-picker-select";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -19,7 +19,8 @@ const AddIncomeTextInput = () => {
     const fetchCategories = async () => {
         try {
             const response = await getCategories();
-            setCategories(response);
+            const expenseCategories = response.filter(category => category.type === 'income');
+            setCategories(expenseCategories);
         } catch (error) {
             console.error("Error fetching categories: ", error);
         }
@@ -66,7 +67,10 @@ const AddIncomeTextInput = () => {
 
     return (
         <View>
-            <MaterialCommunityIcons name="card-plus-outline" size={24} color="black" onPress={handleAddIncome} />
+            <TouchableOpacity style={styles.addIncomeButton} onPress={handleAddIncome}>
+                <MaterialCommunityIcons name="card-plus-outline" size={24} color="blue" />
+                <Text style={styles.addText}>Add Income</Text>
+            </TouchableOpacity>
             <Modal
                 animationType="slide"
                 visible={modalVisible}
@@ -113,6 +117,11 @@ const AddIncomeTextInput = () => {
 };
 
 const styles = StyleSheet.create({
+    addIncomeButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 10,
+    },
     modalContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -134,6 +143,10 @@ const styles = StyleSheet.create({
     buttonContainer: {
         marginBottom: 5,
         marginTop: 5,
+    },
+    addText: {
+        color: 'blue',
+        marginLeft: 5,
     },
 });
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Modal, TextInput, Button, Alert } from "react-native";
+import { View, StyleSheet, Modal, TextInput, Button, Alert, Text, TouchableOpacity, } from "react-native";
 import { createExpense, getCategories, getSubCategories } from "../services/api_management";
 import { AntDesign } from "@expo/vector-icons";
 import RNPickerSelect from "react-native-picker-select";
@@ -21,7 +21,8 @@ const AddExpenseButton = () => {
     const fetchCategories = async () => {
         try {
             const response = await getCategories();
-            setCategories(response);
+            const expenseCategories = response.filter(category => category.type === 'expense');
+            setCategories(expenseCategories);
         } catch (error) {
             console.error("Error fetching categories: ", error);
         }
@@ -29,7 +30,7 @@ const AddExpenseButton = () => {
 
     const fetchSubCategories = async (categoryId) => {
         try {
-            const response = await getSubCategories({ category: categoryId });
+            const response = await getSubCategories({ category_id: categoryId });
             setSubCategories(response);
         } catch (error) {
             console.error("Error fetching subcategories: ", error);
@@ -39,11 +40,11 @@ const AddExpenseButton = () => {
     const newExpense = async () => {
         const numericAmount = parseFloat(amount.replace(/,/g, '.'));
 
-        if(!numericAmount || isNaN(numericAmount) || numericAmount <= 0) {
+        if (!numericAmount || isNaN(numericAmount) || numericAmount <= 0) {
             Alert.alert('Invalid Amount', 'Amount must be greater than zero');
             return;
-        };
-    
+        }
+
         const date = new Date();
         const newTime = date.toISOString().substring(11, 19).toString();
         const newDate = date.toISOString().substring(0, 10).toString();
@@ -56,9 +57,9 @@ const AddExpenseButton = () => {
             category: category,
             subcategory: subCategory,
         };
-    
+
         console.log('Sending expense data:', expenseData);
-    
+
         try {
             const response = await createExpense(expenseData);
             console.log('Expense created:', response);
@@ -66,7 +67,7 @@ const AddExpenseButton = () => {
         } catch (error) {
             console.error('Error creating expense:', error.response.data);
         }
-    };    
+    };
 
     const handleCategoryChange = (categoryId) => {
         setCategory(categoryId);
@@ -79,61 +80,77 @@ const AddExpenseButton = () => {
 
     return (
         <View>
-            <AntDesign name="pluscircleo" size={24} color="black" onPress={handleAddExpense} />
-            <Modal
-                animationType="slide"
-                visible={modalVisible}
-                onRequestClose={() => {
-                    setModalVisible(false);
-                }}
-            >
-                <View style={styles.modalContainer}>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Title"
-                        onChangeText={setTitle}
-                        value={title}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Description"
-                        onChangeText={setDescription}
-                        value={description}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Amount"
-                        keyboardType="numeric"
-                        onChangeText={setAmount}
-                        value={amount}
-                    />
-                    <View style={styles.pickerContainer}>
-                        <RNPickerSelect
-                            onValueChange={(value) => handleCategoryChange(value)}
-                            items={categories.map(category => ({ label: category.name, value: category.id }))}
-                        />
-                    </View>
-                    {subCategories.length > 0 && (
-                        <View style={styles.pickerContainer}>
-                            <RNPickerSelect
-                                onValueChange={(value) => setSubCategory(value)}
-                                items={subCategories.map(subCategory => ({ label: subCategory.name, value: subCategory.id }))}
-                            />
-                        </View>
-                    )}
-                    <View style={styles.buttonContainer}>
-                        <Button title="Add Expense" onPress={newExpense} />
-                    </View>
-                    <View style={styles.buttonContainer}>
-                        <Button title="Cancel" onPress={() => setModalVisible(false)} />
-                    </View>
-                </View>
-            </Modal>
+            <TouchableOpacity style={styles.addButton} onPress={handleAddExpense}>
+                <AntDesign name="pluscircleo" size={24} color="blue" />
+                <Text style={styles.addText}>  Add Expense</Text>
+
+            </TouchableOpacity>
+           <Modal
+    animationType="slide"
+    visible={modalVisible}
+    onRequestClose={() => {
+        setModalVisible(false);
+    }}
+    transparent={true}
+>
+    <View style={[styles.modalContainer, styles.modalContent]}>
+        <TextInput
+            style={styles.input}
+            placeholder="Title"
+            onChangeText={setTitle}
+            value={title}
+        />
+        <TextInput
+            style={styles.input}
+            placeholder="Description"
+            onChangeText={setDescription}
+            value={description}
+        />
+        <TextInput
+            style={styles.input}
+            placeholder="Amount"
+            keyboardType="numeric"
+            onChangeText={setAmount}
+            value={amount}
+        />
+        <View style={styles.pickerContainer}>
+            <RNPickerSelect
+                onValueChange={(value) => handleCategoryChange(value)}
+                items={categories.map(category => ({ label: category.name, value: category.id }))}
+            />
+        </View>
+        {subCategories.length > 0 && (
+            <View style={styles.pickerContainer}>
+                <RNPickerSelect
+                    onValueChange={(value) => setSubCategory(value)}
+                    items={subCategories.map(subCategory => ({ label: subCategory.name, value: subCategory.id }))}
+                />
+            </View>
+        )}
+        <View style={styles.buttonContainer}>
+            <Button title="Add Expense" onPress={newExpense} />
+        </View>
+        <View style={styles.buttonContainer}>
+            <Button title="Cancel" onPress={() => setModalVisible(false)} />
+        </View>
+    </View>
+</Modal>
+
         </View>
     )
 };
 
 const styles = StyleSheet.create({
+    addButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'transparent',
+        padding: 10,
+    },
+    addText: {
+        color: 'blue',
+        marginRight: 5,
+    },
     modalContainer: {
         flex: 1,
         justifyContent: 'center',

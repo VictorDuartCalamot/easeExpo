@@ -8,32 +8,28 @@ const LoginScreenWeb = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Rellene todos los campos');
+      setError('Please fill in all fields.');
       return;
     }
     try {
       const response = await loginUser(email, password, Platform.OS);
       if (response) {
         console.log('Login response', response);
-        Alert.alert('Access');
         if(response.is_superuser || response.is_staff) {
           navigation.navigate('UsersList');
         } else {
           navigation.navigate('Home');
         }
       } else {
-        Alert.alert("User don't exists");
-        Alert.alert("User doesn't exist.");
+        setError("User doesn't exist.");
       }
     } catch (error) {
       console.error('Login error', error);
-      Alert.alert(
-        'Error',
-        'Failed to log in. Please check your credentials and try again'
-      );
+      setError('Failed to log in. Please check your credentials and try again.');
     }
   };
 
@@ -73,6 +69,7 @@ const LoginScreenWeb = () => {
             />
             <View style={styles.inputLine} />
           </View>
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
           <Text
             style={styles.linkText}
             onPress={() => navigation.navigate('Register')}
@@ -150,6 +147,11 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 20,
+  },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 10,
   },
 });
 
