@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, TextInput } from 'react-native';
 import { getExpenses, getCategories, getSubCategories } from '../../services/api_management';
 import CalendarPicker from 'react-native-calendar-picker';
-import { FontAwesome5 } from '@expo/vector-icons'; // Importa el icono necesario
+import { FontAwesome5 } from '@expo/vector-icons';
 
 const SummaryScreenMobile = () => {
   const [startDate, setStartDate] = useState('');
@@ -10,56 +10,77 @@ const SummaryScreenMobile = () => {
   const [expenses, setExpenses] = useState([]);
   const [categories, setCategories] = useState({});
   const [subCategories, setSubCategories] = useState({});
-  const [selectedCategory, setSelectedCategory] = useState(null);
 
   const handleFetchExpenses = async () => {
     try {
       const expenseData = await getExpenses({ start_date: startDate, end_date: endDate });
-      setExpenses(expenseData);
+      const enrichedExpenses = expenseData.map(expense => ({
+        ...expense,
+        categoryName: categories[expense.category]?.name || 'no data',
+        categoryColor: categories[expense.category]?.color || 'no data',
+        subCategoryName: subCategories[expense.subcategory]?.name || 'no data',
+        subCategoryColor: subCategories[expense.subcategory]?.color || 'no data',
+      }));
+      setExpenses(enrichedExpenses.reverse());
     } catch (error) {
       console.error('Error fetching expenses:', error);
     }
   };
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchCategoriesAndSubCategories = async () => {
       try {
-        const categoriesData = await getCategories();
+        const [categoriesData, subCategoriesData] = await Promise.all([getCategories(), getSubCategories()]);
+        
         const categoriesMap = {};
         categoriesData.forEach(category => {
           categoriesMap[category.id] = { name: category.name, color: category.hexColor };
         });
+        
+        const subCategoriesMap = {};
+        subCategoriesData.forEach(subCategory => {
+          subCategoriesMap[subCategory.id] = { name: subCategory.name, color: subCategory.hexColor };
+        });
+
         setCategories(categoriesMap);
+        setSubCategories(subCategoriesMap);
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error('Error fetching categories or subcategories:', error);
       }
     };
 
-    fetchCategories();
+    fetchCategoriesAndSubCategories();
   }, []);
-
-  useEffect(() => {
-    const fetchSubCategories = async (categoryId) => {
-      try {
-        if (categoryId) {
-          const response = await getSubCategories({ category: categoryId });
-          setSubCategories(response);
-        } else {
-          setSubCategories({});
-        }
-      } catch (error) {
-        console.error("Error fetching subcategories: ", error);
-      }
-    };
-
-    fetchSubCategories(selectedCategory);
-  }, [selectedCategory]);
 
   const handleSearch = () => {
     if (startDate && endDate) {
       handleFetchExpenses();
     } else {
       console.warn('Please select both start and end dates.');
+    }
+  };
+  const handleDeleteExpense = async (expenseId) => {
+    try {
+      await deleteExpense(expenseId);
+      const updatedExpenses = expenses.filter(expense => expense.id !== expenseId);
+      setExpenses(updatedExpenses);
+    } catch (error) {
+      console.error('Error deleting expense:', error);
+    }
+  };
+
+  const handleModifyExpense = async (expenseId, newData) => {
+    try {
+      await modifyExpense(expenseId, newData);
+      const updatedExpenses = expenses.map(expense => {
+        if (expense.id === expenseId) {
+          return { ...expense, ...newData };
+        }
+        return expense;
+      });
+      setExpenses(updatedExpenses);
+    } catch (error) {
+      console.error('Error modifying expense:', error);
     }
   };
 
@@ -137,21 +158,38 @@ const SummaryScreenMobile = () => {
                   <Text>{expense.creation_time}</Text>
                   <View style={styles.categoryContainer}>
                     <Text style={[styles.blueText, styles.redText]}>
-                      Categoría: {categories[expense.category]?.name || 'no data'}
+                      Categoría: {expense.categoryName}
                     </Text>
-                    {categories[expense.category]?.color && (
+                    {expense.categoryColor && (
                       <View 
                         style={[
                           styles.colorCircle, 
-                          { backgroundColor: categories[expense.category].color }
+                          { backgroundColor: expense.categoryColor }
                         ]} 
                       />
                     )}
                   </View>
-                  <Text style={styles.redText}>
-                    Subcategoría: {subCategories[expense.subcategory]?.name || 'no data'}
-                  </Text>
-                  <FontAwesome5 name="trash-alt" size={20} color="red" style={styles.icon} />
+                  <View style={styles.categoryContainer}>
+                    <Text style={styles.redText}>
+                      Subcategoría: {expense.subCategoryName}
+                    </Text>
+                    {expense.subCategoryColor && (
+                      <View 
+                        style={[
+                          styles.colorCircle, 
+                          { backgroundColor: expense.subCategoryColor }
+                        ]} 
+                      />
+                    )}
+                  </View>
+                  <View style={styles.iconContainer}>
+                    <TouchableOpacity onPress={() => handleDeleteExpense(expense.id)}>
+                      <FontAwesome5 name="trash-alt" size={20} color="red" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleModifyExpense(expense.id, { /* your new data here */ })}>
+                      <FontAwesome5 name="edit" size={20} color="blue" />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               ))}
             </View>
@@ -169,9 +207,9 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: 'center',
-    marginTop: 40,
+    marginTop: 40,    
     padding: 20,
-    paddingTop: 50,
+    paddingTop: 50,    
     flexGrow: 1,
   },
   inputContainer: {
@@ -202,6 +240,7 @@ const styles = StyleSheet.create({
   expensesContainer: {
     marginTop: 20,
     alignItems: 'center',
+    marginBottom:20,
   },
   expensesTitle: {
     fontWeight: 'bold',
@@ -221,8 +260,8 @@ const styles = StyleSheet.create({
     borderColor: '#000',
     padding: 10,
     borderRadius: 10,
-    width: '300', // Establecer un ancho fijo
-    maxHeight: 270, // Establecer una altura máxima
+    width: 300, // Establecer un ancho fijo
+    maxHeight: 280, // Establecer una altura máxima
     overflow: 'hidden', // Ocultar contenido que supere la altura máxima
     position: 'relative', // Posicionamiento relativo para el icono
   },
@@ -246,11 +285,17 @@ const styles = StyleSheet.create({
     borderRadius: 7.5,
     marginLeft: 5,
   },
-  icon: {
-    marginRight:10, // Alinea el icono a la derecha
-    marginTop:10,
+  iconContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 10,
   },
+  icon: {
+    marginRight: 10,
+    marginTop: 10,
+  },
+  
 });
 
 export default SummaryScreenMobile;
-
