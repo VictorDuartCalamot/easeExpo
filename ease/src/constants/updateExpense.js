@@ -4,7 +4,7 @@ import { getOneExpense, updateExpense, getCategories, getSubCategories } from ".
 import { FontAwesome5 } from "@expo/vector-icons";
 import RNPickerSelect from "react-native-picker-select";
 
-const UpdateExpense = ({idExpense}) => {
+const UpdateExpense = async ({idExpense}) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
