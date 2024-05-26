@@ -17,7 +17,6 @@ const LoginScreenMovil = () => {
       const response = await loginUser(email, password, Platform.OS);
       if (response) {
         console.log('Login response', response);
-        Alert.alert('Access');
         if(response.is_superuser || response.is_staff) {
           navigation.navigate('UsersList');
         } else {

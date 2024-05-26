@@ -146,7 +146,7 @@ const HomeScreenMovil = ({ navigation }) => {
         {chartData.length > 0 ? (
           <>
             <View style={styles.chartContainer}>
-              <Text style={styles.chartTitle}>Gráfica de ingresos</Text>
+              <Text style={styles.chartTitle}>Incomes and expenses</Text>
               <View style={styles.chartBackground}>
                 <PieChart
                   data={chartData}

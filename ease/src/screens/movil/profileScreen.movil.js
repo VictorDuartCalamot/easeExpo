@@ -37,26 +37,26 @@ const ChangePasswordScreen = () => {
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
-            placeholder="Contraseña actual"
+            placeholder="Current password"
             secureTextEntry={true}
             value={currentPassword}
             onChangeText={setCurrentPassword}
           />
           <TextInput
             style={styles.input}
-            placeholder="Nueva contraseña"
+            placeholder="New password"
             secureTextEntry={true}
             value={newPassword}
             onChangeText={setNewPassword}
           />
           <TextInput
             style={styles.input}
-            placeholder="Confirmar nueva contraseña"
+            placeholder="Confirm new password"
             secureTextEntry={true}
             value={confirmNewPassword}
             onChangeText={setConfirmNewPassword}
           />
-          <Button title="Cambiar Contraseña" onPress={handleChangePassword} />
+          <Button title="Change password" onPress={handleChangePassword} />
         </View>
       </ImageBackground>
     </View>

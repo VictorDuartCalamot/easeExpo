@@ -124,7 +124,7 @@ const HomeScreenWeb = ({ navigation }) => {
         </View>
         {chartData.length > 0 ? (
           <View style={styles.chartContainer}>
-            <Text style={styles.chartTitle}>Gráfica de ingresos</Text> {/* Título de la gráfica */}
+            <Text style={styles.chartTitle}>Incomes and expenses</Text> {/* Título de la gráfica */}
             <View style={styles.chartBackground}>
               <PieChart
                 data={chartData}

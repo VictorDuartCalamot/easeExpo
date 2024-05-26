@@ -33,32 +33,32 @@ const profile_screenWeb = () => {
       <View style={styles.container}>
         <View style={styles.box}> {/* Recuadro alrededor del logo y de la sección de cambio de contraseña */}
           <Image source={logo} style={styles.logo} /> {/* Mostrar el logo */}
-          <Text style={styles.title}>Restablecer Contraseña</Text> {/* Título */}
+          <Text style={styles.title}>Restart your password</Text> {/* Título */}
           {message && <Text style={styles.message}>{message}</Text>} {/* Mostrar mensaje si existe */}
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
               value={currentPassword}
               onChangeText={setCurrentPassword}
-              placeholder="Contraseña Actual"
+              placeholder="Current password"
               secureTextEntry
             />
             <TextInput
               style={styles.input}
               value={newPassword}
               onChangeText={setNewPassword}
-              placeholder="Nueva Contraseña"
+              placeholder="New password"
               secureTextEntry
             />
             <TextInput
               style={styles.input}
               value={confirmNewPassword}
               onChangeText={setConfirmNewPassword}
-              placeholder="Confirmar Nueva Contraseña"
+              placeholder="Confirm new password"
               secureTextEntry
             />
           </View>
-          <Button title="Cambiar Contraseña" onPress={handleChangePassword} />
+          <Button title="Change new password" onPress={handleChangePassword} />
         </View>
       </View>
     </ImageBackground>
