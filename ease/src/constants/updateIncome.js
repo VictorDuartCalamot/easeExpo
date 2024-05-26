@@ -1,11 +1,10 @@
 import React, {useState, useEffect} from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, Button } from "react-native";
 import { getOneIncome, updateIncome, getCategories } from "../services/api_management";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import RNPickerSelect from "react-native-picker-select";
 
 const UpdateIncome = ({idIncome}) => {
-    const [income, setIncome] = useState([]);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
@@ -14,18 +13,8 @@ const UpdateIncome = ({idIncome}) => {
     const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
-        fetchIncome();
         fetchCategories();
     }, []);
-
-    const fetchIncome = async () => {
-        try {
-            const response = await getOneIncome(idIncome);
-            setIncome(response);
-        }catch(error){
-            console.error("Error fetching income:", error)
-        }
-    }
 
     const fetchCategories = async () => {
         try {
@@ -79,8 +68,8 @@ const UpdateIncome = ({idIncome}) => {
     return (
         <View>
             <TouchableOpacity style={styles.updateIncomeButton} onPress={handleAddIncome}>
-                <MaterialIcons name="update" size={24} color="blue" />
-                <Text style={styles.updateText}>Add Income</Text>
+                <FontAwesome5 name="edit" size={20} color="blue" />
+                <Text style={styles.updateText}>Update Income</Text>
             </TouchableOpacity>
             <Modal
                 animationType="slide"
@@ -90,21 +79,22 @@ const UpdateIncome = ({idIncome}) => {
                 }}
             >
                 <View style={styles.modalContainer}>
+                    <Text>{idIncome}</Text>
                     <TextInput
                         style={styles.input}
-                        placeholder={income.title}
+                        placeholder="Title"
                         onChangeText={setTitle}
                         value={title}
                     />
                     <TextInput
                         style={styles.input}
-                        placeholder={income.description}
+                        placeholder="Description"
                         onChangeText={setDescription}
                         value={description}
                     />
                     <TextInput
                         style={styles.input}
-                        placeholder={income.amount}
+                        placeholder="Amount"
                         keyboardType="numeric"
                         onChangeText={setAmount}
                         value={amount}

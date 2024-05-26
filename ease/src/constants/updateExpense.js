@@ -1,11 +1,10 @@
 import React, {useState, useEffect} from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, Button } from "react-native";
 import { getOneExpense, updateExpense, getCategories, getSubCategories } from "../services/api_management";
-import { MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 import RNPickerSelect from "react-native-picker-select";
 
 const UpdateExpense = ({idExpense}) => {
-    const [expense, setExpense] = useState([]);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
@@ -16,18 +15,8 @@ const UpdateExpense = ({idExpense}) => {
     const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
-        fetchExpense();
         fetchCategories();
     }, []);
-
-    const fetchExpense = async () => {
-        try{
-            const response = await getOneExpense(idExpense);
-            setExpense(response);
-        }catch(error){
-            console.error("Error fetching expense:", error);
-        }
-    };
 
     const fetchCategories = async () => {
         try {
@@ -91,7 +80,7 @@ const UpdateExpense = ({idExpense}) => {
     return (
         <View>
             <TouchableOpacity style={styles.updateButton} onPress={handleUpdateExpense}>
-                <MaterialIcons name="update" size={24} color={blue}/>
+                <FontAwesome5 name="edit" size={20} color="blue" />
                 <Text style={styles.updateText}>Update Expense</Text>
             </TouchableOpacity>
             <Modal
@@ -102,21 +91,22 @@ const UpdateExpense = ({idExpense}) => {
                 }}
             >
                 <View style={styles.modalContainer}>
+                    <Text>{idExpense}</Text>
                     <TextInput
                         style={styles.input}
-                        placeholder={expense.title}
+                        placeholder="Title"
                         onChangeText={setTitle}
                         value={title}
                     />
                     <TextInput
                         style={styles.input}
-                        placeholder={expense.description}
+                        placeholder="Description"
                         onChangeText={setDescription}
                         value={description}
                     />
                     <TextInput
                         style={styles.input}
-                        placeholder={expense.amount}
+                        placeholder="Amount"
                         keyboardType="numeric"
                         onChangeText={setAmount}
                         value={amount}

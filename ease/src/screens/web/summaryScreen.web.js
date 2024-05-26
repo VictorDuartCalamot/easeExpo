@@ -4,6 +4,8 @@ import { getExpenses, getCategories, getSubCategories, deleteExpense, modifyExpe
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { FontAwesome5 } from '@expo/vector-icons';
+import UpdateExpense from '../../constants/updateExpense';
+import UpdateIncome from '../../constants/updateIncome';
 
 const SummaryScreenWeb = () => {
   const [dateRange, setDateRange] = useState([new Date(), new Date()]);
@@ -220,9 +222,7 @@ const SummaryScreenWeb = () => {
                     <TouchableOpacity onPress={() => { item.type === 'expense' ? handleDeleteExpense(item.id) : handleDeleteIncome(item.id)}}>
                       <FontAwesome5 name="trash-alt" size={20} color="red" />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => { item.type === 'expense' ? handleModifyExpense() : handleModifyIncome()}}>
-                      <FontAwesome5 name="edit" size={20} color="blue" />
-                    </TouchableOpacity>
+                    {item.type === 'expense' ? <UpdateExpense idExpense={item.id} /> : <UpdateIncome idIncome={item.id} />}
                   </View>
                 </View>
               ))}

@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, 
 import { getExpenses, getCategories, getSubCategories, getIncomes, deleteExpense, modifyExpense, deleteIncome } from '../../services/api_management';
 import CalendarPicker from 'react-native-calendar-picker';
 import { FontAwesome5 } from '@expo/vector-icons';
+import UpdateExpense from '../../constants/updateExpense';
+import UpdateIncome from '../../constants/updateIncome';
 
 const SummaryScreenMobile = () => {
   const [startDate, setStartDate] = useState('');
@@ -93,39 +95,9 @@ const SummaryScreenMobile = () => {
     }
   };
 
-  const handleModifyExpense = async (itemId, newData, itemType) => {
-    try {
-      if (itemType === 'expense') {
-        await modifyExpense(itemId, newData);
-      } else {
-        // Assuming there's a modifyIncome function similar to modifyExpense
-        await modifyIncome(itemId, newData);
-      }
-      const updatedItems = items.map(item => {
-        if (item.id === itemId) {
-          return { ...item, ...newData };
-        }
-        return item;
-      });
-      setItems(updatedItems);
-    } catch (error) {
-      console.error(`Error modifying ${itemType}:`, error);
-    }
-  };
-
   const handleDeleteIncome = async (incomeId) => {
     try {
       await deleteIncome(incomeId);
-      const updatedIncome = items.filter(income => income.id !== incomeId);
-      setItems(updatedIncome);
-    } catch (error) {
-      console.error('Error deleting expense:', error);
-    }
-  };
-  //TODO: Modificar el update de income
-  const handleModifyIncome = async (incomeId) => {
-    try {
-      await modifyIncome(incomeId);
       const updatedIncome = items.filter(income => income.id !== incomeId);
       setItems(updatedIncome);
     } catch (error) {
@@ -241,9 +213,7 @@ const SummaryScreenMobile = () => {
                   <TouchableOpacity onPress={() => { item.type === 'expense' ? handleDeleteExpense(item.id) : handleDeleteIncome(item.id)}}>
                       <FontAwesome5 name="trash-alt" size={20} color="red" />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => { item.type === 'expense' ? handleModifyExpense() : handleModifyIncome()}}>
-                      <FontAwesome5 name="edit" size={20} color="blue" />
-                    </TouchableOpacity>
+                    {item.type === 'expense' ? <UpdateExpense id={item.id} /> : <UpdateIncome id={item.id} />}
                   </View>
                 </View>
               ))}
