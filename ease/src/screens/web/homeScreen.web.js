@@ -124,6 +124,7 @@ const HomeScreenWeb = ({ navigation }) => {
         </View>
         {chartData.length > 0 ? (
           <View style={styles.chartContainer}>
+            <Text style={styles.chartTitle}>Gráfica de ingresos</Text> {/* Título de la gráfica */}
             <View style={styles.chartBackground}>
               <PieChart
                 data={chartData}
@@ -200,6 +201,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8, // For iOS shadow
     shadowRadius: 2, // For iOS shadow
   },
+  chartTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom:60,
+  },
   buttonsContainer: {
     position: 'absolute',
     bottom: 20,
@@ -212,7 +218,7 @@ const styles = StyleSheet.create({
     bottom: 20,
     flexDirection: 'row',
     justifyContent: 'center', // Alineación horizontal centrada
-    alignItems:"center"
+    alignItems: "center"
   },
   iconColumn: {
     flexDirection: 'column',
@@ -226,7 +232,7 @@ const styles = StyleSheet.create({
   menuText: {
     marginLeft: 5,
     fontSize: 16,
-    alignItems:"center",
+    alignItems: "center",
   },
   logo: {
     width: 50,

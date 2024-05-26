@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ImageBackground, TextInput, Image, Button, Aler
 import { loginUser } from "../../services/api_authentication";
 import { useNavigation } from '@react-navigation/native';
 
-const LoginScreenWeb = () => {
+const LoginScreenMovil = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -146,4 +146,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreenWeb;
+export default LoginScreenMovil;

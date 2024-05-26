@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, TextInput } from 'react-native';
-import { getExpenses, getCategories, getSubCategories } from '../../services/api_management';
+import { getExpenses, getCategories, getSubCategories, deleteExpense} from '../../services/api_management';
 import CalendarPicker from 'react-native-calendar-picker';
 import { FontAwesome5 } from '@expo/vector-icons';
 

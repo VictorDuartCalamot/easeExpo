@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Button, Image, ImageBackground } from 'react-native';
 import { changePassword } from '../../services/api_authentication';
+import profileScreen from '../profile_screen';
 
 const logo = require('../../pictures/logo.png'); // Importar el logo desde tu carpeta de assets
 const backgroundImage = require('../../pictures/fondo2.jpg'); // Importar el fondo de pantalla
 
-const ChangePasswordScreen = () => {
+const profileScreenMovil = () => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -107,4 +108,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChangePasswordScreen;
+export default profileScreenMovil;

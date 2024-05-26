@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Dimensions, ImageBackground, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, ImageBackground, TouchableOpacity,Image} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { PieChart } from 'react-native-chart-kit';
 import { getExpenses, getIncomes } from '../../services/api_management';
@@ -102,9 +102,12 @@ const HomeScreenMovil = ({ navigation }) => {
 
   return (
     <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
+      <View>
+      <Image source={require('../../pictures/logo.png')} style={styles.logo} />
+      </View>
       <View style={styles.container}>
         <TouchableOpacity onPress={() => setIsMenuOpen(!isMenuOpen)} style={styles.menuButton}>
-          <MaterialIcons name="menu" size={30} color="black" />
+          <MaterialIcons name="menu" size={24} color="black" />
         </TouchableOpacity>
         {isMenuOpen && (
           <View style={styles.menuDropdown}>
@@ -126,10 +129,10 @@ const HomeScreenMovil = ({ navigation }) => {
                 <Text style={styles.menuText}>Chat</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleMenuItemPress('Financer Asistant')}>
+            <TouchableOpacity onPress={() => handleMenuItemPress('ChatIA')}>
               <View style={styles.menuItem}>
                 <MaterialIcons name="assistant" size={24} color="black" />
-                <Text style={styles.menuText}>Financer Assistant</Text>
+                <Text style={styles.menuText}>Chat IA</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleLogout}>
@@ -143,7 +146,7 @@ const HomeScreenMovil = ({ navigation }) => {
         {chartData.length > 0 ? (
           <>
             <View style={styles.chartContainer}>
-              <Text style={styles.chartTitle}>Grafica de gastos e ingresos</Text>
+              <Text style={styles.chartTitle}>Gráfica de ingresos</Text>
               <View style={styles.chartBackground}>
                 <PieChart
                   data={chartData}
@@ -192,7 +195,7 @@ const styles = StyleSheet.create({
   },
   menuButton: {
     position: 'absolute',
-    marginTop: 30,
+    marginTop: 20,
     left: 0,
     zIndex: 2, // Asegura que el botón esté por encima del menú desplegable
     padding: 10,
@@ -200,7 +203,7 @@ const styles = StyleSheet.create({
   menuDropdown: {
     position: 'absolute',
     left: 0,
-    top: 70,
+    top: 60,
     backgroundColor: 'white',
     paddingVertical: 20,
     paddingHorizontal: 10,
@@ -256,11 +259,13 @@ const styles = StyleSheet.create({
     right:75
   },
   logo: {
-    width: 70, // Ajusta el tamaño del logo
-    height: 70,
+    width: 90, // Ajusta el tamaño del logo
+    height: 90,
     resizeMode: 'contain', // Para que el logo mantenga su proporción
-    marginTop: -150, // Espacio entre el logo y el gráfico
+    alignSelf:"center",
     borderRadius: 30,
+    position:"absolute",
+    marginTop:90,
   },
 });
 

@@ -5,7 +5,7 @@ import { getUnmetPasswordRequirements } from '../../utils/passwordUtils';
 import { l_R_styles } from '../../styles/js/l_R_styles';
 import { registerUser } from '../../services/api_authentication';
 
-const RegisterScreen = ({ navigation }) => {
+const RegisterScreenMovil = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [lastname, setLastname] = useState('');
   const [email, setEmail] = useState('');
@@ -109,7 +109,6 @@ const RegisterScreen = ({ navigation }) => {
   )
 }
 
-export default RegisterScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -166,3 +165,5 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
+
+export default RegisterScreenMovil;
