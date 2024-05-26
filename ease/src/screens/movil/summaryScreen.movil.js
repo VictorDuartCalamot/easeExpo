@@ -1,86 +1,135 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, TextInput } from 'react-native';
-import { getExpenses, getCategories, getSubCategories } from '../../services/api_management';
+import { getExpenses, getCategories, getSubCategories, getIncomes, deleteExpense, modifyExpense, deleteIncome } from '../../services/api_management';
 import CalendarPicker from 'react-native-calendar-picker';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 const SummaryScreenMobile = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [expenses, setExpenses] = useState([]);
+  const [items, setItems] = useState([]);
   const [categories, setCategories] = useState({});
   const [subCategories, setSubCategories] = useState({});
 
-  const handleFetchExpenses = async () => {
+  const fetchCategoriesAndSubCategories = async () => {
     try {
-      const expenseData = await getExpenses({ start_date: startDate, end_date: endDate });
+      const [categoriesData, subCategoriesData] = await Promise.all([getCategories(), getSubCategories()]);
+      
+      const categoriesMap = {};
+      categoriesData.forEach(category => {
+        categoriesMap[category.id] = { name: category.name, color: category.hexColor };
+      });
+      
+      const subCategoriesMap = {};
+      subCategoriesData.forEach(subCategory => {
+        subCategoriesMap[subCategory.id] = { name: subCategory.name, color: subCategory.hexColor };
+      });
+
+      setCategories(categoriesMap);
+      setSubCategories(subCategoriesMap);
+    } catch (error) {
+      console.error('Error fetching categories or subcategories:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategoriesAndSubCategories();
+  }, []);
+
+  const handleFetchItems = async () => {
+    try {
+      const [expenseData, incomeData] = await Promise.all([
+        getExpenses({ start_date: startDate, end_date: endDate }),
+        getIncomes({ start_date: startDate, end_date: endDate })
+      ]);
+
       const enrichedExpenses = expenseData.map(expense => ({
         ...expense,
         categoryName: categories[expense.category]?.name || 'no data',
         categoryColor: categories[expense.category]?.color || 'no data',
         subCategoryName: subCategories[expense.subcategory]?.name || 'no data',
         subCategoryColor: subCategories[expense.subcategory]?.color || 'no data',
+        type: 'expense'
       }));
-      setExpenses(enrichedExpenses.reverse());
+
+      const enrichedIncomes = incomeData.map(income => ({
+        ...income,
+        categoryName: categories[income.category]?.name || 'no data',
+        categoryColor: categories[income.category]?.color || 'no data',
+        type: 'income'
+      }));
+
+      const combinedData = [...enrichedExpenses, ...enrichedIncomes].sort((a, b) => {
+        const dateComparison = new Date(a.creation_date) - new Date(b.creation_date);
+        if (dateComparison !== 0) return dateComparison;
+        return a.creation_time.localeCompare(b.creation_time);
+      }).reverse();
+
+      setItems(combinedData);
     } catch (error) {
-      console.error('Error fetching expenses:', error);
+      console.error('Error fetching expenses or incomes:', error);
     }
   };
 
-  useEffect(() => {
-    const fetchCategoriesAndSubCategories = async () => {
-      try {
-        const [categoriesData, subCategoriesData] = await Promise.all([getCategories(), getSubCategories()]);
-        
-        const categoriesMap = {};
-        categoriesData.forEach(category => {
-          categoriesMap[category.id] = { name: category.name, color: category.hexColor };
-        });
-        
-        const subCategoriesMap = {};
-        subCategoriesData.forEach(subCategory => {
-          subCategoriesMap[subCategory.id] = { name: subCategory.name, color: subCategory.hexColor };
-        });
-
-        setCategories(categoriesMap);
-        setSubCategories(subCategoriesMap);
-      } catch (error) {
-        console.error('Error fetching categories or subcategories:', error);
-      }
-    };
-
-    fetchCategoriesAndSubCategories();
-  }, []);
-
   const handleSearch = () => {
     if (startDate && endDate) {
-      handleFetchExpenses();
+      handleFetchItems();
     } else {
       console.warn('Please select both start and end dates.');
     }
   };
-  const handleDeleteExpense = async (expenseId) => {
+
+  const handleDeleteExpense = async (itemId, itemType) => {
     try {
-      await deleteExpense(expenseId);
-      const updatedExpenses = expenses.filter(expense => expense.id !== expenseId);
-      setExpenses(updatedExpenses);
+      if (itemType === 'expense') {
+        await deleteExpense(itemId);
+      } else {
+        await deleteIncome(itemId);
+      }
+      const updatedItems = items.filter(item => item.id !== itemId);
+      setItems(updatedItems);
+    } catch (error) {
+      console.error(`Error deleting ${itemType}:`, error);
+    }
+  };
+
+  const handleModifyExpense = async (itemId, newData, itemType) => {
+    try {
+      if (itemType === 'expense') {
+        await modifyExpense(itemId, newData);
+      } else {
+        // Assuming there's a modifyIncome function similar to modifyExpense
+        await modifyIncome(itemId, newData);
+      }
+      const updatedItems = items.map(item => {
+        if (item.id === itemId) {
+          return { ...item, ...newData };
+        }
+        return item;
+      });
+      setItems(updatedItems);
+    } catch (error) {
+      console.error(`Error modifying ${itemType}:`, error);
+    }
+  };
+
+  const handleDeleteIncome = async (incomeId) => {
+    try {
+      await deleteIncome(incomeId);
+      const updatedIncome = items.filter(income => income.id !== incomeId);
+      setItems(updatedIncome);
     } catch (error) {
       console.error('Error deleting expense:', error);
     }
   };
-
-  const handleModifyExpense = async (expenseId, newData) => {
+  //TODO: Modificar el update de income
+  const handleModifyIncome = async (incomeId) => {
     try {
-      await modifyExpense(expenseId, newData);
-      const updatedExpenses = expenses.map(expense => {
-        if (expense.id === expenseId) {
-          return { ...expense, ...newData };
-        }
-        return expense;
-      });
-      setExpenses(updatedExpenses);
+      await modifyIncome(incomeId);
+      const updatedIncome = items.filter(income => income.id !== incomeId);
+      setItems(updatedIncome);
     } catch (error) {
-      console.error('Error modifying expense:', error);
+      console.error('Error deleting expense:', error);
     }
   };
 
@@ -106,7 +155,6 @@ const SummaryScreenMobile = () => {
                 setStartDate(formattedDate);
                 setEndDate(formattedDate);
               }
-              console.log(formattedDate, type);
             }
           }}
           todayBackgroundColor="#f2e6ff"
@@ -115,78 +163,85 @@ const SummaryScreenMobile = () => {
           onMonthChange={(date) => {
             console.log('month changed', date);
           }}
-          style={{marginTop: 20}} // Ajustado marginTop para el calendario
+          style={{ marginTop: 20 }}
         />
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Fecha de inicio:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="YYYY-MM-DD"
-            onChangeText={text => setStartDate(text)}
-            value={startDate}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Fecha de fin:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="YYYY-MM-DD"
-            onChangeText={text => setEndDate(text)}
-            value={endDate}
-          />
+        <View style={styles.inputWrapper}>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Fecha de inicio:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="YYYY-MM-DD"
+              onChangeText={text => setStartDate(text)}
+              value={startDate}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Fecha de fin:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="YYYY-MM-DD"
+              onChangeText={text => setEndDate(text)}
+              value={endDate}
+            />
+          </View>
         </View>
         <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
           <Text style={styles.searchButtonText}>Buscar</Text>
         </TouchableOpacity>
-        {expenses.length > 0 && (
+        {items.length > 0 && (
           <View style={styles.expensesContainer}>
             <Text style={styles.expensesTitle}>
-              Gastos entre {startDate} y {endDate}:
+              Gastos e ingresos entre {startDate} y {endDate}:
             </Text>
             <View style={styles.columnsContainer}>
-              {expenses.map((expense, index) => (
-                <View key={expense.id} style={[styles.expenseItem, index % 2 !== 0 && styles.newRow]}>
-                  <Text style={styles.blueText}>Title:</Text>
-                  <Text>{expense.title}</Text>
+              {items.map((item, index) => (
+                <View key={item.id} style={[styles.expenseItem, index % 2 !== 0 && styles.newRow, { borderColor: item.type === 'expense' ? 'red' : 'green' }]}>
+                  <Text style={styles.itemTypeText}>
+                    {item.type === 'expense' ? 'Gasto' : 'Ingreso'}
+                  </Text>
+                  <Text style={styles.blueText}>Titulo:</Text>
+                  <Text>{item.title}</Text>
                   <Text style={styles.blueText}>Descripción:</Text>
-                  <Text>{expense.description}</Text>
-                  <Text style={styles.blueText}>Monto:</Text>
-                  <Text>€{expense.amount}</Text>
+                  <Text>{item.description}</Text>
+                  <Text style={styles.blueText}>Total:</Text>
+                  <Text>€{item.amount}</Text>
                   <Text style={styles.blueText}>Fecha:</Text>
-                  <Text>{expense.creation_date}</Text>
+                  <Text>{item.creation_date}</Text>
                   <Text style={styles.blueText}>Hora:</Text>
-                  <Text>{expense.creation_time}</Text>
+                  <Text>{item.creation_time}</Text>
                   <View style={styles.categoryContainer}>
-                    <Text style={[styles.blueText, styles.redText]}>
-                      Categoría: {expense.categoryName}
+                    <Text style={styles.blueText}>
+                      Categoría: {item.categoryName}
                     </Text>
-                    {expense.categoryColor && (
+                    {item.categoryColor && (
                       <View 
                         style={[
                           styles.colorCircle, 
-                          { backgroundColor: expense.categoryColor }
+                          { backgroundColor: item.categoryColor }
                         ]} 
                       />
                     )}
                   </View>
-                  <View style={styles.categoryContainer}>
-                    <Text style={styles.redText}>
-                      Subcategoría: {expense.subCategoryName}
-                    </Text>
-                    {expense.subCategoryColor && (
-                      <View 
-                        style={[
-                          styles.colorCircle, 
-                          { backgroundColor: expense.subCategoryColor }
-                        ]} 
-                      />
-                    )}
-                  </View>
+                  {item.type === 'expense' && (
+                    <View style={styles.categoryContainer}>
+                      <Text style={styles.blueText}>
+                        Subcategoría: {item.subCategoryName}
+                      </Text>
+                      {item.subCategoryColor && (
+                        <View 
+                          style={[
+                            styles.colorCircle, 
+                            { backgroundColor: item.subCategoryColor }
+                          ]} 
+                        />
+                      )}
+                    </View>
+                  )}
                   <View style={styles.iconContainer}>
-                    <TouchableOpacity onPress={() => handleDeleteExpense(expense.id)}>
+                  <TouchableOpacity onPress={() => { item.type === 'expense' ? handleDeleteExpense(item.id) : handleDeleteIncome(item.id)}}>
                       <FontAwesome5 name="trash-alt" size={20} color="red" />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleModifyExpense(expense.id, { /* your new data here */ })}>
+                    <TouchableOpacity onPress={() => { item.type === 'expense' ? handleModifyExpense() : handleModifyIncome()}}>
                       <FontAwesome5 name="edit" size={20} color="blue" />
                     </TouchableOpacity>
                   </View>
@@ -207,72 +262,75 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: 'center',
-    marginTop: 40,    
+    marginTop: 40,
     padding: 20,
-    paddingTop: 50,    
+    paddingTop: 50,
     flexGrow: 1,
   },
+  inputWrapper: {
+    width: '100%',
+    alignItems: 'center',
+  },
   inputContainer: {
+    width: '35%', // Ensure the input containers have the same width
     marginBottom: 10,
   },
-  label: {
-    marginBottom: 5,
-    color: '#FFFFFF',
-  },
   input: {
-    backgroundColor: '#FFFFFF',
-    padding: 10,
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginTop: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+    backgroundColor: 'white',
     borderRadius: 5,
     width: '100%',
+    textAlign: 'center',
+  },
+  label: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   searchButton: {
-    backgroundColor: '#50cebb',
+    backgroundColor: '#2E86C1',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
-    alignSelf: 'center',
-    marginVertical: 10,
+    marginTop: 10,
   },
   searchButtonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontSize: 18,
   },
   expensesContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-    marginBottom:20,
+    marginTop: 30,
+    backgroundColor: '',
+    padding: 20,
+    borderRadius: 10,
+    width: '100%',
   },
   expensesTitle: {
+    fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#FFFFFF',
+    color: '#2E86C1',
   },
   columnsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
   },
   expenseItem: {
-    marginBottom: 20,
-    alignItems: 'flex-start',
-    backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#000',
     padding: 10,
-    borderRadius: 10,
-    width: 300,
-    maxHeight: 280,
-    overflow: 'hidden',
-    position: 'relative',
+    borderRadius: 5,
+    marginBottom: 10,
+    backgroundColor: 'white',
   },
   newRow: {
-    marginTop: 20,
-  },
-  redText: {
-    color: 'red',
+    marginTop: 10,
   },
   blueText: {
-    color: 'blue',
+    color: '#2E86C1',
     fontWeight: 'bold',
   },
   categoryContainer: {
@@ -280,22 +338,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   colorCircle: {
-    width: 15,
-    height: 15,
-    borderRadius: 7.5,
-    marginLeft: 5,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    marginLeft: 10,
   },
   iconContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%',
     marginTop: 10,
   },
-  icon: {
-    marginRight: 10,
-    marginTop: 10,
-  },
-  
+  itemTypeText: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+  }
 });
 
 export default SummaryScreenMobile;
