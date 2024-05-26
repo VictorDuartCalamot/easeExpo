@@ -121,6 +121,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     flatList: {
+        marginTop: 25,
         width: "100%",
     },
     addButton: {
