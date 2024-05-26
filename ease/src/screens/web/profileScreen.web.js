@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Button, Image,ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Button, Image, ImageBackground } from 'react-native';
 import { changePassword } from '../../services/api_authentication';
 
 const logo = require('../../pictures/logo.png'); // Importar el logo desde tu carpeta de assets
 
-const ChangePasswordScreen = () => {
+const profile_screenWeb = () => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -30,41 +30,46 @@ const ChangePasswordScreen = () => {
 
   return (
     <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
-    <View style={styles.container}>
-      <View style={styles.box}> {/* Recuadro alrededor del logo y de la sección de cambio de contraseña */}
-        <Image source={logo} style={styles.logo} /> {/* Mostrar el logo */}
-        {message && <Text style={styles.message}>{message}</Text>} {/* Mostrar mensaje si existe */}
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            value={currentPassword}
-            onChangeText={setCurrentPassword}
-            placeholder="Contraseña Actual"
-            secureTextEntry
-          />
-          <TextInput
-            style={styles.input}
-            value={newPassword}
-            onChangeText={setNewPassword}
-            placeholder="Nueva Contraseña"
-            secureTextEntry
-          />
-          <TextInput
-            style={styles.input}
-            value={confirmNewPassword}
-            onChangeText={setConfirmNewPassword}
-            placeholder="Confirmar Nueva Contraseña"
-            secureTextEntry
-          />
+      <View style={styles.container}>
+        <View style={styles.box}> {/* Recuadro alrededor del logo y de la sección de cambio de contraseña */}
+          <Image source={logo} style={styles.logo} /> {/* Mostrar el logo */}
+          <Text style={styles.title}>Restablecer Contraseña</Text> {/* Título */}
+          {message && <Text style={styles.message}>{message}</Text>} {/* Mostrar mensaje si existe */}
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              value={currentPassword}
+              onChangeText={setCurrentPassword}
+              placeholder="Contraseña Actual"
+              secureTextEntry
+            />
+            <TextInput
+              style={styles.input}
+              value={newPassword}
+              onChangeText={setNewPassword}
+              placeholder="Nueva Contraseña"
+              secureTextEntry
+            />
+            <TextInput
+              style={styles.input}
+              value={confirmNewPassword}
+              onChangeText={setConfirmNewPassword}
+              placeholder="Confirmar Nueva Contraseña"
+              secureTextEntry
+            />
+          </View>
+          <Button title="Cambiar Contraseña" onPress={handleChangePassword} />
         </View>
-        <Button title="Cambiar Contraseña" onPress={handleChangePassword} />
       </View>
-    </View>
     </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -79,13 +84,18 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     backgroundColor: '#f9f9f9', // Fondo del recuadro
-    marginTop:250,
+    alignContent:"center"
   },
   logo: {
     width: 150,
     height: 150,
     marginBottom: 20,
     borderRadius: 30,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
   inputContainer: {
     width: '100%', // Asegurarse de que las entradas ocupen todo el ancho del recuadro
@@ -106,4 +116,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChangePasswordScreen;
+export default profile_screenWeb;

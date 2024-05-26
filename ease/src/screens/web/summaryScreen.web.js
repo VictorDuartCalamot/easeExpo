@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, TextInput } from 'react-native';
-import { getExpenses, getCategories, getSubCategories, deleteExpense, modifyExpense, getIncomes, deleteIncome,modifyIncome } from '../../services/api_management';
+import { getExpenses, getCategories, getSubCategories, deleteExpense, modifyExpense } from '../../services/api_management';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -9,10 +9,10 @@ import UpdateIncome from '../../constants/updateIncome';
 
 const SummaryScreenWeb = () => {
   const [dateRange, setDateRange] = useState([new Date(), new Date()]);
-  const [items, setItems] = useState([]);
+  const [expenses, setExpenses] = useState([]);
   const [categories, setCategories] = useState({});
   const [subCategories, setSubCategories] = useState({});
-  const [dataLoaded, setDataLoaded] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false); // Track if categories and subcategories are loaded
 
   const fetchCategoriesAndSubCategories = async () => {
     try {
@@ -30,7 +30,7 @@ const SummaryScreenWeb = () => {
 
       setCategories(categoriesMap);
       setSubCategories(subCategoriesMap);
-      setDataLoaded(true);
+      setDataLoaded(true); // Set dataLoaded to true once data is fetched
     } catch (error) {
       console.error('Error fetching categories or subcategories:', error);
     }
@@ -40,91 +40,51 @@ const SummaryScreenWeb = () => {
     fetchCategoriesAndSubCategories();
   }, []);
 
-  const handleFetchItems = async () => {
+  const handleFetchExpenses = async () => {
     try {
       const [startDate, endDate] = dateRange;
-      const [expenseData, incomeData] = await Promise.all([
-        getExpenses({ start_date: startDate.toISOString().slice(0, 10), end_date: endDate.toISOString().slice(0, 10) }),
-        getIncomes({ start_date: startDate.toISOString().slice(0, 10), end_date: endDate.toISOString().slice(0, 10) })
-      ]);
-
+      const expenseData = await getExpenses({ start_date: startDate.toISOString().slice(0, 10), end_date: endDate.toISOString().slice(0, 10) });
       const enrichedExpenses = expenseData.map(expense => ({
         ...expense,
         categoryName: categories[expense.category]?.name || 'no data',
         categoryColor: categories[expense.category]?.color || 'no data',
         subCategoryName: subCategories[expense.subcategory]?.name || 'no data',
         subCategoryColor: subCategories[expense.subcategory]?.color || 'no data',
-        type: 'expense'
       }));
-
-      const enrichedIncomes = incomeData.map(income => ({
-        ...income,
-        categoryName: categories[income.category]?.name || 'no data',
-        categoryColor: categories[income.category]?.color || 'no data',
-        type: 'income'
-      }));
-
-      const combinedData = [...enrichedExpenses, ...enrichedIncomes].sort((a, b) => {
-        const dateComparison = new Date(a.creation_date) - new Date(b.creation_date);
-        if (dateComparison !== 0) return dateComparison;
-        return a.creation_time.localeCompare(b.creation_time);
-      }).reverse();
-
-      setItems(combinedData);
+      setExpenses(enrichedExpenses.reverse());
     } catch (error) {
-      console.error('Error fetching expenses or incomes:', error);
+      console.error('Error fetching expenses:', error);
     }
   };
 
   const handleDeleteExpense = async (expenseId) => {
     try {
       await deleteExpense(expenseId);
-      const updatedExpenses = items.filter(expense => expense.id !== expenseId);
-      setItems(updatedExpenses);
+      const updatedExpenses = expenses.filter(expense => expense.id !== expenseId);
+      setExpenses(updatedExpenses);
     } catch (error) {
       console.error('Error deleting expense:', error);
     }
   };
-  
+
   const handleModifyExpense = async (expenseId, newData) => {
     try {
       await modifyExpense(expenseId, newData);
-      const updatedExpenses = items.map(expense => {
+      const updatedExpenses = expenses.map(expense => {
         if (expense.id === expenseId) {
           return { ...expense, ...newData };
         }
         return expense;
       });
-      setItems(updatedExpenses);
+      setExpenses(updatedExpenses);
     } catch (error) {
       console.error('Error modifying expense:', error);
     }
   };
 
-  const handleDeleteIncome = async (incomeId) => {
-    try {
-      await deleteIncome(incomeId);
-      const updatedIncome = items.filter(income => income.id !== incomeId);
-      setItems(updatedIncome);
-    } catch (error) {
-      console.error('Error deleting expense:', error);
-    }
-  };
-  //TODO: Modificación del income
-  const handleModifyIncome = async (incomeId) => {
-    try {
-      await modifyIncome(incomeId);
-      const updatedIncome = items.filter(income => income.id !== incomeId);
-      setItems(updatedIncome);
-    } catch (error) {
-      console.error('Error deleting expense:', error);
-    }
-  };
-
-
   const handleSearch = () => {
     if (dataLoaded && dateRange[0] && dateRange[1]) {
-      handleFetchItems();
+      handleFetchExpenses();
     } else {
       console.warn('Please select both start and end dates.');
     }
@@ -162,67 +122,57 @@ const SummaryScreenWeb = () => {
         <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
           <Text style={styles.searchButtonText}>Buscar</Text>
         </TouchableOpacity>
-        {items.length > 0 && (
+        {expenses.length > 0 && (
           <View style={styles.expensesContainer}>
             <Text style={styles.expensesTitle}>
-              Gastos e ingresos entre {dateRange[0].toISOString().slice(0, 10)} y {dateRange[1].toISOString().slice(0, 10)}:
+              Gastos entre {dateRange[0].toISOString().slice(0, 10)} y {dateRange[1].toISOString().slice(0, 10)}:
             </Text>
             <View style={styles.gridContainer}>
-              {items.map((item) => (
-                <View
-                  key={item.id}
-                  style={[
-                    styles.expenseItem,
-                    { borderColor: item.type === 'expense' ? 'red' : 'green' }
-                  ]}
-                >
-                  <Text style={styles.itemTypeText}>
-                    {item.type === 'expense' ? 'Gasto' : 'Ingreso'}
-                  </Text>
-                  <Text style={styles.blueText}>Titulo:</Text>
-                  <Text>{item.title}</Text>
+              {expenses.map((expense) => (
+                <View key={expense.id} style={styles.expenseItem}>
+                  <Text style={styles.blueText}>Title:</Text>
+                  <Text>{expense.title}</Text>
                   <Text style={styles.blueText}>Descripción:</Text>
-                  <Text>{item.description}</Text>
-                  <Text style={styles.blueText}>Total:</Text>
-                  <Text>€{item.amount}</Text>
+                  <Text>{expense.description}</Text>
+                  <Text style={styles.blueText}>Monto:</Text>
+                  <Text>€{expense.amount}</Text>
                   <Text style={styles.blueText}>Fecha:</Text>
-                  <Text>{item.creation_date}</Text>
+                  <Text>{expense.creation_date}</Text>
                   <Text style={styles.blueText}>Hora:</Text>
-                  <Text>{item.creation_time}</Text>
+                  <Text>{expense.creation_time}</Text>
                   <View style={styles.categoryContainer}>
-                    <Text style={styles.blueText}>
-                      Categoría: {item.categoryName}
+                    <Text style={[styles.blueText, styles.redText]}>
+                      Categoría: {expense.categoryName}
                     </Text>
-                    {item.categoryColor && (
+                    {expense.categoryColor && (
                       <View 
                         style={[
                           styles.colorCircle, 
-                          { backgroundColor: item.categoryColor }
+                          { backgroundColor: expense.categoryColor }
                         ]} 
                       />
                     )}
                   </View>
-                  {item.type === 'expense' && (
-                    <View style={styles.categoryContainer}>
-                      <Text style={styles.blueText}>
-                        Subcategoría: {item.subCategoryName}
-                      </Text>
-                      {item.subCategoryColor && (
-                        <View 
-                          style={[
-                            styles.colorCircle, 
-                            { backgroundColor: item.subCategoryColor }
-                          ]} 
-                        />
-                      )}
-                    </View>
-                  )}
-                  <View style={styles.flexGrow} />
+                  <View style={styles.categoryContainer}>
+                    <Text style={styles.redText}>
+                      Subcategoría: {expense.subCategoryName}
+                    </Text>
+                    {expense.subCategoryColor && (
+                      <View 
+                        style={[
+                          styles.colorCircle, 
+                          { backgroundColor: expense.subCategoryColor }
+                        ]} 
+                      />
+                    )}
+                  </View>
                   <View style={styles.iconContainer}>
-                    <TouchableOpacity onPress={() => { item.type === 'expense' ? handleDeleteExpense(item.id) : handleDeleteIncome(item.id)}}>
+                    <TouchableOpacity onPress={() => handleDeleteExpense(expense.id)}>
                       <FontAwesome5 name="trash-alt" size={20} color="red" />
                     </TouchableOpacity>
-                    {item.type === 'expense' ? <UpdateExpense idExpense={item.id} /> : <UpdateIncome idIncome={item.id} />}
+                    <TouchableOpacity onPress={() => handleModifyExpense(expense.id, { /* your new data here */ })}>
+                      <FontAwesome5 name="edit" size={20} color="blue" />
+                    </TouchableOpacity>
                   </View>
                 </View>
               ))}
@@ -299,17 +249,16 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     backgroundColor: '#fff',
     borderWidth: 1,
+    borderColor: '#000',
     padding: 10,
     borderRadius: 10,
     width: 300,
-    maxHeight: 310,
+    maxHeight: 280,
     overflow: 'hidden',
     position: 'relative',
   },
-  itemTypeText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
+  redText: {
+    color: 'red',
   },
   blueText: {
     color: 'blue',
@@ -325,18 +274,11 @@ const styles = StyleSheet.create({
     borderRadius: 7.5,
     marginLeft: 5,
   },
-  flexGrow: {
-    flexGrow: 1,
-  },
   iconContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
     marginTop: 10,
-    position: 'relative',
-    bottom: 0,
-    left: 0,
-    right: 0,
   },
 });
 
