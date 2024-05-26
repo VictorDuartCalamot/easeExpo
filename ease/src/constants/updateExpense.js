@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Modal, TextInput, Button, Alert, TouchableOpacity,Text } from "react-native";
-import { createExpense, getCategories, getSubCategories } from "../services/api_management";
-import { AntDesign } from "@expo/vector-icons";
+import React, {useState, useEffect} from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, Button } from "react-native";
+import { getOneExpense, updateExpense, getCategories, getSubCategories } from "../services/api_management";
+import { MaterialIcons } from "@expo/vector-icons";
 import RNPickerSelect from "react-native-picker-select";
 
-const AddExpenseButton = () => {
+const UpdateExpense = ({idExpense}) => {
+    const [expense, setExpense] = useState([]);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
@@ -15,40 +16,50 @@ const AddExpenseButton = () => {
     const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
+        fetchExpense();
         fetchCategories();
     }, []);
+
+    const fetchExpense = async () => {
+        try{
+            const response = await getOneExpense(idExpense);
+            setExpense(response);
+        }catch(error){
+            console.error("Error fetching expense:", error);
+        }
+    };
 
     const fetchCategories = async () => {
         try {
             const response = await getCategories();
-            const expenseCategories = response.filter(category => category.type === 'expense');
+            const expenseCategories = response.filter(category => category.type == 'expense');
             setCategories(expenseCategories);
-        } catch (error) {
-            console.error("Error fetching categories: ", error);
+        }catch(error){
+            console.error("Error fetching category:", error);
         }
     };
 
     const fetchSubCategories = async (categoryId) => {
-        try {
-            const response = await getSubCategories({ category_id: categoryId });
+        try{
+            const response = await getSubCategories({ category_id: categoryId});
             setSubCategories(response);
-        } catch (error) {
-            console.error("Error fetching subcategories: ", error);
+        }catch(error){
+            console.error("Error fetching subcategory:", error);
         }
     };
 
-    const newExpense = async () => {
+    const updateExpenses = async () => {
         const numericAmount = parseFloat(amount.replace(/,/g, '.'));
 
-        if (!numericAmount || isNaN(numericAmount) || numericAmount <= 0) {
+        if(!numericAmount || isNaN(numericAmount) || numericAmount <= 0){
             Alert.alert('Invalid Amount', 'Amount must be greater than zero');
             return;
-        }
+        };
 
         const date = new Date();
         const newTime = date.toISOString().substring(11, 19).toString();
         const newDate = date.toISOString().substring(0, 10).toString();
-        const expenseData = {
+        const newExpenseData = {
             title: title,
             description: description,
             amount: numericAmount,
@@ -57,32 +68,31 @@ const AddExpenseButton = () => {
             category: category,
             subcategory: subCategory,
         };
+        console.log('Sending new expense data:', newExpenseData);
 
-        console.log('Sending expense data:', expenseData);
-
-        try {
-            const response = await createExpense(expenseData);
-            console.log('Expense created:', response);
+        try{
+            const response = await updateExpense(newExpenseData, idExpense);
+            console.log('Expense update:', response);
             setModalVisible(false);
-        } catch (error) {
-            console.error('Error creating expense:', error.response.data);
+        }catch(error){
+            console.error('Error updating expense:', error.response.data);
         }
     };
 
     const handleCategoryChange = (categoryId) => {
-        setCategory(categoryId);
+        setCategory(categoryId)
         fetchSubCategories(categoryId);
     };
 
-    const handleAddExpense = () => {
+    const handleUpdateExpense = () => {
         setModalVisible(true);
     };
 
     return (
         <View>
-             <TouchableOpacity style={styles.addButton} onPress={handleAddExpense}>
-                <AntDesign name="pluscircleo" size={24} color="blue" />
-                <Text style={styles.addText}>  Add Expense</Text>
+            <TouchableOpacity style={styles.updateButton} onPress={handleUpdateExpense}>
+                <MaterialIcons name="update" size={24} color={blue}/>
+                <Text style={styles.updateText}>Update Expense</Text>
             </TouchableOpacity>
             <Modal
                 animationType="slide"
@@ -94,19 +104,19 @@ const AddExpenseButton = () => {
                 <View style={styles.modalContainer}>
                     <TextInput
                         style={styles.input}
-                        placeholder="Title"
+                        placeholder={expense.title}
                         onChangeText={setTitle}
                         value={title}
                     />
                     <TextInput
                         style={styles.input}
-                        placeholder="Description"
+                        placeholder={expense.description}
                         onChangeText={setDescription}
                         value={description}
                     />
                     <TextInput
                         style={styles.input}
-                        placeholder="Amount"
+                        placeholder={expense.amount}
                         keyboardType="numeric"
                         onChangeText={setAmount}
                         value={amount}
@@ -126,10 +136,10 @@ const AddExpenseButton = () => {
                         </View>
                     )}
                     <View style={styles.buttonContainer}>
-                        <Button title="Add Expense" onPress={newExpense} />
+                        <Button title="Update Expense" onPress={updateExpenses}/>
                     </View>
                     <View style={styles.buttonContainer}>
-                        <Button title="Cancel" onPress={() => setModalVisible(false)} />
+                        <Button title="Cancel" onPress={() => setModalVisible(false)}/>
                     </View>
                 </View>
             </Modal>
@@ -160,11 +170,11 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         marginTop: 5,
     },
-    addText: {
+    updateText: {
         color: 'blue',
         marginRight: 5,
     },
-    addButton: {
+    updateButton: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: 'transparent',
@@ -172,4 +182,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default AddExpenseButton;
+export default UpdateExpense;

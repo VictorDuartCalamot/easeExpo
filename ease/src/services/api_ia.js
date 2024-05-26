@@ -1,18 +1,38 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, TextInput, Button, Text, ScrollView, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_KEY } from '@env';
 
-const OpenIAChat = () => {
+const FinancerAssistant = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const scrollViewRef = useRef();
-  const intervalRef = useRef();
+  const isSendingRef = useRef(false);
+
+  const isFinanceQuestion = (input) => {
+    const financeKeywords = ['finanzas', 'ahorro', 'inversión', 'gasto', 'presupuesto', 'dinero', 'banca', 'crédito', 'hola', 'financiero'];
+    return financeKeywords.some(keyword => input.toLowerCase().includes(keyword));
+  };
 
   const fetchResponse = async (input) => {
+    if (!isFinanceQuestion(input)) {
+      const timestamp = new Date().toLocaleTimeString();
+      setMessages(prevMessages => [
+        ...prevMessages, 
+        { role: 'user', content: input, timestamp },
+        { role: 'ai', content: 'Lo siento, solo puedo responder preguntas relacionadas con finanzas y ahorro.', timestamp }
+      ]);
+      setInput('');
+      return;
+    }
+
+    if (isSendingRef.current) return;
+    isSendingRef.current = true;
+
     const cachedResponse = await AsyncStorage.getItem(input);
     const timestamp = new Date().toLocaleTimeString();
+
     if (cachedResponse) {
       setMessages(prevMessages => [
         ...prevMessages, 
@@ -24,10 +44,10 @@ const OpenIAChat = () => {
         const response = await axios.post('https://api.openai.com/v1/chat/completions', {
           model: "gpt-4o",
           messages: [
-            { role: "system", content: "You are a helpful financial assistant." },
+            { role: "system", content: "Eres un asistente financiero útil que solo responde preguntas sobre finanzas y ahorro." },
             { role: "user", content: input }
           ],
-          max_tokens: 150,
+          max_tokens: 600,
           temperature: 0.7
         }, {
           headers: {
@@ -49,17 +69,10 @@ const OpenIAChat = () => {
         }
       }
     }
+
+    setInput('');
+    isSendingRef.current = false;
   };
-
-  useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      if (input) {
-        fetchResponse(input);
-      }
-    }, 300000);
-
-    return () => clearInterval(intervalRef.current);
-  }, [input]);
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
@@ -97,7 +110,7 @@ const OpenIAChat = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 20,
+    marginTop: 60,
   },
   innerContainer: {
     flex: 1,
@@ -148,4 +161,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default OpenIAChat;
+export default FinancerAssistant;

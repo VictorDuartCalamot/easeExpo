@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Modal, TextInput, Button, Alert, TouchableOpacity,Text } from "react-native";
-import { createExpense, getCategories, getSubCategories } from "../services/api_management";
-import { AntDesign } from "@expo/vector-icons";
+import { View, StyleSheet, Modal, TextInput, Button, Alert } from "react-native";
+import { createIncome, getCategories } from "../services/api_management";
 import RNPickerSelect from "react-native-picker-select";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-const AddExpenseButton = () => {
+const AddIncomeTextInput = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
     const [category, setCategory] = useState('');
-    const [subCategory, setSubCategory] = useState('');
     const [categories, setCategories] = useState([]);
-    const [subCategories, setSubCategories] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
@@ -21,69 +19,54 @@ const AddExpenseButton = () => {
     const fetchCategories = async () => {
         try {
             const response = await getCategories();
-            const expenseCategories = response.filter(category => category.type === 'expense');
-            setCategories(expenseCategories);
+            setCategories(response);
         } catch (error) {
             console.error("Error fetching categories: ", error);
         }
     };
 
-    const fetchSubCategories = async (categoryId) => {
-        try {
-            const response = await getSubCategories({ category_id: categoryId });
-            setSubCategories(response);
-        } catch (error) {
-            console.error("Error fetching subcategories: ", error);
-        }
-    };
-
-    const newExpense = async () => {
+    const newIncome = async () => {
         const numericAmount = parseFloat(amount.replace(/,/g, '.'));
 
         if (!numericAmount || isNaN(numericAmount) || numericAmount <= 0) {
             Alert.alert('Invalid Amount', 'Amount must be greater than zero');
             return;
-        }
+        };
 
         const date = new Date();
-        const newTime = date.toISOString().substring(11, 19).toString();
-        const newDate = date.toISOString().substring(0, 10).toString();
-        const expenseData = {
+        const newTime = date.toISOString().substring(11, 19);
+        const newDate = date.toISOString().substring(0, 10);
+        const incomeData = {
             title: title,
             description: description,
             amount: numericAmount,
             creation_date: newDate,
             creation_time: newTime,
             category: category,
-            subcategory: subCategory,
         };
 
-        console.log('Sending expense data:', expenseData);
+        console.log('Sending income data: ', incomeData);
 
         try {
-            const response = await createExpense(expenseData);
-            console.log('Expense created:', response);
+            const response = await createIncome(incomeData);
+            console.log('Income created', response);
             setModalVisible(false);
         } catch (error) {
-            console.error('Error creating expense:', error.response.data);
+            console.error('Error creating income:', error);
         }
     };
 
     const handleCategoryChange = (categoryId) => {
         setCategory(categoryId);
-        fetchSubCategories(categoryId);
     };
 
-    const handleAddExpense = () => {
+    const handleAddIncome = () => {
         setModalVisible(true);
     };
 
     return (
         <View>
-             <TouchableOpacity style={styles.addButton} onPress={handleAddExpense}>
-                <AntDesign name="pluscircleo" size={24} color="blue" />
-                <Text style={styles.addText}>  Add Expense</Text>
-            </TouchableOpacity>
+            <MaterialCommunityIcons name="card-plus-outline" size={24} color="black" onPress={handleAddIncome} />
             <Modal
                 animationType="slide"
                 visible={modalVisible}
@@ -117,16 +100,8 @@ const AddExpenseButton = () => {
                             items={categories.map(category => ({ label: category.name, value: category.id }))}
                         />
                     </View>
-                    {subCategories.length > 0 && (
-                        <View style={styles.pickerContainer}>
-                            <RNPickerSelect
-                                onValueChange={(value) => setSubCategory(value)}
-                                items={subCategories.map(subCategory => ({ label: subCategory.name, value: subCategory.id }))}
-                            />
-                        </View>
-                    )}
                     <View style={styles.buttonContainer}>
-                        <Button title="Add Expense" onPress={newExpense} />
+                        <Button title="Add Income" onPress={newIncome} />
                     </View>
                     <View style={styles.buttonContainer}>
                         <Button title="Cancel" onPress={() => setModalVisible(false)} />
@@ -134,7 +109,7 @@ const AddExpenseButton = () => {
                 </View>
             </Modal>
         </View>
-    )
+    );
 };
 
 const styles = StyleSheet.create({
@@ -160,16 +135,6 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         marginTop: 5,
     },
-    addText: {
-        color: 'blue',
-        marginRight: 5,
-    },
-    addButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: 'transparent',
-        padding: 10,
-    },
 });
 
-export default AddExpenseButton;
+export default AddIncomeTextInput;

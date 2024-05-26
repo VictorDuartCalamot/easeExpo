@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
-import Card from "../../constants/card";
+import Card from "../../components/card";
 import { getusers, deleteUser, updateUserAccountStatus } from "../../services/api_authentication";
 import { useNavigation } from "@react-navigation/native";
 import { Feather, MaterialIcons, MaterialCommunityIcons, AntDesign } from "@expo/vector-icons";
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        marginTop: 80,
+        marginTop: 60
     },
     title: {
         fontSize: 24,

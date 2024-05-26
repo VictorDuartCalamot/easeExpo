@@ -189,22 +189,3 @@ export const updateUserAccountStatus = async (userData,id) => {
       throw error;
   }
 };
-export const changePassword = async (current_password, newPassword) => {
-  try {
-    const token = await AsyncStorage.getItem('Token');
-    const headers = {
-      'Authorization': `Token ${token}`,
-      'Content-Type': 'application/json'
-    };
-    const response = await axios.put(baseurl + 'users/changepwd/', {
-      current_password: current_password,
-      new_password: newPassword
-    }, { headers });
-    
-    console.log(response.data);
-    return response.data;
-  } catch (error) {
-    console.error('Error changing password:', error);
-    throw error;
-  }
-}

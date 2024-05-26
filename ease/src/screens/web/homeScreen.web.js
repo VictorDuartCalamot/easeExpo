@@ -14,10 +14,21 @@ const HomeScreenWeb = ({ navigation }) => {
   const [chartData, setChartData] = useState([]);
   const [refresh, setRefresh] = useState(false);
 
+  const getRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
   useEffect(() => {
     const fetchExpenses = async () => {
+      const today = new Date();
+      const dateString = today.toISOString().split('T')[0];
       try {
-        const expenseData = await getExpenses({ start_date: '2024-05-20', end_date: '2024-05-20', start_time: '', end_time: '' });
+        const expenseData = await getExpenses({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
         if (!Array.isArray(expenseData)) {
           console.error("Error: los datos de expense no son un array");
           return;
@@ -25,7 +36,7 @@ const HomeScreenWeb = ({ navigation }) => {
         const cleanedExpenseData = expenseData.map((exp, index) => ({
           name: exp.title,
           population: parseFloat(exp.amount),
-          color: `hsl(${index * 360 / expenseData.length}, 70%, 70%)`,
+          color: getRandomColor(),
           legendFontColor: "#7F7F7F",
           legendFontSize: 15
         }));
@@ -36,8 +47,10 @@ const HomeScreenWeb = ({ navigation }) => {
     };
 
     const fetchIncomes = async () => {
+      const today = new Date();
+      const dateString = today.toISOString().split('T')[0];
       try {
-        const incomeData = await getIncomes({ start_date: '2024-05-20', end_date: '2024-05-20', start_time: '', end_time: '' });
+        const incomeData = await getIncomes({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
         if (!Array.isArray(incomeData)) {
           console.error("Error: los datos de income no son un array");
           return;
@@ -45,7 +58,7 @@ const HomeScreenWeb = ({ navigation }) => {
         const cleanedIncomeData = incomeData.map((inc, index) => ({
           name: inc.title,
           population: parseFloat(inc.amount),
-          color: `hsl(${(index + expenses.length) * 360 / incomeData.length}, 70%, 70%)`,
+          color: getRandomColor(),
           legendFontColor: "#7F7F7F",
           legendFontSize: 15
         }));
@@ -96,8 +109,8 @@ const HomeScreenWeb = ({ navigation }) => {
             <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('ChatClient')}>
               <MaterialIcons name="chat" size={24} color="black" />
               <Text style={styles.menuText}>Chat</Text>
-            </TouchableOpacity>  
-            <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('ChatIA')}>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('Financer Asistant')}>
               <MaterialIcons name="assistant" size={24} color="black" />
               <Text style={styles.menuText}>Financer Assistant</Text>
             </TouchableOpacity>

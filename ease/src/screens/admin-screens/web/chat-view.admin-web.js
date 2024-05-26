@@ -4,13 +4,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { getOneUser } from '../../../services/api_authentication';
 
-function ChatClientWeb() {
+function ChatAdminWeb() {
     const [chats, setChats] = useState([]);
     const [activeChat, setActiveChat] = useState(null);
     const [messages, setMessages] = useState({});
     const [inputMessage, setInputMessage] = useState('');
     const websocketRef = useRef(null);
-    const reconnectInterval = useRef(5000); // 5 seconds initial reconnection interval
+    const flatListRef = useRef(null);
 
     useEffect(() => {
         loadChats();
@@ -72,16 +72,11 @@ function ChatClientWeb() {
 
             websocketRef.current.onopen = () => {
                 console.log('WebSocket Connected');
-                reconnectInterval.current = 5000; // Reset reconnection interval
             };
             websocketRef.current.onerror = error => console.error('WebSocket Error:', error);
             websocketRef.current.onmessage = event => handleWebSocketMessages(event, chatId);
             websocketRef.current.onclose = event => {
                 console.log(`WebSocket Disconnected. Code: ${event.code}, Reason: ${event.reason}`);
-                if (websocketRef.current && websocketRef.current.readyState !== WebSocket.CONNECTING) {
-                    setTimeout(() => connectWebSocket(chatId), reconnectInterval.current);
-                    reconnectInterval.current = Math.min(reconnectInterval.current * 2, 60000); // Increment interval up to 1 minute
-                }
             };
         } catch (error) {
             console.error('Error connecting to WebSocket:', error);
@@ -94,14 +89,14 @@ function ChatClientWeb() {
 
     const onSend = useCallback(() => {
         if (!inputMessage.trim()) return;
-    
+
         if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
             try {
                 const message = {
                     "message": inputMessage.trim(),
                 };
                 websocketRef.current.send(JSON.stringify(message));
-                console.log('Message sent: ', websocketRef.current.send);
+                console.log('Message sent: ', message);
                 setInputMessage('');
             } catch (error) {
                 console.error('Error sending message: ', error);
@@ -109,12 +104,12 @@ function ChatClientWeb() {
         } else {
             console.error('WebSocket is not open. Current state: ', websocketRef.current.readyState);
         }
-    }, [inputMessage]);    
+    }, [inputMessage]);
 
     const handleWebSocketMessages = (event, chatId) => {
         const rawMessages = JSON.parse(event.data);
         console.log('Received message: ', rawMessages);
-        
+
         if (Array.isArray(rawMessages)) {
             const formattedMessages = rawMessages.map(rawMessage => ({
                 _id: rawMessage.user ? rawMessage.user.toString() : new Date().getTime().toString(),
@@ -125,10 +120,10 @@ function ChatClientWeb() {
                     name: rawMessage.user || 'Unknown',
                 }
             }));
-    
+
             setMessages(prevMessages => ({
                 ...prevMessages,
-                [chatId]: [...(prevMessages[chatId] || []), ...formattedMessages]
+                [chatId]: [...(prevMessages[chatId] || []), ...formattedMessages].sort((a, b) => a.createdAt - b.createdAt)
             }));
         } else if (rawMessages.message) {
             const formattedMessage = {
@@ -140,15 +135,21 @@ function ChatClientWeb() {
                     name: rawMessages.user || 'Unknown',
                 }
             };
-    
+
             setMessages(prevMessages => ({
                 ...prevMessages,
-                [chatId]: [...(prevMessages[chatId] || []), formattedMessage]
+                [chatId]: [...(prevMessages[chatId] || []), formattedMessage].sort((a, b) => a.createdAt - b.createdAt)
             }));
         } else {
             console.error(`Unexpected message format for chat ${chatId}:`, rawMessages);
         }
-    };    
+    };
+
+    useEffect(() => {
+        if (flatListRef.current) {
+            flatListRef.current.scrollToEnd({ animated: true });
+        }
+    }, [messages[activeChat]]);
 
     const renderItem = ({ item }) => (
         <View style={styles.messageItem}>
@@ -169,9 +170,11 @@ function ChatClientWeb() {
                 {activeChat && (
                     <>
                         <FlatList
+                            ref={flatListRef}
                             data={messages[activeChat] || []}
                             renderItem={renderItem}
                             keyExtractor={(item, index) => index.toString()}
+                            onContentSizeChange={() => flatListRef.current.scrollToEnd({ animated: true })}
                         />
                         <KeyboardAvoidingView
                             behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -246,4 +249,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ChatClientWeb;
+export default ChatAdminWeb;

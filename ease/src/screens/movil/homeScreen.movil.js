@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Dimensions, Image, ImageBackground, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, ImageBackground, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { PieChart } from 'react-native-chart-kit';
 import { getExpenses, getIncomes } from '../../services/api_management';
@@ -8,17 +8,34 @@ import AddIncomeTextInput from '../../constants/AddIncomeTextInput';
 
 const screenWidth = Dimensions.get("window").width;
 
-const HomeScreenWeb = ({ navigation }) => {
+const HomeScreenMovil = ({ navigation }) => {
   const [expenses, setExpenses] = useState([]);
   const [incomes, setIncomes] = useState([]);
   const [chartData, setChartData] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const handleMenuItemPress = (screen) => {
+    navigation.navigate(screen);
+    setIsMenuOpen(false); // Cierra el menú después de navegar
+  };
+
+  const getRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
   useEffect(() => {
     const fetchExpenses = async () => {
+      const today = new Date();
+      const dateString = today.toISOString().split('T')[0];
+
       try {
-        const expenseData = await getExpenses({ start_date: '2024-05-20', end_date: '2024-05-20', start_time: '', end_time: '' });
+        const expenseData = await getExpenses({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
         if (!Array.isArray(expenseData)) {
           console.error("Error: los datos de expense no son un array");
           return;
@@ -26,7 +43,7 @@ const HomeScreenWeb = ({ navigation }) => {
         const cleanedExpenseData = expenseData.map((exp, index) => ({
           name: exp.title,
           population: parseFloat(exp.amount),
-          color: `hsl(${index * 360 / expenseData.length}, 70%, 70%)`,
+          color: getRandomColor(),
           legendFontColor: "#7F7F7F",
           legendFontSize: 15
         }));
@@ -37,8 +54,11 @@ const HomeScreenWeb = ({ navigation }) => {
     };
 
     const fetchIncomes = async () => {
+      const today = new Date();
+      const dateString = today.toISOString().split('T')[0];
+
       try {
-        const incomeData = await getIncomes({ start_date: '2024-05-20', end_date: '2024-05-20', start_time: '', end_time: '' });
+        const incomeData = await getIncomes({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
         if (!Array.isArray(incomeData)) {
           console.error("Error: los datos de income no son un array");
           return;
@@ -46,7 +66,7 @@ const HomeScreenWeb = ({ navigation }) => {
         const cleanedIncomeData = incomeData.map((inc, index) => ({
           name: inc.title,
           population: parseFloat(inc.amount),
-          color: `hsl(${(index + expenses.length) * 360 / incomeData.length}, 70%, 70%)`,
+          color: getRandomColor(),
           legendFontColor: "#7F7F7F",
           legendFontSize: 15
         }));
@@ -80,11 +100,6 @@ const HomeScreenWeb = ({ navigation }) => {
     setRefresh(!refresh);
   };
 
-  const handleMenuItemPress = (screen) => {
-    navigation.navigate(screen);
-    setIsMenuOpen(false); // Cierra el menú después de navegar
-  };
-
   return (
     <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
       <View style={styles.container}>
@@ -111,10 +126,10 @@ const HomeScreenWeb = ({ navigation }) => {
                 <Text style={styles.menuText}>Chat</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleMenuItemPress('ChatIA')}>
+            <TouchableOpacity onPress={() => handleMenuItemPress('Financer Asistant')}>
               <View style={styles.menuItem}>
                 <MaterialIcons name="assistant" size={24} color="black" />
-                <Text style={styles.menuText}>Chat IA</Text>
+                <Text style={styles.menuText}>Financer Assistant</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleLogout}>
@@ -125,48 +140,41 @@ const HomeScreenWeb = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         )}
-        <View style={styles.chartContainer}>
-          <Image source={require('../../pictures/logo.png')} style={styles.logo} />
-          {chartData.length > 0 ? (
-            <View style={styles.chartBackground}>
-            <PieChart
-  data={chartData}
-  width={screenWidth * 0.8}
-  height={200}
-  chartConfig={{
-    backgroundColor: "#ffffff",
-    backgroundGradientFrom: "#ffffff",
-    backgroundGradientTo: "#ffffff",
-    decimalPlaces: 2,
-    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-  }}
-  accessor={"population"}
-  backgroundColor={"transparent"}
-  paddingLeft={"20"}
-  center={[0, 0]}
-  absolute={false}
-  style={{
-    labels: {
-      justifyContent: "center",
-      alignItems: "center",
-      marginTop: 10,
-      marginBottom: 10,
-    },
-  }}
-  labelRadius={5} // Ajusta este valor según tu preferencia
-/>
+        {chartData.length > 0 ? (
+          <>
+            <View style={styles.chartContainer}>
+              <Text style={styles.chartTitle}>Grafica de gastos e ingresos</Text>
+              <View style={styles.chartBackground}>
+                <PieChart
+                  data={chartData}
+                  width={screenWidth - 40}
+                  height={220}
+                  chartConfig={{
+                    backgroundColor: "#ffffff",
+                    backgroundGradientFrom: "#ffffff",
+                    backgroundGradientTo: "#ffffff",
+                    decimalPlaces: 2,
+                    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                  }}
+                  accessor={"population"}
+                  backgroundColor={"transparent"}
+                  paddingLeft={"15"}
+                  center={[0, 0]}
+                  absolute={false}
+                />
+              </View>
             </View>
-          ) : (
-            <View style={styles.centeredButtonsContainer}>
-              <Text></Text>
+            <View style={styles.buttonsContainer}>
+              <AddExpenseButton onPress={handleAddExpense} />
+              <AddIncomeTextInput onPress={handleAddIncome} />
             </View>
-          )}
-          <View style={styles.centeredButtonsContainer}>
+          </>
+        ) : (
+          <View style={styles.buttonsContainer}>
             <AddExpenseButton onPress={handleAddExpense} />
-            <View style={{ width: 10 }} />
             <AddIncomeTextInput onPress={handleAddIncome} />
           </View>
-        </View>
+        )}
       </View>
     </ImageBackground>
   );
@@ -223,7 +231,17 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     elevation: 3,
-    marginTop: 20,
+    marginVertical: 20,
+    width: 400,
+    alignItems: 'center',
+    left: 130
+  },
+  chartTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+    left:130  
   },
   centeredButtonsContainer: {
     flexDirection: 'row',
@@ -233,15 +251,17 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 20,
+    alignItems: 'center',
+    marginTop: 400,
+    right:75
   },
   logo: {
     width: 70, // Ajusta el tamaño del logo
     height: 70,
     resizeMode: 'contain', // Para que el logo mantenga su proporción
-    marginTop:-150, // Espacio entre el logo y el gráfico
-    borderRadius:30,
+    marginTop: -150, // Espacio entre el logo y el gráfico
+    borderRadius: 30,
   },
 });
 
-export default HomeScreenWeb;
+export default HomeScreenMovil;

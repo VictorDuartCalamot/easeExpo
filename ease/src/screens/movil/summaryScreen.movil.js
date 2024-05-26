@@ -260,13 +260,13 @@ const styles = StyleSheet.create({
     borderColor: '#000',
     padding: 10,
     borderRadius: 10,
-    width: 300, // Establecer un ancho fijo
-    maxHeight: 280, // Establecer una altura máxima
-    overflow: 'hidden', // Ocultar contenido que supere la altura máxima
-    position: 'relative', // Posicionamiento relativo para el icono
+    width: 300,
+    maxHeight: 280,
+    overflow: 'hidden',
+    position: 'relative',
   },
   newRow: {
-    marginTop: 20, // Margen entre filas
+    marginTop: 20,
   },
   redText: {
     color: 'red',
