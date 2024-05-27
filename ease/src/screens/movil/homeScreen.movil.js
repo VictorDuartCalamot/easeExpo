@@ -233,9 +233,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   chartContainer: {
+    position:"absolute",
     flex: 1,
-    padding: 20,
+    padding: 5,
     justifyContent: 'center',
+    marginTop:200,
   },
   chartTitle: {
     fontSize: 20,
@@ -268,14 +270,17 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    alignItems: 'center',
-    marginBottom: 20,
+    alignContent: 'center',
+    top:535,
   },
   logo: {
+    position:"absolute",
     width: 100,
     height: 100,
     alignSelf: 'center',
-    marginTop: 20,
+    borderRadius: 30,
+    marginTop: 85,
+
   },
 });
 

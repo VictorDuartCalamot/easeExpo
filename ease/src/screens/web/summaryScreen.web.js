@@ -223,62 +223,66 @@ const SummaryScreenWeb = () => {
             </View>
           </View>
         )}
-        <Modal
-          visible={isUpdateModalVisible}
-          animationType="slide"
-          transparent={false}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Actualizar Item</Text>
-              <TextInput
-                style={styles.modalInput}
-                placeholder={selectedItem ? selectedItem.title : "Título"}
-                value={updateForm.title}
-                onChangeText={text => setUpdateForm({ ...updateForm, title: text })}
-              />
-              <TextInput
-                style={styles.modalInput}
-                placeholder={selectedItem ? selectedItem.description : "Descripción"}
-                value={updateForm.description}
-                onChangeText={text => setUpdateForm({ ...updateForm, description: text })}
-              />
-              <TextInput
-                style={styles.modalInput}
-                placeholder={selectedItem ? selectedItem.amount.toString() : "Monto"}
-                value={updateForm.amount}
-                onChangeText={text => setUpdateForm({ ...updateForm, amount: text })}
-                keyboardType="numeric"
-              />
-              <RNPickerSelect
-                onValueChange={handleCategoryChange}
-                items={Object.keys(categories).map(key => ({
-                  label: categories[key].name,
-                  value: key,
-                }))}
-                value={updateForm.category}
-                placeholder={{ label: "Seleccionar Categoría", value: null }}
-                style={pickerSelectStyles}
-              />
-              <RNPickerSelect
-                onValueChange={value => setUpdateForm({ ...updateForm, subcategory: value })}
-                items={filteredSubCategories}
-                value={updateForm.subcategory}
-                placeholder={{ label: "Seleccionar Subcategoría", value: null }}
-                style={pickerSelectStyles}
-              />
-              <Button title="Actualizar" onPress={handleUpdateItem} />
-              <Button title="Cancelar" onPress={() => setIsUpdateModalVisible(false)} />
-            </View>
-          </View>
-        </Modal>
+       <Modal
+  visible={isUpdateModalVisible}
+  animationType="slide"
+  transparent={true}
+>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalTitle}>Actualizar Item</Text>
+      <TextInput
+        style={styles.modalInput}
+        placeholder={selectedItem ? selectedItem.title : "Título"}
+        value={updateForm.title}
+        onChangeText={text => setUpdateForm({ ...updateForm, title: text })}
+      />
+      <TextInput
+        style={styles.modalInput}
+        placeholder={selectedItem ? selectedItem.description : "Descripción"}
+        value={updateForm.description}
+        onChangeText={text => setUpdateForm({ ...updateForm, description: text })}
+      />
+      <TextInput
+        style={styles.modalInput}
+        placeholder={selectedItem ? selectedItem.amount.toString() : "Monto"}
+        value={updateForm.amount}
+        onChangeText={text => setUpdateForm({ ...updateForm, amount: text })}
+        keyboardType="numeric"
+      />
+      <RNPickerSelect
+        onValueChange={handleCategoryChange}
+        items={Object.keys(categories).map(key => ({
+          label: categories[key].name,
+          value: key,
+        }))}
+        value={updateForm.category}
+        placeholder={{ label: "Seleccionar Categoría", value: null }}
+        style={pickerSelectStyles}
+      />
+      <RNPickerSelect
+        onValueChange={value => setUpdateForm({ ...updateForm, subcategory: value })}
+        items={filteredSubCategories}
+        value={updateForm.subcategory}
+        placeholder={{ label: "Seleccionar Subcategoría", value: null }}
+        style={pickerSelectStyles}
+      />
+      <View style={styles.buttonContainer}>
+        <Button title="Actualizar" onPress={handleUpdateItem} />
+      </View>
+      <View style={styles.buttonContainer}>
+        <Button title="Cancelar" onPress={() => setIsUpdateModalVisible(false)} />
+      </View>
+    </View>
+  </View>
+</Modal>
+
       </ScrollView>
     </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  // Define your styles here
   background: {
     flex: 1,
     resizeMode: 'cover',
@@ -321,10 +325,9 @@ const styles = StyleSheet.create({
   },
   expensesTitle: {
     fontSize: 18,
-    color: '#fff',
+    color: "black",
     marginBottom: 10,
-    alignItems: 'center',
-    justifyContent: 'center'
+    alignSelf: "center",
   },
   gridContainer: {
     display: 'flex',
@@ -367,25 +370,30 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    width: '80%',
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     padding: 20,
-    borderRadius: 5,
+    borderRadius: 10,
+    width: 400,
   },
   modalTitle: {
     fontSize: 20,
     marginBottom: 20,
+    textAlign: 'center',
+    alignSelf: "center",
   },
   modalInput: {
-    backgroundColor: '#eee',
-    padding: 10,
+    backgroundColor: 'white',
+    padding: 15,
     borderRadius: 5,
-    marginBottom: 10,
+    marginBottom: 15,
+  },
+  buttonContainer: {
+    marginBottom: 10, // Espacio entre botones
   },
 });
-
 const pickerSelectStyles = {
   inputIOS: {
     fontSize: 16,
@@ -396,7 +404,8 @@ const pickerSelectStyles = {
     borderRadius: 4,
     color: 'black',
     paddingRight: 30,
-    marginBottom: 10,
+    marginBottom: 20, // Espacio entre selectores
+    padding: 20,
   },
   inputAndroid: {
     fontSize: 16,
@@ -407,7 +416,7 @@ const pickerSelectStyles = {
     borderRadius: 8,
     color: 'black',
     paddingRight: 30,
-    marginBottom: 10,
+    marginBottom: 20, // Espacio entre selectores
   },
 };
 

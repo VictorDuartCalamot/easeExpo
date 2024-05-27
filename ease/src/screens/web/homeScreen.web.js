@@ -177,7 +177,7 @@ const HomeScreenWeb = ({ navigation }) => {
             </View>
           </View>
         ) : (
-          <View style={styles.buttonsContainer}>
+          <View style={styles.emptyStateContainer}>
             <View style={styles.dateContainer}>
               <TouchableOpacity style={styles.dateButton} onPress={handlePrevDay}>
                 <MaterialIcons name="keyboard-arrow-left" size={24} color="black" />
@@ -187,8 +187,8 @@ const HomeScreenWeb = ({ navigation }) => {
                 <MaterialIcons name="keyboard-arrow-right" size={24} color="black" />
               </TouchableOpacity>
             </View>
-            <AddExpenseButtonWeb/>
-            <AddIncomeTextInputWeb/>
+            <AddExpenseButtonWeb />
+            <AddIncomeTextInputWeb />
           </View>
         )}
       </View>
@@ -197,103 +197,108 @@ const HomeScreenWeb = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-background: {
-  flex: 1,
-  resizeMode: 'cover',
-},
-container: {
-  flex: 1,
-  flexDirection: 'row', // To align menu and content side by side
-},
-menuContainer: {
-  flex: 0.1,  // Adjusted width of the menu container
-  backgroundColor: 'white',
-  padding: 10,
-  borderTopRightRadius: 10,
-  borderBottomRightRadius: 10,
-  elevation: 5, // For Android shadow
-  shadowColor: '#000', // For iOS shadow
-  shadowOffset: { width: 0, height: 2 }, // For iOS shadow
-  shadowOpacity: 0.8, // For iOS shadow
-  shadowRadius: 2, // For iOS shadow
-  justifyContent: 'space-between', // Align items and logout button
-},
-dateContainer: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'center',
-},
-dateButton: {
-  padding: 10,
-},
-dateText: {
-  fontSize: 18,
-  marginHorizontal: 10,
-},
-chartContainer: {
-  flex: 0.9,
-  justifyContent: 'center',
-  alignItems: 'center',
-},
-chartBackground: {
-  backgroundColor: 'white',
-  borderRadius: 10,
-  padding: 10,
-  elevation: 5, // For Android shadow
-  shadowColor: '#000', // For iOS shadow
-  shadowOffset: { width: 0, height: 2 }, // For iOS shadow
-  shadowOpacity: 0.8, // For iOS shadow
-  shadowRadius: 2, // For iOS shadow
-},
-chartTitle: {
-  fontSize: 24,
-  fontWeight: 'bold',
-  marginBottom: 60,
-},
-buttonsContainer: {
-  position: 'absolute',
-  bottom: 20,
-  right: 20,
-  flexDirection: 'column',
-  alignItems: 'flex-end',
-},
-centeredButtonsContainer: {
-  position: 'absolute',
-  bottom: 20,
-  flexDirection: 'row',
-  justifyContent: 'center', // Alineación horizontal centrada
-  alignItems: "center"
-},
-iconColumn: {
-  flexDirection: 'column',
-  alignItems: 'flex-start',
-},
-iconItem: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  marginVertical: 10,
-},
-menuText: {
-  marginLeft: 5,
-  fontSize: 16,
-  alignItems: "center",
-},
-logo: {
-  width: 50,
-  height: 50,
-  borderRadius: 10,
-  marginBottom: 20,
-  alignSelf: "center",
-},
-logoutContainer: {
-  marginTop: 'auto',
-  marginBottom: 10,
-},
-logoutText: {
-  marginLeft: 5,
-  fontSize: 16,
-  color: 'red',
-},
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
+  container: {
+    flex: 1,
+    flexDirection: 'row', // To align menu and content side by side
+  },
+  menuContainer: {
+    flex: 0.1,  // Adjusted width of the menu container
+    backgroundColor: 'white',
+    padding: 10,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+    elevation: 5, // For Android shadow
+    shadowColor: '#000', // For iOS shadow
+    shadowOffset: { width: 0, height: 2 }, // For iOS shadow
+    shadowOpacity: 0.8, // For iOS shadow
+    shadowRadius: 2, // For iOS shadow
+    justifyContent: 'space-between', // Align items and logout button
+  },
+  dateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dateButton: {
+    padding: 10,
+  },
+  dateText: {
+    fontSize: 18,
+    marginHorizontal: 10,
+  },
+  chartContainer: {
+    flex: 0.9,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  chartBackground: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 10,
+    elevation: 5, // For Android shadow
+    shadowColor: '#000', // For iOS shadow
+    shadowOffset: { width: 0, height: 2 }, // For iOS shadow
+    shadowOpacity: 0.8, // For iOS shadow
+    shadowRadius: 2, // For iOS shadow
+  },
+  chartTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 60,
+  },
+  centeredButtonsContainer: {
+    position: 'absolute',
+    bottom: 20,
+    flexDirection: 'row',
+    justifyContent: 'center', // Alineación horizontal centrada
+    alignItems: "center"
+  },
+  buttonsContainer: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+  },
+  emptyStateContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconColumn: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  iconItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  menuText: {
+    marginLeft: 5,
+    fontSize: 16,
+    alignItems: "center",
+  },
+  logo: {
+    width: 50,
+    height: 50,
+    borderRadius: 10,
+    marginBottom: 20,
+    alignSelf: "center",
+  },
+  logoutContainer: {
+    marginTop: 'auto',
+    marginBottom: 10,
+  },
+  logoutText: {
+    marginLeft: 5,
+    fontSize: 16,
+    color: 'red',
+  },
 });
 
 export default HomeScreenWeb;
