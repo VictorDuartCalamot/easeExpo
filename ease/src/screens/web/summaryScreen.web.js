@@ -191,7 +191,7 @@ const SummaryScreenWeb = () => {
         {items.length > 0 && (
           <View style={styles.expensesContainer}>
             <Text style={styles.expensesTitle}>
-              Expense and Income between {dateRange[0].toISOString().slice(0, 10)} y {dateRange[1].toISOString().slice(0, 10)}:
+              Expense and Income between {dateRange[0].toISOString().slice(0, 10)} and {dateRange[1].toISOString().slice(0, 10)}:
             </Text>
             <View style={styles.gridContainer}>
               {items.map((item) => (
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   calendarContainer: {
-    marginBottom: 20,
+    marginTop:75,
   },
   inputContainer: {
     width: '80%',
@@ -337,12 +337,16 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     color: '#fff',
-  },
+    width:100,
+    alignSelf:"center",
+    },
   input: {
     backgroundColor: '#fff',
     padding: 10,
     borderRadius: 5,
     marginBottom: 10,
+    alignSelf:"center",
+    width:250,
   },
   searchButton: {
     backgroundColor: '#007BFF',
