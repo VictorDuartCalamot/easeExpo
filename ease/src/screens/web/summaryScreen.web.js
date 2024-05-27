@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, TextInput, Modal, Button } from 'react-native';
-import { getExpenses, getCategories, getSubCategories, deleteExpense, updateExpense, updateIncome, getIncomes } from '../../services/api_management';
+import { getExpenses, getCategories, getSubCategories, deleteExpense, updateExpense, updateIncome, getIncomes,deleteIncome } from '../../services/api_management';
 import { DateRangePicker } from 'react-date-range';
 import { FontAwesome5 } from '@expo/vector-icons';
 import RNPickerSelect from 'react-native-picker-select';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
-
+import moment from 'moment';
 const SummaryScreenWeb = () => {
   const [dateRange, setDateRange] = useState([{ startDate: new Date(), endDate: new Date(), key: 'selection' }]);
   const [categories, setCategories] = useState({});
@@ -48,10 +48,11 @@ const SummaryScreenWeb = () => {
 
   const handleFetchItems = async () => {
     try {
-      const { startDate, endDate } = dateRange[0];
+      const startDate = moment(dateRange[0].startDate).format('YYYY-MM-DD');
+      const endDate = moment(dateRange[0].endDate).format('YYYY-MM-DD')
       const [expenseData, incomeData] = await Promise.all([
-        getExpenses({ start_date: startDate.toISOString().slice(0, 10), end_date: endDate.toISOString().slice(0, 10) }),
-        getIncomes({ start_date: startDate.toISOString().slice(0, 10), end_date: endDate.toISOString().slice(0, 10) })
+        getExpenses({ start_date: startDate, end_date: endDate }),
+        getIncomes({ start_date: startDate, end_date: endDate })
       ]);
 
       const enrichedExpenses = expenseData.map(expense => ({
@@ -98,13 +99,23 @@ const SummaryScreenWeb = () => {
 
   const handleModifyItem = (item) => {
     setSelectedItem(item);
-    setUpdateForm({
-      title: item.title,
-      description: item.description,
-      amount: item.amount.toString(),
-      category: item.category || '',
-      subcategory: item.subcategory || ''
-    });
+    if(item.type === 'expense') {
+      setUpdateForm({
+        title: item.title,
+        description: item.description,
+        amount: item.amount.toString(),
+        category: item.category || '',
+        subcategory: item.subcategory || ''
+      });
+    }else{
+      setUpdateForm({
+        title: item.title,
+        description: item.description,
+        amount: item.amount.toString(),
+        category: item.category || '',        
+      });
+    }
+    
     setIsUpdateModalVisible(true);
 
     // Actualizar subcategorías filtradas
@@ -128,16 +139,17 @@ const SummaryScreenWeb = () => {
 
   const handleUpdateItem = async () => {
     try {
+      
       const updatedItem = {
         ...selectedItem,
         title: updateForm.title,
         description: updateForm.description,
         amount: parseFloat(updateForm.amount),
-        category: updateForm.category,
-        subcategory: updateForm.subcategory
+        category: updateForm.category,        
       };
 
       if (selectedItem.type === 'expense') {
+        updatedItem.subcategory = updateForm.subcategory;
         await updateExpense(updatedItem, updatedItem.id);
       } else {
         await updateIncome(updatedItem, updatedItem.id);
@@ -152,20 +164,21 @@ const SummaryScreenWeb = () => {
   };
 
   const handleSearch = () => {
-    if (dataLoaded && dateRange[0] && dateRange[0].startDate && dateRange[0].endDate) {
-      handleFetchItems();
-    } else {
-      console.warn('Please select both start and end dates.');
-    }
+    const startDate = moment(dateRange[0].startDate).format('YYYY-MM-DD');
+    const endDate = moment(dateRange[0].endDate).format('YYYY-MM-DD');
+    handleFetchItems(startDate, endDate);  
+};
+  const handleDateRangeChange = (item) => {
+    setDateRange([item.selection]);
   };
-
+  
   return (
     <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.calendarContainer}>
           <DateRangePicker
             ranges={dateRange}
-            onChange={item => setDateRange([item.selection])}
+            onChange={handleDateRangeChange}
             showSelectionPreview={true}
             moveRangeOnFirstSelection={false}
             months={1}
@@ -178,7 +191,7 @@ const SummaryScreenWeb = () => {
         {items.length > 0 && (
           <View style={styles.expensesContainer}>
             <Text style={styles.expensesTitle}>
-              Expense and Income between {dateRange[0].startDate.toISOString().slice(0, 10)} and {dateRange[0].endDate.toISOString().slice(0, 10)}:
+            Expense and Income between {moment(dateRange[0].startDate).format('YYYY-MM-DD')} and {moment(dateRange[0].endDate).format('YYYY-MM-DD')}:
             </Text>
             <View style={styles.gridContainer}>
               {items.map((item) => (
@@ -282,14 +295,16 @@ const SummaryScreenWeb = () => {
                 value={updateForm.category}
                 placeholder={{ label: "Select a category...", value: null }}
                 style={pickerSelectStyles}
-              />
-              <RNPickerSelect
-                onValueChange={value => setUpdateForm({ ...updateForm, subcategory: value })}
-                items={filteredSubCategories}
-                value={updateForm.subcategory}
-                placeholder={{ label: "Select a subcategory...", value: null }}
-                style={pickerSelectStyles}
-              />
+              />              
+              {selectedItem?.type === 'expense' && (
+                <RNPickerSelect              
+                  onValueChange={value => setUpdateForm({ ...updateForm, subcategory: value })}
+                  items={filteredSubCategories}
+                  value={updateForm.subcategory}
+                  placeholder={{ label: "Select a subcategory...", value: null }}
+                  style={pickerSelectStyles}
+                />
+              )}
               <View style={styles.buttonContainer}>
                 <Button title="Update" onPress={handleUpdateItem} />
               </View>
@@ -399,6 +414,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   buttonContainer: {
+    marginTop: 10,
     marginBottom: 10, // Espacio entre botones
   },
 });
