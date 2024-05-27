@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, TextInput, Button, Text, ScrollView, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, TextInput, Button, Text, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, ImageBackground } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_KEY } from '@env';
@@ -75,6 +75,7 @@ const FinancerAssistant = () => {
   };
 
   return (
+    <ImageBackground source={require('../pictures/fondo2.jpg')} style={styles.background}>
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
       <View style={styles.innerContainer}>
         <ScrollView
@@ -104,10 +105,15 @@ const FinancerAssistant = () => {
         </View>
       </View>
     </KeyboardAvoidingView>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+      flex: 1,
+      resizeMode: 'cover',
+  },
   container: {
     flex: 1,
     marginTop: 60,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, TextInput, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, TextInput, FlatList, KeyboardAvoidingView, Platform, ImageBackground } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { getOneUser } from '../../../services/api_authentication';
@@ -158,6 +158,7 @@ function ChatAdminWeb() {
     );
 
     return (
+        <ImageBackground source={require('../../../pictures/fondo2.jpg')} style={styles.background}>
         <View style={styles.container}>
             <View style={styles.chatList}>
                 {chats.map((chat, index) => (
@@ -182,32 +183,37 @@ function ChatAdminWeb() {
                         >
                             <TextInput
                                 style={styles.text}
-                                placeholder="Escribe tu mensaje..."
+                                placeholder="Write your message..."
                                 value={inputMessage}
                                 onChangeText={setInputMessage}
                             />
                             <TouchableOpacity style={styles.sendButton} onPress={onSend}>
-                                <Text style={styles.sendButtonText}>Enviar</Text>
+                                <Text style={styles.sendButtonText}>Send</Text>
                             </TouchableOpacity>
                         </KeyboardAvoidingView>
                     </>
                 )}
             </View>
         </View>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
+    background: {
+        flex: 1,
+        resizeMode: 'cover',
+    },
     container: {
         flex: 1,
         flexDirection: 'row',
+        marginTop: 65
     },
     chatList: {
         flex: 1,
         borderRightWidth: 1,
         borderColor: '#ccc',
         padding: 10,
-        marginTop: 45,
     },
     chatItem: {
         padding: 10,
@@ -231,7 +237,7 @@ const styles = StyleSheet.create({
     },
     text: {
         flex: 1,
-        borderColor: '#ccc',
+        borderColor: 'black',
         borderWidth: 1,
         borderRadius: 5,
         paddingHorizontal: 10,

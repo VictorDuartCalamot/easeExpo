@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     card: {
         padding: 10,
         marginBottom: 10,
-        backgroundColor: "#f0f0f0",
+        backgroundColor: "transparent",
     },
     userName: {
         fontSize: 16,
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     button: {
-        backgroundColor: "#ccc",
+        backgroundColor: "#3EF581",
         padding: 5,
         borderRadius: 5,
     },

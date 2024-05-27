@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Switch } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Switch, ImageBackground } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { registerNewUser } from "../services/api_authentication";
 
@@ -32,6 +32,7 @@ function NewUserAdmin() {
     };
 
     return (
+        <ImageBackground source={require('../pictures/fondo2.jpg')} style={styles.background}>
         <View style={styles.container}>
             <Text style={styles.title}>New User</Text>
             <TextInput
@@ -75,10 +76,15 @@ function NewUserAdmin() {
                 <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
         </View>
+        </ImageBackground>
     )
 }
 
 const styles = StyleSheet.create({
+    background: {
+        flex: 1,
+        resizeMode: 'cover',
+    },
     container: {
         flex: 1,
         justifyContent: "center",
@@ -92,7 +98,7 @@ const styles = StyleSheet.create({
         width: "80%",
         height: 40,
         borderWidth: 1,
-        borderColor: "gray",
+        borderColor: "black",
         marginBottom: 20,
         paddingLeft: 10,
     },

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, FlatList } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, FlatList, ImageBackground } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { getOneUser } from '../../../services/api_authentication';
@@ -53,6 +53,7 @@ function ChatAdminMovil() {
     );
 
     return (
+        <ImageBackground source={require('../../../pictures/fondo2.jpg')} style={styles.background}>
         <View style={styles.container}>
             <FlatList
                 data={chats}
@@ -60,14 +61,19 @@ function ChatAdminMovil() {
                 keyExtractor={(item) => item.id.toString()}
             />
         </View>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
+    background: {
+        flex: 1,
+        resizeMode: 'cover',
+    },
     container: {
         flex: 1,
         padding: 10,
-        marginTop: 50,
+        marginTop: 65,
     },
     chatItem: {
         padding: 10,

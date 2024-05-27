@@ -1,5 +1,5 @@
-import React, {useState} from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, ImageBackground } from "react-native";
 import { createCategory } from "../services/api_management";
 import { useNavigation } from "@react-navigation/native";
 import RNPickerSelect from 'react-native-picker-select';
@@ -9,16 +9,10 @@ const typeOptions = [
     { label: 'Income', value: 'income' },
 ];
 
-const colorOptions = [
-    { label: 'Rojo', value: '#FF0000' },
-    { label: 'Verde', value: '#00FF00' },
-    { label: 'Azul', value: '#0000FF' },
-    { label: 'Amarillo', value: '#FFFF00' },
-    { label: 'Naranja', value: '#FFA500' },
-    { label: 'Violeta', value: '#EE82EE' },
-    { label: 'Negro', value: '#000000' },
-    { label: 'Blanco', value: '#FFFFFF' },
-];
+const isValidHexColor = (hex) => {
+    const hexRegex = /^#?([A-Fa-f0-9]{6})$/;
+    return hexRegex.test(hex);
+};
 
 const NewCategory = () => {
     const navigation = useNavigation();
@@ -33,20 +27,28 @@ const NewCategory = () => {
 
     const handleSave = async () => {
         try {
+            if (!isValidHexColor(color)) {
+                Alert.alert("Invalid Color", "Please enter a valid hex color code.");
+                return;
+            }
+
+            const hexColor = color.startsWith('#') ? color : `#${color}`;
+
             const categoryData = {
                 name: name,
                 description: description,
                 type: type,
-                hexColor: color,
+                hexColor: hexColor,
             };
             await createCategory(categoryData);
             navigation.goBack();
-        }catch(error){
+        } catch (error) {
             console.error("Error creating new category: ", error);
         }
     };
 
     return (
+        <ImageBackground source={require('../pictures/fondo2.jpg')} style={styles.background}>
         <View style={styles.container}>
             <Text style={styles.title}>New Category</Text>
             <TextInput
@@ -61,17 +63,19 @@ const NewCategory = () => {
                 value={description}
                 onChangeText={setDescription}
             />
-            <RNPickerSelect
-                onValueChange={(value)=>setType(value)}
-                items={typeOptions}
-                placeholder={{ label: 'Select a type...', value: null}}
-                style={pickerSelectStyles}
-            />
-            <RNPickerSelect
-                onValueChange={(value)=>setColor(value)}
-                items={colorOptions}
-                placeholder={{ label: 'Select a color...', value: null}}
-                style={pickerSelectStyles}
+            <View style={styles.pickerContainer}>
+                <RNPickerSelect
+                    onValueChange={(value) => setType(value)}
+                    items={typeOptions}
+                    placeholder={{ label: 'Select a type...', value: null }}
+                />
+            </View>
+            <TextInput
+                style={styles.input}
+                placeholder="Hex Color (e.g., FFFFFF)"
+                value={color}
+                onChangeText={setColor}
+                maxLength={6}
             />
             <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
                 <Text style={styles.buttonText}>Save</Text>
@@ -80,10 +84,15 @@ const NewCategory = () => {
                 <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
         </View>
+        </ImageBackground>
     )
 }
 
 const styles = StyleSheet.create({
+    background: {
+        flex: 1,
+        resizeMode: 'cover',
+    },
     container: {
         flex: 1,
         justifyContent: "center",
@@ -97,15 +106,10 @@ const styles = StyleSheet.create({
         width: "80%",
         height: 40,
         borderWidth: 1,
-        borderColor: "gray",
+        borderColor: "black",
         marginBottom: 20,
         paddingLeft: 10,
         fontSize: 16,
-    },
-    colorPicker: {
-        width: "80%",
-        height: 150,
-        marginBottom: 20,
     },
     saveButton: {
         backgroundColor: "blue",
@@ -128,33 +132,10 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 16,
     },
+    pickerContainer: {
+        width: '80%',
+        marginVertical: 10,
+    },
 });
-
-const pickerSelectStyles = StyleSheet.create({
-    inputIOS: {
-        fontSize: 16,
-        paddingVertical: 12,
-        paddingHorizontal: 10,
-        borderWidth: 1,
-        borderColor: 'gray',
-        borderRadius: 4,
-        color: 'black',
-        paddingRight: 30, // to ensure the text is never behind the icon
-        backgroundColor: 'white',
-        marginBottom: 20,
-    },
-    inputAndroid: {
-        fontSize: 16,
-        paddingHorizontal: 10,
-        paddingVertical: 8,
-        borderWidth: 0.5,
-        borderColor: 'purple',
-        borderRadius: 8,
-        color: 'black',
-        paddingRight: 30, // to ensure the text is never behind the icon
-        backgroundColor: 'white',
-        marginBottom: 20,
-    },
-})
 
 export default NewCategory;

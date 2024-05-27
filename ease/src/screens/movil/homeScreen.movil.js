@@ -148,10 +148,10 @@ const HomeScreenMovil = ({ navigation }) => {
                 <Text style={styles.menuText}>Chat</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleMenuItemPress('ChatIA')}>
+            <TouchableOpacity onPress={() => handleMenuItemPress('Financer Asistant')}>
               <View style={styles.menuItem}>
                 <MaterialIcons name="assistant" size={24} color="black" />
-                <Text style={styles.menuText}>Chat IA</Text>
+                <Text style={styles.menuText}>Financer Asistant</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleLogout}>

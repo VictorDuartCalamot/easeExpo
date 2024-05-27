@@ -131,7 +131,7 @@ const HomeScreenWeb = ({ navigation }) => {
               <MaterialIcons name="chat" size={24} color="black" />
               <Text style={styles.menuText}>Chat</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('Financer Assistant')}>
+            <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('Financer Asistant')}>
               <MaterialIcons name="assistant" size={24} color="black" />
               <Text style={styles.menuText}>Financer Assistant</Text>
             </TouchableOpacity>

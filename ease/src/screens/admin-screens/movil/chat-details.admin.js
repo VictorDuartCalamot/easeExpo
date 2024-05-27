@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, TextInput, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, TextInput, FlatList, KeyboardAvoidingView, Platform, ImageBackground } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function ChatDetails({ route }) {
@@ -103,6 +103,7 @@ function ChatDetails({ route }) {
     );
 
     return (
+        <ImageBackground source={require('../../../pictures/fondo2.jpg')} style={styles.background}>
         <View style={styles.container}>
             <FlatList
                 data={messages}
@@ -115,24 +116,29 @@ function ChatDetails({ route }) {
             >
                 <TextInput
                     style={styles.text}
-                    placeholder="Escribe tu mensaje..."
+                    placeholder="Write your message..."
                     value={inputMessage}
                     onChangeText={setInputMessage}
                 />
                 <TouchableOpacity style={styles.sendButton} onPress={onSend}>
-                    <Text style={styles.sendButtonText}>Enviar</Text>
+                    <Text style={styles.sendButtonText}>Send</Text>
                 </TouchableOpacity>
             </KeyboardAvoidingView>
         </View>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
+    background: {
+        flex: 1,
+        resizeMode: 'cover',
+    },
     container: {
         flex: 1,
         padding: 10,
         justifyContent: 'space-between',
-        marginTop: 60
+        marginTop: 65
     },
     messageItem: {
         padding: 10,
@@ -146,7 +152,7 @@ const styles = StyleSheet.create({
     },
     text: {
         flex: 1,
-        borderColor: '#ccc',
+        borderColor: 'black',
         borderWidth: 1,
         borderRadius: 5,
         paddingHorizontal: 10,

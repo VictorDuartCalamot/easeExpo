@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
-import Card from "../../components/card";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ImageBackground } from "react-native";
+import Card from "../../constants/card";
 import { getusers, deleteUser, updateUserAccountStatus } from "../../services/api_authentication";
 import { useNavigation } from "@react-navigation/native";
 import { Feather, MaterialIcons, MaterialCommunityIcons, AntDesign } from "@expo/vector-icons";
@@ -86,6 +86,7 @@ function UsersList() {
     );
 
     return (
+        <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
         <View style={styles.container}>
             <FlatList
                 data={users}
@@ -106,10 +107,15 @@ function UsersList() {
                 <AntDesign name="wechat" size={24} color="white"/>
             </TouchableOpacity>
         </View>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
+    background: {
+        flex: 1,
+        resizeMode: 'cover',
+    },
     container: {
         flex: 1,
         justifyContent: "center",
