@@ -157,12 +157,12 @@ const HomeScreenMovil = ({ navigation }) => {
           </View>
         )}
         <View style={styles.chartContainer}>
-          <Text style={styles.chartTitle}>Incomes and expenses</Text>
+          <Text style={[styles.chartTitle, {textAlign: 'center'}]}>Incomes and expenses</Text>
           <View style={styles.dateContainer}>
             <TouchableOpacity style={styles.dateButton} onPress={handlePrevDay}>
               <MaterialIcons name="keyboard-arrow-left" size={24} color="black" />
             </TouchableOpacity>
-            <Text style={styles.dateText}>{currentDate.toDateString()}</Text>
+            <Text style={[styles.dateText, {textAlign: 'center'}]}>{currentDate.toDateString()}</Text>
             <TouchableOpacity style={styles.dateButton} onPress={handleNextDay}>
               <MaterialIcons name="keyboard-arrow-right" size={24} color="black" />
             </TouchableOpacity>
@@ -170,118 +170,133 @@ const HomeScreenMovil = ({ navigation }) => {
           {chartData.length > 0 ? (
             <View style={styles.chartBackground}>
               <PieChart
-                data={chartData}
-                width={screenWidth - 40}
-                height={220}
-                chartConfig={{
-                  backgroundColor: "#ffffff",
-                  backgroundGradientFrom: "#ffffff",
-                  backgroundGradientTo: "#ffffff",
-                  decimalPlaces: 2,
-                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                }}
+               data={chartData}
+               width={screenWidth - 40}
+               height={220}
+               chartConfig={{
+                 backgroundColor: "#ffffff",
+                 backgroundGradientFrom: "#ffffff",
+                 backgroundGradientTo: "#ffffff",
+                 decimalPlaces: 2,
+                 color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+               }} 
                 accessor={"population"}
                 backgroundColor={"transparent"}
                 paddingLeft={"15"}
                 center={[0, 0]}
                 absolute={false}
-              />
+                />
+                  </View>
+                ) : (
+                  <View style={[styles.chartBackground, {alignItems: 'center'}]}>
+                    <Text>No expenses or incomes available</Text>
+                  </View>
+                )}
+              </View>
+              <View style={styles.buttonsContainer}>
+                {chartData.length > 0 ? (
+                  <>
+                    <AddExpenseButton onPress={() => {}} />
+                    <AddIncomeTextInput onPress={() => {}} />
+                  </>
+                ) : (
+                  <View style={{ alignItems: 'center',flexDirection:"row" }}>
+                    <AddExpenseButton onPress={() => {}} />
+                    <AddIncomeTextInput onPress={() => {}} />
+                  </View>
+                )}
+              </View>
             </View>
-          ) : null}
-        </View>
-        <View style={styles.buttonsContainer}>
-          <AddExpenseButton onPress={() => {}} />
-          <AddIncomeTextInput onPress={() => {}} />
-        </View>
-      </View>
-    </ImageBackground>
-  );
-};
-
-const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    resizeMode: 'cover',
-  },
-  container: {
-    flex: 1,
-    position: 'relative',
-  },
-  menuButton: {
-    position: 'absolute',
-    marginTop: 20,
-    left: 0,
-    zIndex: 2,
-    padding: 10,
-  },
-  menuDropdown: {
-    position: 'absolute',
-    left: 0,
-    top: 60,
-    backgroundColor: 'white',
-    paddingVertical: 20,
-    paddingHorizontal: 10,
-    zIndex: 2,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  menuText: {
-    marginLeft: 10,
-    fontSize: 16,
-  },
-  chartContainer: {
-    position:"absolute",
-    flex: 1,
-    padding: 5,
-    justifyContent: 'center',
-    marginTop:200,
-  },
-  chartTitle: {
-    fontSize: 20,
-    textAlign: 'center',
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  dateContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 10,
-  },
-  dateButton: {
-    paddingHorizontal: 10,
-  },
-  dateText: {
-    fontSize: 16,
-  },
-  chartBackground: {
-    backgroundColor: 'white',
-    borderRadius: 16,
-    padding: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 4,
-  },
-  buttonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignContent: 'center',
-    top:535,
-  },
-  logo: {
-    position:"absolute",
-    width: 100,
-    height: 100,
-    alignSelf: 'center',
-    borderRadius: 30,
-    marginTop: 85,
-
-  },
-});
-
-export default HomeScreenMovil;
+          </ImageBackground>
+        );
+      };
+      
+      const styles = StyleSheet.create({
+        background: {
+          flex: 1,
+          resizeMode: 'cover',
+        },
+        container: {
+          flex: 1,
+          position: 'relative',
+        },
+        menuButton: {
+          position: 'absolute',
+          marginTop: 20,
+          left: 0,
+          zIndex: 2,
+          padding: 10,
+        },
+        menuDropdown: {
+          position: 'absolute',
+          left: 0,
+          top: 60,
+          backgroundColor: 'white',
+          paddingVertical: 20,
+          paddingHorizontal: 10,
+          zIndex: 2,
+        },
+        menuItem: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginBottom: 10,
+        },
+        menuText: {
+          marginLeft: 10,
+          fontSize: 16,
+        },
+        chartContainer: {
+          position: "absolute",
+          flex: 1,
+          padding: 5,
+          justifyContent: 'center',
+          marginTop: 200,
+          width: '100%',
+        },
+        chartTitle: {
+          fontSize: 20,
+          fontWeight: 'bold',
+          marginBottom: 10,
+        },
+        dateContainer: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: 10,
+        },
+        dateButton: {
+          paddingHorizontal: 10,
+        },
+        dateText: {
+          fontSize: 16,
+        },
+        chartBackground: {
+          backgroundColor: 'white',
+          borderRadius: 16,
+          padding: 10,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.8,
+          shadowRadius: 2,
+          elevation: 4,
+        },
+        buttonsContainer: {
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+          alignItems: 'center',
+          position: 'absolute',
+          bottom: 120,
+          width: '100%',
+        },
+        logo: {
+          position: "absolute",
+          width: 100,
+          height: 100,
+          alignSelf: 'center',
+          borderRadius: 30,
+          marginTop: 85,
+        },
+      });
+      
+      export default HomeScreenMovil;
+      
