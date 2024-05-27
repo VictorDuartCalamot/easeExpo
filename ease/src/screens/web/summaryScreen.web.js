@@ -19,6 +19,7 @@ const SummaryScreenWeb = () => {
   const [updateForm, setUpdateForm] = useState({ title: '', description: '', amount: '', category: '', subcategory: '', type: '' });
   const [filteredSubCategories, setFilteredSubCategories] = useState([]);
   const [filteredCategories, setFilteredCategories] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const fetchCategoriesAndSubCategories = async () => {
     try {
@@ -49,7 +50,7 @@ const SummaryScreenWeb = () => {
   const handleFetchItems = async () => {
     try {
       const startDate = moment(dateRange[0].startDate).format('YYYY-MM-DD');
-      const endDate = moment(dateRange[0].endDate).format('YYYY-MM-DD')
+      const endDate = moment(dateRange[0].endDate).format('YYYY-MM-DD');
       const [expenseData, incomeData] = await Promise.all([
         getExpenses({ start_date: startDate, end_date: endDate }),
         getIncomes({ start_date: startDate, end_date: endDate })
@@ -97,26 +98,24 @@ const SummaryScreenWeb = () => {
     }
   };
 
+  const resetUpdateForm = () => {
+    setUpdateForm({ title: '', description: '', amount: '', category: '', subcategory: '', type: '' });
+    setErrorMessage('');
+  };
+
   const handleModifyItem = (item) => {
+    resetUpdateForm();
     setSelectedItem(item);
-    if(item.type === 'expense') {
-      setUpdateForm({
-        title: item.title,
-        description: item.description,
-        amount: item.amount.toString(),
-        category: item.category || '',
-        subcategory: item.subcategory || ''
-      });
-    } else {
-      setUpdateForm({
-        title: item.title,
-        description: item.description,
-        amount: item.amount.toString(),
-        category: item.category || '',        
-      });
-    }
+    const initialFormState = {
+      title: item.title,
+      description: item.description,
+      amount: item.amount.toString(),
+      category: item.category || '',
+      subcategory: item.subcategory || '',
+      type: item.type
+    };
+    setUpdateForm(initialFormState);
     
-    // Filter categories based on item type
     const filteredCats = Object.keys(categories)
       .filter(key => categories[key].type === item.type)
       .map(key => ({ label: categories[key].name, value: key }));
@@ -124,7 +123,6 @@ const SummaryScreenWeb = () => {
 
     setIsUpdateModalVisible(true);
 
-    // Actualizar subcategorías filtradas
     if (item.category) {
       handleCategoryChange(item.category);
     }
@@ -144,32 +142,42 @@ const SummaryScreenWeb = () => {
   };
 
   const handleUpdateItem = async () => {
+    if (updateForm.amount === '') {
+      setErrorMessage('Amount is required.');
+      return;
+    }
+
     try {
       const updatedItem = {
-        ...selectedItem,
-        title: updateForm.title,
-        description: updateForm.description,
-        amount: parseFloat(updateForm.amount),
-        category: updateForm.category,        
+        title: updateForm.title !== '' ? updateForm.title : selectedItem.title,
+        description: updateForm.description !== '' ? updateForm.description : selectedItem.description,
+        amount: updateForm.amount !== '' ? parseFloat(updateForm.amount) : selectedItem.amount,
+        category: updateForm.category !== '' ? updateForm.category : selectedItem.category,
+        subcategory: selectedItem.type === 'expense' ? (updateForm.subcategory !== '' ? updateForm.subcategory : selectedItem.subcategory) : undefined
       };
 
       if (selectedItem.type === 'expense') {
-        updatedItem.subcategory = updateForm.subcategory;
-        await updateExpense(updatedItem, updatedItem.id);
+        await updateExpense(updatedItem, selectedItem.id);
       } else {
-        await updateIncome(updatedItem, updatedItem.id);
+        await updateIncome(updatedItem, selectedItem.id);
       }
 
-      const updateItems = items.map(expense => expense.id === updatedItem.id ? updatedItem : expense);
-      setItems(updateItems);
+      const updatedItems = items.map(item => (item.id === selectedItem.id ? { ...item, ...updatedItem } : item));
+      setItems(updatedItems);
       setIsUpdateModalVisible(false);
+      resetUpdateForm();
     } catch (error) {
       console.error('Error updating item:', error);
     }
   };
 
+  const handleCloseModal = () => {
+    resetUpdateForm();
+    setIsUpdateModalVisible(false);
+  };
+
   const handleSearch = () => {
-    if ((dataLoaded) && (dateRange[0] || dateRange[1])) {
+    if (dataLoaded && (dateRange[0] || dateRange[1])) {
       handleFetchItems();
     } else {
       console.warn('Please select both start and end dates.');
@@ -238,7 +246,7 @@ const SummaryScreenWeb = () => {
                   </View>
                   {item.type === 'expense' && (
                     <View style={styles.categoryContainer}>
-                      <Text style={styles.blueText}>
+                      <Text style={styles.redText}>
                         Subcategory: {item.subCategoryName}
                       </Text>
                       {item.subCategoryColor && (
@@ -275,21 +283,24 @@ const SummaryScreenWeb = () => {
               <Text style={styles.modalTitle}>
                 {selectedItem?.type === 'expense' ? 'Update expense' : 'Update income'}
               </Text>
+              {errorMessage ? (
+                <Text style={styles.errorText}>{errorMessage}</Text>
+              ) : null}
               <TextInput
                 style={styles.modalInput}
-                placeholder={selectedItem ? selectedItem.title : "Title"}
+                placeholder={selectedItem ? `Title: ${selectedItem.title}` : 'Title'}
                 value={updateForm.title}
                 onChangeText={text => setUpdateForm({ ...updateForm, title: text })}
               />
               <TextInput
                 style={styles.modalInput}
-                placeholder={selectedItem ? selectedItem.description : "Description"}
+                placeholder={selectedItem ? `Description: ${selectedItem.description}` : 'Description'}
                 value={updateForm.description}
                 onChangeText={text => setUpdateForm({ ...updateForm, description: text })}
               />
               <TextInput
                 style={styles.modalInput}
-                placeholder={selectedItem ? selectedItem.amount.toString() : "Amount"}
+                placeholder={selectedItem ? `Amount: ${selectedItem.amount}` : 'Amount'}
                 value={updateForm.amount}
                 onChangeText={text => setUpdateForm({ ...updateForm, amount: text })}
                 keyboardType="numeric"
@@ -298,7 +309,7 @@ const SummaryScreenWeb = () => {
                 onValueChange={handleCategoryChange}
                 items={filteredCategories}
                 value={updateForm.category}
-                placeholder={{ label: "Select a category...", value: null }}
+                placeholder={{ label: `Select a category... (Current: ${selectedItem?.categoryName})`, value: null }}
                 style={pickerSelectStyles}
               />              
               {selectedItem?.type === 'expense' && (
@@ -306,7 +317,7 @@ const SummaryScreenWeb = () => {
                   onValueChange={value => setUpdateForm({ ...updateForm, subcategory: value })}
                   items={filteredSubCategories}
                   value={updateForm.subcategory}
-                  placeholder={{ label: "Select a subcategory...", value: null }}
+                  placeholder={{ label: `Select a subcategory... (Current: ${selectedItem?.subCategoryName})`, value: null }}
                   style={pickerSelectStyles}
                 />
               )}
@@ -314,7 +325,7 @@ const SummaryScreenWeb = () => {
                 <Button title="Update" onPress={handleUpdateItem} />
               </View>
               <View style={styles.buttonContainer}>
-                <Button title="Cancel" onPress={() => setIsUpdateModalVisible(false)} />
+                <Button title="Cancel" onPress={handleCloseModal} />
               </View>
             </View>
           </View>
@@ -420,7 +431,12 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 10,
-    marginBottom: 10, // Espacio entre botones
+    marginBottom: 10,
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 15,
+    textAlign: 'center',
   },
 });
 
@@ -434,7 +450,7 @@ const pickerSelectStyles = {
     borderRadius: 4,
     color: 'black',
     paddingRight: 30,
-    marginBottom: 20, // Espacio entre selectores
+    marginBottom: 20,
   },
   inputAndroid: {
     fontSize: 16,
@@ -445,7 +461,7 @@ const pickerSelectStyles = {
     borderRadius: 8,
     color: 'black',
     paddingRight: 30,
-    marginBottom: 20, // Espacio entre selectores
+    marginBottom: 20,
   },
 };
 

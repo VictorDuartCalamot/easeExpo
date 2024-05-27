@@ -101,15 +101,14 @@ const SummaryScreenMobile = () => {
   const handleModifyItem = (item) => {
     setSelectedItem(item);
     setUpdateForm({
-      title: item.title,
-      description: item.description,
-      amount: item.amount.toString(),
+      title: item.title || '',
+      description: item.description || '',
+      amount: item.amount.toString() || '',
       category: item.category || '',
       subcategory: item.subcategory || ''
     });
     setIsUpdateModalVisible(true);
 
-    // Actualizar subcategorías filtradas
     if (item.category) {
       handleCategoryChange(item.category);
     }
@@ -129,14 +128,19 @@ const SummaryScreenMobile = () => {
   };
 
   const handleUpdateItem = async () => {
+    if (!updateForm.amount) {
+      Alert.alert('Error', 'Amount is required');
+      return;
+    }
+
     try {
       const updatedItem = {
         ...selectedItem,
-        title: updateForm.title,
-        description: updateForm.description,
+        title: updateForm.title || selectedItem.title,
+        description: updateForm.description || selectedItem.description,
         amount: parseFloat(updateForm.amount),
-        category: updateForm.category,
-        subcategory: updateForm.subcategory
+        category: updateForm.category || selectedItem.category,
+        subcategory: updateForm.subcategory || selectedItem.subcategory
       };
 
       if (selectedItem.type === 'expense') {
@@ -148,9 +152,16 @@ const SummaryScreenMobile = () => {
       const updatedItems = items.map(item => item.id === updatedItem.id ? updatedItem : item);
       setItems(updatedItems);
       setIsUpdateModalVisible(false);
+      resetUpdateForm();
     } catch (error) {
       console.error('Error updating item:', error);
     }
+  };
+
+  const resetUpdateForm = () => {
+    setUpdateForm({ title: '', description: '', amount: '', category: '', subcategory: '' });
+    setFilteredSubCategories([]);
+    setSelectedItem(null);
   };
 
   return (
@@ -270,7 +281,7 @@ const SummaryScreenMobile = () => {
             </View>
           </View>
         )}
-        <Modal visible={isUpdateModalVisible} animationType="slide">
+        <Modal visible={isUpdateModalVisible} animationType="slide" onRequestClose={resetUpdateForm}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>
               {selectedItem?.type === 'expense' ? 'Update expense' : 'Update income'}
@@ -313,7 +324,7 @@ const SummaryScreenMobile = () => {
               />
             )}
             <View style={styles.buttonContainer}>
-              <Button title="Cancel" onPress={() => setIsUpdateModalVisible(false)} />
+              <Button title="Cancel" onPress={() => { setIsUpdateModalVisible(false); resetUpdateForm(); }} />
               <Button title="Update" onPress={handleUpdateItem} />
             </View>
           </View>
