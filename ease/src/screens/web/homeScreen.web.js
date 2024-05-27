@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Dimensions, Image, ImageBackground, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, Image, ImageBackground, TouchableOpacity, Button } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { PieChart } from 'react-native-chart-kit';
-import { getExpenses, getIncomes } from '../../services/api_management';
+import { getExpenses, getIncomes, getCategories } from '../../services/api_management';
 import AddExpenseButtonWeb from '../../constants/AddExpenseButtonWeb';
 import AddIncomeTextInputWeb from '../../constants/AddIncomeTextInputWeb';
 
@@ -12,69 +12,80 @@ const HomeScreenWeb = ({ navigation }) => {
   const [expenses, setExpenses] = useState([]);
   const [incomes, setIncomes] = useState([]);
   const [chartData, setChartData] = useState([]);
-  const [refresh, setRefresh] = useState(false);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [categories, setCategories] = useState({});
+  const [dataLoaded, setDataLoaded] = useState(false);
 
-  const getRandomColor = () => {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
+  const fetchCategories = async () => {
+    try {
+      const categoriesData = await getCategories();
+      const categoriesMap = {};
+      categoriesData.forEach(category => {
+        categoriesMap[category.id] = { name: category.name, color: category.hexColor };
+      });
+      setCategories(categoriesMap);
+      setDataLoaded(true);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
     }
-    return color;
+  };
+
+  const fetchExpenses = async (date) => {
+    try {
+      const dateString = date.toISOString().split('T')[0];
+      const expenseData = await getExpenses({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
+      if (!Array.isArray(expenseData)) {
+        console.error("Error: los datos de expense no son un array");
+        return;
+      }
+      const cleanedExpenseData = expenseData.map((exp) => ({
+        name: categories[exp.category]?.name || 'Sin categoría',
+        population: parseFloat(exp.amount),
+        color: categories[exp.category]?.color || '#000000',
+        legendFontColor: "#7F7F7F",
+        legendFontSize: 15
+      }));
+      setExpenses(cleanedExpenseData);
+    } catch (error) {
+      console.error("Error fetching expenses: ", error);
+    }
+  };
+
+  const fetchIncomes = async (date) => {
+    try {
+      const dateString = date.toISOString().split('T')[0];
+      const incomeData = await getIncomes({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
+      if (!Array.isArray(incomeData)) {
+        console.error("Error: los datos de income no son un array");
+        return;
+      }
+      const cleanedIncomeData = incomeData.map((inc) => ({
+        name: categories[inc.category]?.name || 'Sin categoría',
+        population: parseFloat(inc.amount),
+        color: categories[inc.category]?.color || '#000000',
+        legendFontColor: "#7F7F7F",
+        legendFontSize: 15
+      }));
+      setIncomes(cleanedIncomeData);
+    } catch (error) {
+      console.error('Error fetching income:', error);
+    }
+  };
+
+  const fetchAllData = async (date) => {
+    await fetchExpenses(date);
+    await fetchIncomes(date);
   };
 
   useEffect(() => {
-    const fetchExpenses = async () => {
-      const today = new Date();
-      const dateString = today.toISOString().split('T')[0];
-      try {
-        const expenseData = await getExpenses({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
-        if (!Array.isArray(expenseData)) {
-          console.error("Error: los datos de expense no son un array");
-          return;
-        }
-        const cleanedExpenseData = expenseData.map((exp, index) => ({
-          name: exp.title,
-          population: parseFloat(exp.amount),
-          color: getRandomColor(),
-          legendFontColor: "#7F7F7F",
-          legendFontSize: 15
-        }));
-        setExpenses(cleanedExpenseData);
-      } catch (error) {
-        console.error("Error fetching expenses: ", error);
-      }
-    };
+    fetchCategories();
+  }, []);
 
-    const fetchIncomes = async () => {
-      const today = new Date();
-      const dateString = today.toISOString().split('T')[0];
-      try {
-        const incomeData = await getIncomes({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
-        if (!Array.isArray(incomeData)) {
-          console.error("Error: los datos de income no son un array");
-          return;
-        }
-        const cleanedIncomeData = incomeData.map((inc, index) => ({
-          name: inc.title,
-          population: parseFloat(inc.amount),
-          color: getRandomColor(),
-          legendFontColor: "#7F7F7F",
-          legendFontSize: 15
-        }));
-        setIncomes(cleanedIncomeData);
-      } catch (error) {
-        console.error('Error fetching income:', error);
-      }
-    };
-
-    const fetchAllData = async () => {
-      await fetchExpenses();
-      await fetchIncomes();
-    };
-
-    fetchAllData();
-  }, [refresh]);
+  useEffect(() => {
+    if (dataLoaded) {
+      fetchAllData(currentDate);
+    }
+  }, [currentDate, dataLoaded]);
 
   useEffect(() => {
     setChartData([...expenses, ...incomes]);
@@ -84,12 +95,16 @@ const HomeScreenWeb = ({ navigation }) => {
     navigation.navigate('Login');
   };
 
-  const handleAddExpense = () => {
-    setRefresh(!refresh);
+  const handlePrevDay = () => {
+    const prevDay = new Date(currentDate);
+    prevDay.setDate(prevDay.getDate() - 1);
+    setCurrentDate(prevDay);
   };
 
-  const handleAddIncome = () => {
-    setRefresh(!refresh);
+  const handleNextDay = () => {
+    const nextDay = new Date(currentDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    setCurrentDate(nextDay);
   };
 
   return (
@@ -124,11 +139,20 @@ const HomeScreenWeb = ({ navigation }) => {
         </View>
         {chartData.length > 0 ? (
           <View style={styles.chartContainer}>
-            <Text style={styles.chartTitle}>Incomes and expenses</Text> {/* Título de la gráfica */}
+            <Text style={styles.chartTitle}>Incomes and expenses</Text>
+            <View style={styles.dateContainer}>
+              <TouchableOpacity style={styles.dateButton} onPress={handlePrevDay}>
+                <MaterialIcons name="keyboard-arrow-left" size={24} color="black" />
+              </TouchableOpacity>
+              <Text style={styles.dateText}>{currentDate.toDateString()}</Text>
+              <TouchableOpacity style={styles.dateButton} onPress={handleNextDay}>
+                <MaterialIcons name="keyboard-arrow-right" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
             <View style={styles.chartBackground}>
               <PieChart
                 data={chartData}
-                width={screenWidth * 0.7}  // Reduced width of the chart container
+                width={screenWidth * 0.7}
                 height={360}
                 chartConfig={{
                   backgroundColor: "#ffffff",
@@ -144,19 +168,27 @@ const HomeScreenWeb = ({ navigation }) => {
                 absolute={false}
               />
             </View>
-            {/* Ajustes para centrar los iconos */}
             <View style={styles.centeredButtonsContainer}>
-              <AddExpenseButtonWeb onPress={handleAddExpense} />
-              <View style={{width:10}}/>
-              <View style={{ width: 20, marginTop:330}} /> {/* Espacio horizontal entre iconos */}
-              <AddIncomeTextInputWeb onPress={handleAddIncome} />
-              <View style={{width:10}}/>
+              <AddExpenseButtonWeb onPress={() => {}} />
+              <View style={{ width: 10 }} />
+              <View style={{ width: 20, marginTop: 330 }} />
+              <AddIncomeTextInputWeb onPress={() => {}} />
+              <View style={{ width: 10 }} />
             </View>
           </View>
         ) : (
           <View style={styles.buttonsContainer}>
-            <AddExpenseButtonWeb onPress={handleAddExpense} />
-            <AddIncomeTextInputWeb onPress={handleAddIncome} />
+            <View style={styles.dateContainer}>
+              <TouchableOpacity style={styles.dateButton} onPress={handlePrevDay}>
+                <MaterialIcons name="keyboard-arrow-left" size={24} color="black" />
+              </TouchableOpacity>
+              <Text style={styles.dateText}>{currentDate.toDateString()}</Text>
+              <TouchableOpacity style={styles.dateButton} onPress={handleNextDay}>
+                <MaterialIcons name="keyboard-arrow-right" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
+            <AddExpenseButtonWeb/>
+            <AddIncomeTextInputWeb/>
           </View>
         )}
       </View>
@@ -165,91 +197,103 @@ const HomeScreenWeb = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    resizeMode: 'cover',
-  },
-  container: {
-    flex: 1,
-    flexDirection: 'row', // To align menu and content side by side
-  },
-  menuContainer: {
-    flex: 0.1,  // Adjusted width of the menu container
-    backgroundColor: 'white',
-    padding: 10,
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
-    elevation: 5, // For Android shadow
-    shadowColor: '#000', // For iOS shadow
-    shadowOffset: { width: 0, height: 2 }, // For iOS shadow
-    shadowOpacity: 0.8, // For iOS shadow
-    shadowRadius: 2, // For iOS shadow
-    justifyContent: 'space-between', // Align items and logout button
-  },
-  chartContainer: {
-    flex: 0.9,  // Adjusted flex to match the reduced menu width
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  chartBackground: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 10,
-    elevation: 5, // For Android shadow
-    shadowColor: '#000', // For iOS shadow
-    shadowOffset: { width: 0, height: 2 }, // For iOS shadow
-    shadowOpacity: 0.8, // For iOS shadow
-    shadowRadius: 2, // For iOS shadow
-  },
-  chartTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom:60,
-  },
-  buttonsContainer: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-  },
-  centeredButtonsContainer: {
-    position: 'absolute',
-    bottom: 20,
-    flexDirection: 'row',
-    justifyContent: 'center', // Alineación horizontal centrada
-    alignItems: "center"
-  },
-  iconColumn: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-  },
-  iconItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  menuText: {
-    marginLeft: 5,
-    fontSize: 16,
-    alignItems: "center",
-  },
-  logo: {
-    width: 50,
-    height: 50,
-    borderRadius: 10,
-    marginBottom: 20,
-    alignSelf: "center",
-  },
-  logoutContainer: {
-    marginTop: 'auto',
-    marginBottom: 10,
-  },
-  logoutText: {
-    marginLeft: 5,
-    fontSize: 16,
-    color: 'red',
-  },
+background: {
+  flex: 1,
+  resizeMode: 'cover',
+},
+container: {
+  flex: 1,
+  flexDirection: 'row', // To align menu and content side by side
+},
+menuContainer: {
+  flex: 0.1,  // Adjusted width of the menu container
+  backgroundColor: 'white',
+  padding: 10,
+  borderTopRightRadius: 10,
+  borderBottomRightRadius: 10,
+  elevation: 5, // For Android shadow
+  shadowColor: '#000', // For iOS shadow
+  shadowOffset: { width: 0, height: 2 }, // For iOS shadow
+  shadowOpacity: 0.8, // For iOS shadow
+  shadowRadius: 2, // For iOS shadow
+  justifyContent: 'space-between', // Align items and logout button
+},
+dateContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+dateButton: {
+  padding: 10,
+},
+dateText: {
+  fontSize: 18,
+  marginHorizontal: 10,
+},
+chartContainer: {
+  flex: 0.9,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+chartBackground: {
+  backgroundColor: 'white',
+  borderRadius: 10,
+  padding: 10,
+  elevation: 5, // For Android shadow
+  shadowColor: '#000', // For iOS shadow
+  shadowOffset: { width: 0, height: 2 }, // For iOS shadow
+  shadowOpacity: 0.8, // For iOS shadow
+  shadowRadius: 2, // For iOS shadow
+},
+chartTitle: {
+  fontSize: 24,
+  fontWeight: 'bold',
+  marginBottom: 60,
+},
+buttonsContainer: {
+  position: 'absolute',
+  bottom: 20,
+  right: 20,
+  flexDirection: 'column',
+  alignItems: 'flex-end',
+},
+centeredButtonsContainer: {
+  position: 'absolute',
+  bottom: 20,
+  flexDirection: 'row',
+  justifyContent: 'center', // Alineación horizontal centrada
+  alignItems: "center"
+},
+iconColumn: {
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+},
+iconItem: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginVertical: 10,
+},
+menuText: {
+  marginLeft: 5,
+  fontSize: 16,
+  alignItems: "center",
+},
+logo: {
+  width: 50,
+  height: 50,
+  borderRadius: 10,
+  marginBottom: 20,
+  alignSelf: "center",
+},
+logoutContainer: {
+  marginTop: 'auto',
+  marginBottom: 10,
+},
+logoutText: {
+  marginLeft: 5,
+  fontSize: 16,
+  color: 'red',
+},
 });
 
 export default HomeScreenWeb;

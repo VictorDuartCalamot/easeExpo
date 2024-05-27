@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Dimensions, ImageBackground, TouchableOpacity,Image} from 'react-native';
+import { View, StyleSheet, Text, Dimensions, ImageBackground, TouchableOpacity, Image } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { PieChart } from 'react-native-chart-kit';
-import { getExpenses, getIncomes } from '../../services/api_management';
+import { getExpenses, getIncomes, getCategories } from '../../services/api_management';
 import AddExpenseButton from '../../constants/AddExpenseButton';
 import AddIncomeTextInput from '../../constants/AddIncomeTextInput';
 
@@ -12,77 +12,81 @@ const HomeScreenMovil = ({ navigation }) => {
   const [expenses, setExpenses] = useState([]);
   const [incomes, setIncomes] = useState([]);
   const [chartData, setChartData] = useState([]);
-  const [refresh, setRefresh] = useState(false);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [categories, setCategories] = useState({});
+  const [dataLoaded, setDataLoaded] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const handleMenuItemPress = (screen) => {
-    navigation.navigate(screen);
-    setIsMenuOpen(false); // Cierra el menú después de navegar
+  const fetchCategories = async () => {
+    try {
+      const categoriesData = await getCategories();
+      const categoriesMap = {};
+      categoriesData.forEach(category => {
+        categoriesMap[category.id] = { name: category.name, color: category.hexColor };
+      });
+      setCategories(categoriesMap);
+      setDataLoaded(true);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
   };
 
-  const getRandomColor = () => {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
+  const fetchExpenses = async (date) => {
+    try {
+      const dateString = date.toISOString().split('T')[0];
+      const expenseData = await getExpenses({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
+      if (!Array.isArray(expenseData)) {
+        console.error("Error: los datos de expense no son un array");
+        return;
+      }
+      const cleanedExpenseData = expenseData.map((exp) => ({
+        name: categories[exp.category]?.name || 'Sin categoría',
+        population: parseFloat(exp.amount),
+        color: categories[exp.category]?.color || '#000000',
+        legendFontColor: "#7F7F7F",
+        legendFontSize: 15
+      }));
+      setExpenses(cleanedExpenseData);
+    } catch (error) {
+      console.error("Error fetching expenses: ", error);
     }
-    return color;
+  };
+
+  const fetchIncomes = async (date) => {
+    try {
+      const dateString = date.toISOString().split('T')[0];
+      const incomeData = await getIncomes({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
+      if (!Array.isArray(incomeData)) {
+        console.error("Error: los datos de income no son un array");
+        return;
+      }
+      const cleanedIncomeData = incomeData.map((inc) => ({
+        name: categories[inc.category]?.name || 'Sin categoría',
+        population: parseFloat(inc.amount),
+        color: categories[inc.category]?.color || '#000000',
+        legendFontColor: "#7F7F7F",
+        legendFontSize: 15
+      }));
+      setIncomes(cleanedIncomeData);
+    } catch (error) {
+      console.error('Error fetching income:', error);
+    }
+  };
+
+  const fetchAllData = async (date) => {
+    await fetchExpenses(date);
+    await fetchIncomes(date);
   };
 
   useEffect(() => {
-    const fetchExpenses = async () => {
-      const today = new Date();
-      const dateString = today.toISOString().split('T')[0];
+    fetchCategories();
+  }, []);
 
-      try {
-        const expenseData = await getExpenses({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
-        if (!Array.isArray(expenseData)) {
-          console.error("Error: los datos de expense no son un array");
-          return;
-        }
-        const cleanedExpenseData = expenseData.map((exp, index) => ({
-          name: exp.title,
-          population: parseFloat(exp.amount),
-          color: getRandomColor(),
-          legendFontColor: "#7F7F7F",
-          legendFontSize: 15
-        }));
-        setExpenses(cleanedExpenseData);
-      } catch (error) {
-        console.error("Error fetching expenses: ", error);
-      }
-    };
-
-    const fetchIncomes = async () => {
-      const today = new Date();
-      const dateString = today.toISOString().split('T')[0];
-
-      try {
-        const incomeData = await getIncomes({ start_date: dateString, end_date: dateString, start_time: '', end_time: '' });
-        if (!Array.isArray(incomeData)) {
-          console.error("Error: los datos de income no son un array");
-          return;
-        }
-        const cleanedIncomeData = incomeData.map((inc, index) => ({
-          name: inc.title,
-          population: parseFloat(inc.amount),
-          color: getRandomColor(),
-          legendFontColor: "#7F7F7F",
-          legendFontSize: 15
-        }));
-        setIncomes(cleanedIncomeData);
-      } catch (error) {
-        console.error('Error fetching income:', error);
-      }
-    };
-
-    const fetchAllData = async () => {
-      await fetchExpenses();
-      await fetchIncomes();
-    };
-
-    fetchAllData();
-  }, [refresh]);
+  useEffect(() => {
+    if (dataLoaded) {
+      fetchAllData(currentDate);
+    }
+  }, [currentDate, dataLoaded]);
 
   useEffect(() => {
     setChartData([...expenses, ...incomes]);
@@ -92,18 +96,27 @@ const HomeScreenMovil = ({ navigation }) => {
     navigation.navigate('Login');
   };
 
-  const handleAddExpense = () => {
-    setRefresh(!refresh);
+  const handlePrevDay = () => {
+    const prevDay = new Date(currentDate);
+    prevDay.setDate(prevDay.getDate() - 1);
+    setCurrentDate(prevDay);
   };
 
-  const handleAddIncome = () => {
-    setRefresh(!refresh);
+  const handleNextDay = () => {
+    const nextDay = new Date(currentDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    setCurrentDate(nextDay);
+  };
+
+  const handleMenuItemPress = (screen) => {
+    navigation.navigate(screen);
+    setIsMenuOpen(false);
   };
 
   return (
     <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
       <View>
-      <Image source={require('../../pictures/logo.png')} style={styles.logo} />
+        <Image source={require('../../pictures/logo.png')} style={styles.logo} />
       </View>
       <View style={styles.container}>
         <TouchableOpacity onPress={() => setIsMenuOpen(!isMenuOpen)} style={styles.menuButton}>
@@ -143,41 +156,43 @@ const HomeScreenMovil = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         )}
-        {chartData.length > 0 ? (
-          <>
-            <View style={styles.chartContainer}>
-              <Text style={styles.chartTitle}>Incomes and expenses</Text>
-              <View style={styles.chartBackground}>
-                <PieChart
-                  data={chartData}
-                  width={screenWidth - 40}
-                  height={220}
-                  chartConfig={{
-                    backgroundColor: "#ffffff",
-                    backgroundGradientFrom: "#ffffff",
-                    backgroundGradientTo: "#ffffff",
-                    decimalPlaces: 2,
-                    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                  }}
-                  accessor={"population"}
-                  backgroundColor={"transparent"}
-                  paddingLeft={"15"}
-                  center={[0, 0]}
-                  absolute={false}
-                />
-              </View>
-            </View>
-            <View style={styles.buttonsContainer}>
-              <AddExpenseButton onPress={handleAddExpense} />
-              <AddIncomeTextInput onPress={handleAddIncome} />
-            </View>
-          </>
-        ) : (
-          <View style={styles.buttonsContainer}>
-            <AddExpenseButton onPress={handleAddExpense} />
-            <AddIncomeTextInput onPress={handleAddIncome} />
+        <View style={styles.chartContainer}>
+          <Text style={styles.chartTitle}>Incomes and expenses</Text>
+          <View style={styles.dateContainer}>
+            <TouchableOpacity style={styles.dateButton} onPress={handlePrevDay}>
+              <MaterialIcons name="keyboard-arrow-left" size={24} color="black" />
+            </TouchableOpacity>
+            <Text style={styles.dateText}>{currentDate.toDateString()}</Text>
+            <TouchableOpacity style={styles.dateButton} onPress={handleNextDay}>
+              <MaterialIcons name="keyboard-arrow-right" size={24} color="black" />
+            </TouchableOpacity>
           </View>
-        )}
+          {chartData.length > 0 ? (
+            <View style={styles.chartBackground}>
+              <PieChart
+                data={chartData}
+                width={screenWidth - 40}
+                height={220}
+                chartConfig={{
+                  backgroundColor: "#ffffff",
+                  backgroundGradientFrom: "#ffffff",
+                  backgroundGradientTo: "#ffffff",
+                  decimalPlaces: 2,
+                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                }}
+                accessor={"population"}
+                backgroundColor={"transparent"}
+                paddingLeft={"15"}
+                center={[0, 0]}
+                absolute={false}
+              />
+            </View>
+          ) : null}
+        </View>
+        <View style={styles.buttonsContainer}>
+          <AddExpenseButton onPress={() => {}} />
+          <AddIncomeTextInput onPress={() => {}} />
+        </View>
       </View>
     </ImageBackground>
   );
@@ -190,14 +205,13 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    flexDirection: 'row',
     position: 'relative',
   },
   menuButton: {
     position: 'absolute',
     marginTop: 20,
     left: 0,
-    zIndex: 2, // Asegura que el botón esté por encima del menú desplegable
+    zIndex: 2,
     padding: 10,
   },
   menuDropdown: {
@@ -207,12 +221,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     paddingVertical: 20,
     paddingHorizontal: 10,
-    zIndex: 1, // Asegura que el menú esté por encima de otros elementos
-    elevation: 5, // Para sombra en Android
-    shadowColor: '#000', // Para sombra en iOS
-    shadowOffset: { width: 0, height: 2 }, // Para sombra en iOS
-    shadowOpacity: 0.8, // Para sombra en iOS
-    shadowRadius: 2, // Para sombra en iOS
+    zIndex: 2,
   },
   menuItem: {
     flexDirection: 'row',
@@ -220,52 +229,53 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   menuText: {
-    fontSize: 16,
     marginLeft: 10,
+    fontSize: 16,
   },
   chartContainer: {
     flex: 1,
-    alignItems: 'center',
+    padding: 20,
     justifyContent: 'center',
-    marginTop: 10,
-  },
-  chartBackground: {
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 10,
-    elevation: 3,
-    marginVertical: 20,
-    width: 400,
-    alignItems: 'center',
-    left: 130
   },
   chartTitle: {
-    fontSize: 18,
+    fontSize: 20,
+    textAlign: 'center',
     fontWeight: 'bold',
     marginBottom: 10,
-    textAlign: 'center',
-    left:130  
   },
-  centeredButtonsContainer: {
+  dateContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
+    justifyContent: 'center',
+    marginBottom: 10,
+  },
+  dateButton: {
+    paddingHorizontal: 10,
+  },
+  dateText: {
+    fontSize: 16,
+  },
+  chartBackground: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 4,
   },
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    marginTop: 400,
-    right:75
+    marginBottom: 20,
   },
   logo: {
-    width: 90, // Ajusta el tamaño del logo
-    height: 90,
-    resizeMode: 'contain', // Para que el logo mantenga su proporción
-    alignSelf:"center",
-    borderRadius: 30,
-    position:"absolute",
-    marginTop:90,
+    width: 100,
+    height: 100,
+    alignSelf: 'center',
+    marginTop: 20,
   },
 });
 

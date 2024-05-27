@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, TextInput } from 'react-native';
-import { getExpenses, getCategories, getSubCategories, deleteExpense, modifyExpense } from '../../services/api_management';
+import { View, Text, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, TextInput, Modal, Button } from 'react-native';
+import { getExpenses, getCategories, getSubCategories, deleteExpense, updateExpense, updateIncome } from '../../services/api_management';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { FontAwesome5 } from '@expo/vector-icons';
+import RNPickerSelect from 'react-native-picker-select';
 
 const SummaryScreenWeb = () => {
   const [dateRange, setDateRange] = useState([new Date(), new Date()]);
   const [expenses, setExpenses] = useState([]);
   const [categories, setCategories] = useState({});
   const [subCategories, setSubCategories] = useState({});
-  const [dataLoaded, setDataLoaded] = useState(false); // Track if categories and subcategories are loaded
+  const [dataLoaded, setDataLoaded] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
+  const [updateForm, setUpdateForm] = useState({ title: '', description: '', amount: '', category: '', subcategory: '', type: '' });
+  const [filteredSubCategories, setFilteredSubCategories] = useState([]);
 
   const fetchCategoriesAndSubCategories = async () => {
     try {
@@ -18,17 +23,17 @@ const SummaryScreenWeb = () => {
       
       const categoriesMap = {};
       categoriesData.forEach(category => {
-        categoriesMap[category.id] = { name: category.name, color: category.hexColor };
+        categoriesMap[category.id] = { name: category.name, color: category.hexColor, type: category.type };
       });
       
       const subCategoriesMap = {};
       subCategoriesData.forEach(subCategory => {
-        subCategoriesMap[subCategory.id] = { name: subCategory.name, color: subCategory.hexColor };
+        subCategoriesMap[subCategory.id] = { name: subCategory.name, color: subCategory.hexColor, category: subCategory.category };
       });
 
       setCategories(categoriesMap);
       setSubCategories(subCategoriesMap);
-      setDataLoaded(true); // Set dataLoaded to true once data is fetched
+      setDataLoaded(true);
     } catch (error) {
       console.error('Error fetching categories or subcategories:', error);
     }
@@ -48,6 +53,7 @@ const SummaryScreenWeb = () => {
         categoryColor: categories[expense.category]?.color || 'no data',
         subCategoryName: subCategories[expense.subcategory]?.name || 'no data',
         subCategoryColor: subCategories[expense.subcategory]?.color || 'no data',
+        type: 'expense'
       }));
       setExpenses(enrichedExpenses.reverse());
     } catch (error) {
@@ -65,18 +71,58 @@ const SummaryScreenWeb = () => {
     }
   };
 
-  const handleModifyExpense = async (expenseId, newData) => {
+  const handleModifyItem = (item) => {
+    setSelectedItem(item);
+    setUpdateForm({
+      title: item.title,
+      description: item.description,
+      amount: item.amount.toString(),
+      category: item.category || '',
+      subcategory: item.subcategory || '',
+      type: item.type
+    });
+    setIsUpdateModalVisible(true);
+
+    if (item.category) {
+      handleCategoryChange(item.category);
+    }
+  };
+
+  const handleCategoryChange = (value) => {
+    setUpdateForm({ ...updateForm, category: value, subcategory: '' });
+
+    if (value) {
+      const filtered = Object.keys(subCategories)
+        .filter(key => subCategories[key].category === value)
+        .map(key => ({ label: subCategories[key].name, value: key }));
+      setFilteredSubCategories(filtered);
+    } else {
+      setFilteredSubCategories([]);
+    }
+  };
+
+  const handleUpdateItem = async () => {
     try {
-      await modifyExpense(expenseId, newData);
-      const updatedExpenses = expenses.map(expense => {
-        if (expense.id === expenseId) {
-          return { ...expense, ...newData };
-        }
-        return expense;
-      });
+      const updatedItem = {
+        ...selectedItem,
+        title: updateForm.title,
+        description: updateForm.description,
+        amount: parseFloat(updateForm.amount),
+        category: updateForm.category,
+        subcategory: updateForm.subcategory
+      };
+
+      if (selectedItem.type === 'expense') {
+        await updateExpense(updatedItem, updatedItem.id);
+      } else {
+        await updateIncome(updatedItem, updatedItem.id);
+      }
+
+      const updatedExpenses = expenses.map(expense => expense.id === updatedItem.id ? updatedItem : expense);
       setExpenses(updatedExpenses);
+      setIsUpdateModalVisible(false);
     } catch (error) {
-      console.error('Error modifying expense:', error);
+      console.error('Error updating item:', error);
     }
   };
 
@@ -168,7 +214,7 @@ const SummaryScreenWeb = () => {
                     <TouchableOpacity onPress={() => handleDeleteExpense(expense.id)}>
                       <FontAwesome5 name="trash-alt" size={20} color="red" />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleModifyExpense(expense.id, { /* your new data here */ })}>
+                    <TouchableOpacity onPress={() => handleModifyItem(expense)}>
                       <FontAwesome5 name="edit" size={20} color="blue" />
                     </TouchableOpacity>
                   </View>
@@ -177,107 +223,192 @@ const SummaryScreenWeb = () => {
             </View>
           </View>
         )}
+        <Modal
+          visible={isUpdateModalVisible}
+          animationType="slide"
+          transparent={false}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Actualizar Item</Text>
+              <TextInput
+                style={styles.modalInput}
+                placeholder={selectedItem ? selectedItem.title : "Título"}
+                value={updateForm.title}
+                onChangeText={text => setUpdateForm({ ...updateForm, title: text })}
+              />
+              <TextInput
+                style={styles.modalInput}
+                placeholder={selectedItem ? selectedItem.description : "Descripción"}
+                value={updateForm.description}
+                onChangeText={text => setUpdateForm({ ...updateForm, description: text })}
+              />
+              <TextInput
+                style={styles.modalInput}
+                placeholder={selectedItem ? selectedItem.amount.toString() : "Monto"}
+                value={updateForm.amount}
+                onChangeText={text => setUpdateForm({ ...updateForm, amount: text })}
+                keyboardType="numeric"
+              />
+              <RNPickerSelect
+                onValueChange={handleCategoryChange}
+                items={Object.keys(categories).map(key => ({
+                  label: categories[key].name,
+                  value: key,
+                }))}
+                value={updateForm.category}
+                placeholder={{ label: "Seleccionar Categoría", value: null }}
+                style={pickerSelectStyles}
+              />
+              <RNPickerSelect
+                onValueChange={value => setUpdateForm({ ...updateForm, subcategory: value })}
+                items={filteredSubCategories}
+                value={updateForm.subcategory}
+                placeholder={{ label: "Seleccionar Subcategoría", value: null }}
+                style={pickerSelectStyles}
+              />
+              <Button title="Actualizar" onPress={handleUpdateItem} />
+              <Button title="Cancelar" onPress={() => setIsUpdateModalVisible(false)} />
+            </View>
+          </View>
+        </Modal>
       </ScrollView>
     </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  // Define your styles here
   background: {
     flex: 1,
     resizeMode: 'cover',
   },
   container: {
-    alignItems: 'center',
-    marginTop: 40,
-    padding: 20,
-    paddingTop: 50,
     flexGrow: 1,
+    padding: 20,
+    alignItems: 'center',
   },
   calendarContainer: {
-    width: '100%',
-    alignItems: 'center',
     marginBottom: 20,
   },
   inputContainer: {
+    width: '80%',
     marginBottom: 10,
-    width: '100%',
-    maxWidth: 600,
   },
   label: {
-    marginBottom: 5,
-    color: '#FFFFFF',
+    fontSize: 16,
+    color: '#fff',
   },
   input: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#fff',
     padding: 10,
     borderRadius: 5,
-    width: '100%',
+    marginBottom: 10,
   },
   searchButton: {
-    backgroundColor: '#50cebb',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    backgroundColor: '#007BFF',
+    padding: 10,
     borderRadius: 5,
-    alignSelf: 'center',
-    marginVertical: 10,
+    marginBottom: 20,
   },
   searchButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: '#fff',
+    fontSize: 16,
   },
   expensesContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-    marginBottom: 20,
     width: '100%',
+    marginTop: 20,
   },
   expensesTitle: {
-    fontWeight: 'bold',
+    fontSize: 18,
+    color: '#fff',
     marginBottom: 10,
-    color: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   gridContainer: {
-    flexDirection: 'row',
+    display: 'flex',
     flexWrap: 'wrap',
-    justifyContent: 'center',
-  },
-  expenseItem: {
-    margin: 10,
-    alignItems: 'flex-start',
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#000',
-    padding: 10,
-    borderRadius: 10,
-    width: 300,
-    maxHeight: 280,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  redText: {
-    color: 'red',
-  },
-  blueText: {
-    color: 'blue',
-    fontWeight: 'bold',
-  },
-  categoryContainer: {
-    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
+  expenseItem: {
+    width: '48%',
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  blueText: {
+    color: '#007BFF',
+  },
+  redText: {
+    color: '#FF4136',
+  },
+  categoryContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
   colorCircle: {
-    width: 15,
-    height: 15,
-    borderRadius: 7.5,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
     marginLeft: 5,
   },
   iconContainer: {
+    display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%',
     marginTop: 10,
   },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    marginBottom: 20,
+  },
+  modalInput: {
+    backgroundColor: '#eee',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
 });
+
+const pickerSelectStyles = {
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    color: 'black',
+    paddingRight: 30,
+    marginBottom: 10,
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.5,
+    borderColor: 'purple',
+    borderRadius: 8,
+    color: 'black',
+    paddingRight: 30,
+    marginBottom: 10,
+  },
+};
 
 export default SummaryScreenWeb;
