@@ -178,6 +178,7 @@ const HomeScreenWeb = ({ navigation }) => {
           </View>
         ) : (
           <View style={styles.emptyStateContainer}>
+              <Text style={styles.chartTitle}>Incomes and expenses</Text>
             <View style={styles.dateContainer}>
               <TouchableOpacity style={styles.dateButton} onPress={handlePrevDay}>
                 <MaterialIcons name="keyboard-arrow-left" size={24} color="black" />
@@ -186,9 +187,16 @@ const HomeScreenWeb = ({ navigation }) => {
               <TouchableOpacity style={styles.dateButton} onPress={handleNextDay}>
                 <MaterialIcons name="keyboard-arrow-right" size={24} color="black" />
               </TouchableOpacity>
+
+             
             </View>
+            <View style={[styles.chartBackground, {alignItems: 'center'}]}>
+                    <Text>No expenses or incomes available</Text>
+                  </View>
+            <View style={{flexDirection:"row"}}>
             <AddExpenseButtonWeb />
             <AddIncomeTextInputWeb />
+            </View>
           </View>
         )}
       </View>
@@ -298,6 +306,11 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontSize: 16,
     color: 'red',
+  },
+  noDataText: {
+    fontSize: 18,
+    marginTop: 10, // Espacio entre la fecha y el texto
+    textAlign: 'center',
   },
 });
 
