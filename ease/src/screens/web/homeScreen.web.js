@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Dimensions, Image, ImageBackground, TouchableOpacity, Button } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, Image, ImageBackground, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { PieChart } from 'react-native-chart-kit';
 import { getExpenses, getIncomes, getCategories } from '../../services/api_management';
@@ -30,6 +30,24 @@ const HomeScreenWeb = ({ navigation }) => {
     }
   };
 
+  const groupDataByCategory = (data) => {
+    const groupedData = data.reduce((acc, item) => {
+      const category = categories[item.category] || { name: 'Sin categoría', color: '#000000' };
+      if (!acc[category.name]) {
+        acc[category.name] = {
+          name: category.name,
+          population: 0,
+          color: category.color,
+          legendFontColor: "#7F7F7F",
+          legendFontSize: 15
+        };
+      }
+      acc[category.name].population += parseFloat(item.amount);
+      return acc;
+    }, {});
+    return Object.values(groupedData);
+  };
+
   const fetchExpenses = async (date) => {
     try {
       const dateString = date.toISOString().split('T')[0];
@@ -38,14 +56,8 @@ const HomeScreenWeb = ({ navigation }) => {
         console.error("Error: los datos de expense no son un array");
         return;
       }
-      const cleanedExpenseData = expenseData.map((exp) => ({
-        name: categories[exp.category]?.name || 'Sin categoría',
-        population: parseFloat(exp.amount),
-        color: categories[exp.category]?.color || '#000000',
-        legendFontColor: "#7F7F7F",
-        legendFontSize: 15
-      }));
-      setExpenses(cleanedExpenseData);
+      const groupedExpenses = groupDataByCategory(expenseData);
+      setExpenses(groupedExpenses);
     } catch (error) {
       console.error("Error fetching expenses: ", error);
     }
@@ -59,14 +71,8 @@ const HomeScreenWeb = ({ navigation }) => {
         console.error("Error: los datos de income no son un array");
         return;
       }
-      const cleanedIncomeData = incomeData.map((inc) => ({
-        name: categories[inc.category]?.name || 'Sin categoría',
-        population: parseFloat(inc.amount),
-        color: categories[inc.category]?.color || '#000000',
-        legendFontColor: "#7F7F7F",
-        legendFontSize: 15
-      }));
-      setIncomes(cleanedIncomeData);
+      const groupedIncomes = groupDataByCategory(incomeData);
+      setIncomes(groupedIncomes);
     } catch (error) {
       console.error('Error fetching income:', error);
     }
@@ -125,7 +131,7 @@ const HomeScreenWeb = ({ navigation }) => {
               <MaterialIcons name="chat" size={24} color="black" />
               <Text style={styles.menuText}>Chat</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('Financer Asistant')}>
+            <TouchableOpacity style={styles.iconItem} onPress={() => navigation.navigate('Financer Assistant')}>
               <MaterialIcons name="assistant" size={24} color="black" />
               <Text style={styles.menuText}>Financer Assistant</Text>
             </TouchableOpacity>
@@ -178,7 +184,7 @@ const HomeScreenWeb = ({ navigation }) => {
           </View>
         ) : (
           <View style={styles.emptyStateContainer}>
-              <Text style={styles.chartTitle}>Incomes and expenses</Text>
+            <Text style={styles.chartTitle}>Incomes and expenses</Text>
             <View style={styles.dateContainer}>
               <TouchableOpacity style={styles.dateButton} onPress={handlePrevDay}>
                 <MaterialIcons name="keyboard-arrow-left" size={24} color="black" />
@@ -187,15 +193,13 @@ const HomeScreenWeb = ({ navigation }) => {
               <TouchableOpacity style={styles.dateButton} onPress={handleNextDay}>
                 <MaterialIcons name="keyboard-arrow-right" size={24} color="black" />
               </TouchableOpacity>
-
-             
             </View>
-            <View style={[styles.chartBackground, {alignItems: 'center'}]}>
-                    <Text>No expenses or incomes available</Text>
-                  </View>
-            <View style={{flexDirection:"row"}}>
-            <AddExpenseButtonWeb />
-            <AddIncomeTextInputWeb />
+            <View style={[styles.chartBackground, { alignItems: 'center' }]}>
+              <Text>No expenses or incomes available</Text>
+            </View>
+            <View style={{ flexDirection: "row" }}>
+              <AddExpenseButtonWeb />
+              <AddIncomeTextInputWeb />
             </View>
           </View>
         )}
