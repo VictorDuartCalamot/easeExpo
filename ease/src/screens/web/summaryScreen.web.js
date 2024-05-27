@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, TextInput, Modal, Button } from 'react-native';
-import { getExpenses, getCategories, getSubCategories, deleteExpense, updateExpense, updateIncome, getIncomes } from '../../services/api_management';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
+import { getExpenses, getCategories, getSubCategories, deleteExpense, updateExpense, updateIncome, getIncomes, deleteIncome } from '../../services/api_management';
+import { DateRangePicker } from 'react-date-range';
 import { FontAwesome5 } from '@expo/vector-icons';
 import RNPickerSelect from 'react-native-picker-select';
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
+import moment from 'moment';
 
 const SummaryScreenWeb = () => {
-  const [dateRange, setDateRange] = useState([new Date(), new Date()]);
+  const [dateRange, setDateRange] = useState([{ startDate: new Date(), endDate: new Date(), key: 'selection' }]);
   const [categories, setCategories] = useState({});
   const [items, setItems] = useState([]);
   const [subCategories, setSubCategories] = useState({});
@@ -16,6 +18,7 @@ const SummaryScreenWeb = () => {
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [updateForm, setUpdateForm] = useState({ title: '', description: '', amount: '', category: '', subcategory: '', type: '' });
   const [filteredSubCategories, setFilteredSubCategories] = useState([]);
+  const [filteredCategories, setFilteredCategories] = useState([]);
 
   const fetchCategoriesAndSubCategories = async () => {
     try {
@@ -45,10 +48,11 @@ const SummaryScreenWeb = () => {
 
   const handleFetchItems = async () => {
     try {
-      const [startDate, endDate] = dateRange;
+      const startDate = moment(dateRange[0].startDate).format('YYYY-MM-DD');
+      const endDate = moment(dateRange[0].endDate).format('YYYY-MM-DD')
       const [expenseData, incomeData] = await Promise.all([
-        getExpenses({ start_date: startDate.toISOString().slice(0, 10), end_date: endDate.toISOString().slice(0, 10) }),
-        getIncomes({ start_date: startDate.toISOString().slice(0, 10), end_date: endDate.toISOString().slice(0, 10) })
+        getExpenses({ start_date: startDate, end_date: endDate }),
+        getIncomes({ start_date: startDate, end_date: endDate })
       ]);
 
       const enrichedExpenses = expenseData.map(expense => ({
@@ -95,13 +99,29 @@ const SummaryScreenWeb = () => {
 
   const handleModifyItem = (item) => {
     setSelectedItem(item);
-    setUpdateForm({
-      title: item.title,
-      description: item.description,
-      amount: item.amount.toString(),
-      category: item.category || '',
-      subcategory: item.subcategory || ''
-    });
+    if(item.type === 'expense') {
+      setUpdateForm({
+        title: item.title,
+        description: item.description,
+        amount: item.amount.toString(),
+        category: item.category || '',
+        subcategory: item.subcategory || ''
+      });
+    } else {
+      setUpdateForm({
+        title: item.title,
+        description: item.description,
+        amount: item.amount.toString(),
+        category: item.category || '',        
+      });
+    }
+    
+    // Filter categories based on item type
+    const filteredCats = Object.keys(categories)
+      .filter(key => categories[key].type === item.type)
+      .map(key => ({ label: categories[key].name, value: key }));
+    setFilteredCategories(filteredCats);
+
     setIsUpdateModalVisible(true);
 
     // Actualizar subcategorías filtradas
@@ -130,11 +150,11 @@ const SummaryScreenWeb = () => {
         title: updateForm.title,
         description: updateForm.description,
         amount: parseFloat(updateForm.amount),
-        category: updateForm.category,
-        subcategory: updateForm.subcategory
+        category: updateForm.category,        
       };
 
       if (selectedItem.type === 'expense') {
+        updatedItem.subcategory = updateForm.subcategory;
         await updateExpense(updatedItem, updatedItem.id);
       } else {
         await updateIncome(updatedItem, updatedItem.id);
@@ -149,40 +169,28 @@ const SummaryScreenWeb = () => {
   };
 
   const handleSearch = () => {
-    if (dataLoaded && dateRange[0] && dateRange[1]) {
+    if ((dataLoaded) && (dateRange[0] || dateRange[1])) {
       handleFetchItems();
     } else {
       console.warn('Please select both start and end dates.');
     }
   };
 
+  const handleDateRangeChange = (item) => {
+    setDateRange([item.selection]);
+  };
+
   return (
     <ImageBackground source={require('../../pictures/fondo2.jpg')} style={styles.background}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.calendarContainer}>
-          <Calendar
-            selectRange
-            onChange={setDateRange}
-            value={dateRange}
-            className="calendar"
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Start date:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="YYYY-MM-DD"
-            onChangeText={text => setDateRange([new Date(text), dateRange[1]])}
-            value={dateRange[0].toISOString().slice(0, 10)}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Ending date:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="YYYY-MM-DD"
-            onChangeText={text => setDateRange([dateRange[0], new Date(text)])}
-            value={dateRange[1].toISOString().slice(0, 10)}
+          <DateRangePicker
+            ranges={dateRange}
+            onChange={handleDateRangeChange}
+            showSelectionPreview={true}
+            moveRangeOnFirstSelection={false}
+            months={1}
+            direction="horizontal"
           />
         </View>
         <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
@@ -191,17 +199,17 @@ const SummaryScreenWeb = () => {
         {items.length > 0 && (
           <View style={styles.expensesContainer}>
             <Text style={styles.expensesTitle}>
-              Expense and Income between {dateRange[0].toISOString().slice(0, 10)} and {dateRange[1].toISOString().slice(0, 10)}:
+              Expense and Income between {moment(dateRange[0].startDate).format('YYYY-MM-DD')} and {moment(dateRange[0].endDate).format('YYYY-MM-DD')}:
             </Text>
             <View style={styles.gridContainer}>
               {items.map((item) => (
-                  <View
-                    key={item.id}
-                    style={[
-                      styles.expenseItem,
-                      { borderColor: item.type === 'expense' ? 'red' : 'green' }
-                    ]}
-                  >
+                <View
+                  key={item.id}
+                  style={[
+                    styles.expenseItem,
+                    { borderColor: item.type === 'expense' ? 'red' : 'green' }
+                  ]}
+                >
                   <Text style={styles.itemTypeText}>
                     {item.type === 'expense' ? 'Expense' : 'Income'}
                   </Text>
@@ -217,7 +225,7 @@ const SummaryScreenWeb = () => {
                   <Text>{item.creation_time}</Text>
                   <View style={styles.categoryContainer}>
                     <Text style={styles.blueText}>
-                        Category: {item.categoryName}
+                      Category: {item.categoryName}
                     </Text>
                     {item.categoryColor && (
                       <View 
@@ -245,7 +253,7 @@ const SummaryScreenWeb = () => {
                   )}
                   <View style={styles.flexGrow} />
                   <View style={styles.iconContainer}>
-                    <TouchableOpacity onPress={() => handleDeleteExpense(item.id, item.type)}>
+                    <TouchableOpacity onPress={() => handleDeleteItem(item.id, item.type)}>
                       <FontAwesome5 name="trash-alt" size={20} color="red" />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => handleModifyItem(item)}>
@@ -257,7 +265,7 @@ const SummaryScreenWeb = () => {
             </View>
           </View>
         )}
-       <Modal
+        <Modal
           visible={isUpdateModalVisible}
           animationType="slide"
           transparent={true}
@@ -288,21 +296,20 @@ const SummaryScreenWeb = () => {
               />
               <RNPickerSelect
                 onValueChange={handleCategoryChange}
-                items={Object.keys(categories).map(key => ({
-                  label: categories[key].name,
-                  value: key,
-                }))}
+                items={filteredCategories}
                 value={updateForm.category}
                 placeholder={{ label: "Select a category...", value: null }}
                 style={pickerSelectStyles}
-              />
-              <RNPickerSelect
-                onValueChange={value => setUpdateForm({ ...updateForm, subcategory: value })}
-                items={filteredSubCategories}
-                value={updateForm.subcategory}
-                placeholder={{ label: "Select a subcategory...", value: null }}
-                style={pickerSelectStyles}
-              />
+              />              
+              {selectedItem?.type === 'expense' && (
+                <RNPickerSelect              
+                  onValueChange={value => setUpdateForm({ ...updateForm, subcategory: value })}
+                  items={filteredSubCategories}
+                  value={updateForm.subcategory}
+                  placeholder={{ label: "Select a subcategory...", value: null }}
+                  style={pickerSelectStyles}
+                />
+              )}
               <View style={styles.buttonContainer}>
                 <Button title="Update" onPress={handleUpdateItem} />
               </View>
@@ -328,25 +335,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   calendarContainer: {
-    marginTop:75,
-  },
-  inputContainer: {
-    width: '80%',
-    marginBottom: 10,
-  },
-  label: {
-    fontSize: 16,
-    color: '#fff',
-    width:100,
-    alignSelf:"center",
-    },
-  input: {
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 10,
-    alignSelf:"center",
-    width:250,
+    marginTop: 75,
   },
   searchButton: {
     backgroundColor: '#007BFF',
@@ -430,9 +419,11 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   buttonContainer: {
+    marginTop: 10,
     marginBottom: 10, // Espacio entre botones
   },
 });
+
 const pickerSelectStyles = {
   inputIOS: {
     fontSize: 16,
@@ -444,7 +435,6 @@ const pickerSelectStyles = {
     color: 'black',
     paddingRight: 30,
     marginBottom: 20, // Espacio entre selectores
-    padding: 20,
   },
   inputAndroid: {
     fontSize: 16,
