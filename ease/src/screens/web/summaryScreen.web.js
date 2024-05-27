@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, TextInput, Modal, Button } from 'react-native';
-import { getExpenses, getCategories, getSubCategories, deleteExpense, updateExpense, updateIncome } from '../../services/api_management';
+import { getExpenses, getCategories, getSubCategories, deleteExpense, updateExpense, updateIncome, getIncomes } from '../../services/api_management';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -8,8 +8,8 @@ import RNPickerSelect from 'react-native-picker-select';
 
 const SummaryScreenWeb = () => {
   const [dateRange, setDateRange] = useState([new Date(), new Date()]);
-  const [expenses, setExpenses] = useState([]);
   const [categories, setCategories] = useState({});
+  const [items, setItems] = useState([]);
   const [subCategories, setSubCategories] = useState({});
   const [dataLoaded, setDataLoaded] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -43,10 +43,14 @@ const SummaryScreenWeb = () => {
     fetchCategoriesAndSubCategories();
   }, []);
 
-  const handleFetchExpenses = async () => {
+  const handleFetchItems = async () => {
     try {
       const [startDate, endDate] = dateRange;
-      const expenseData = await getExpenses({ start_date: startDate.toISOString().slice(0, 10), end_date: endDate.toISOString().slice(0, 10) });
+      const [expenseData, incomeData] = await Promise.all([
+        getExpenses({ start_date: startDate.toISOString().slice(0, 10), end_date: endDate.toISOString().slice(0, 10) }),
+        getIncomes({ start_date: startDate.toISOString().slice(0, 10), end_date: endDate.toISOString().slice(0, 10) })
+      ]);
+
       const enrichedExpenses = expenseData.map(expense => ({
         ...expense,
         categoryName: categories[expense.category]?.name || 'no data',
@@ -55,19 +59,37 @@ const SummaryScreenWeb = () => {
         subCategoryColor: subCategories[expense.subcategory]?.color || 'no data',
         type: 'expense'
       }));
-      setExpenses(enrichedExpenses.reverse());
+
+      const enrichedIncomes = incomeData.map(income => ({
+        ...income,
+        categoryName: categories[income.category]?.name || 'no data',
+        categoryColor: categories[income.category]?.color || 'no data',
+        type: 'income'
+      }));
+
+      const combinedData = [...enrichedExpenses, ...enrichedIncomes].sort((a, b) => {
+        const dateComparison = new Date(a.creation_date) - new Date(b.creation_date);
+        if (dateComparison !== 0) return dateComparison;
+        return a.creation_time.localeCompare(b.creation_time);
+      }).reverse();
+
+      setItems(combinedData);
     } catch (error) {
-      console.error('Error fetching expenses:', error);
+      console.error('Error fetching expenses or incomes:', error);
     }
   };
 
-  const handleDeleteExpense = async (expenseId) => {
+  const handleDeleteItem = async (itemId, itemType) => {
     try {
-      await deleteExpense(expenseId);
-      const updatedExpenses = expenses.filter(expense => expense.id !== expenseId);
-      setExpenses(updatedExpenses);
+      if (itemType === 'expense') {
+        await deleteExpense(itemId);
+      } else {
+        await deleteIncome(itemId);
+      }
+      const updatedItems = items.filter(item => item.id !== itemId);
+      setItems(updatedItems);
     } catch (error) {
-      console.error('Error deleting expense:', error);
+      console.error('Error deleting item:', error);
     }
   };
 
@@ -78,11 +100,11 @@ const SummaryScreenWeb = () => {
       description: item.description,
       amount: item.amount.toString(),
       category: item.category || '',
-      subcategory: item.subcategory || '',
-      type: item.type
+      subcategory: item.subcategory || ''
     });
     setIsUpdateModalVisible(true);
 
+    // Actualizar subcategorías filtradas
     if (item.category) {
       handleCategoryChange(item.category);
     }
@@ -118,8 +140,8 @@ const SummaryScreenWeb = () => {
         await updateIncome(updatedItem, updatedItem.id);
       }
 
-      const updatedExpenses = expenses.map(expense => expense.id === updatedItem.id ? updatedItem : expense);
-      setExpenses(updatedExpenses);
+      const updateItems = items.map(expense => expense.id === updatedItem.id ? updatedItem : expense);
+      setItems(updateItems);
       setIsUpdateModalVisible(false);
     } catch (error) {
       console.error('Error updating item:', error);
@@ -128,7 +150,7 @@ const SummaryScreenWeb = () => {
 
   const handleSearch = () => {
     if (dataLoaded && dateRange[0] && dateRange[1]) {
-      handleFetchExpenses();
+      handleFetchItems();
     } else {
       console.warn('Please select both start and end dates.');
     }
@@ -166,55 +188,67 @@ const SummaryScreenWeb = () => {
         <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
           <Text style={styles.searchButtonText}>Search</Text>
         </TouchableOpacity>
-        {expenses.length > 0 && (
+        {items.length > 0 && (
           <View style={styles.expensesContainer}>
             <Text style={styles.expensesTitle}>
-              Expense between {dateRange[0].toISOString().slice(0, 10)} y {dateRange[1].toISOString().slice(0, 10)}:
+              Expense and Income between {dateRange[0].toISOString().slice(0, 10)} y {dateRange[1].toISOString().slice(0, 10)}:
             </Text>
             <View style={styles.gridContainer}>
-              {expenses.map((expense) => (
-                <View key={expense.id} style={styles.expenseItem}>
+              {items.map((item) => (
+                  <View
+                    key={item.id}
+                    style={[
+                      styles.expenseItem,
+                      { borderColor: item.type === 'expense' ? 'red' : 'green' }
+                    ]}
+                  >
+                  <Text style={styles.itemTypeText}>
+                    {item.type === 'expense' ? 'Expense' : 'Income'}
+                  </Text>
                   <Text style={styles.blueText}>Title:</Text>
-                  <Text>{expense.title}</Text>
+                  <Text>{item.title}</Text>
                   <Text style={styles.blueText}>Description:</Text>
-                  <Text>{expense.description}</Text>
+                  <Text>{item.description}</Text>
                   <Text style={styles.blueText}>Total:</Text>
-                  <Text>€{expense.amount}</Text>
+                  <Text>€{item.amount}</Text>
                   <Text style={styles.blueText}>Date:</Text>
-                  <Text>{expense.creation_date}</Text>
+                  <Text>{item.creation_date}</Text>
                   <Text style={styles.blueText}>Hour:</Text>
-                  <Text>{expense.creation_time}</Text>
+                  <Text>{item.creation_time}</Text>
                   <View style={styles.categoryContainer}>
-                    <Text style={[styles.blueText, styles.redText]}>
-                      Category: {expense.categoryName}
+                    <Text style={styles.blueText}>
+                        Category: {item.categoryName}
                     </Text>
-                    {expense.categoryColor && (
+                    {item.categoryColor && (
                       <View 
                         style={[
                           styles.colorCircle, 
-                          { backgroundColor: expense.categoryColor }
+                          { backgroundColor: item.categoryColor }
                         ]} 
                       />
                     )}
                   </View>
-                  <View style={styles.categoryContainer}>
-                    <Text style={styles.redText}>
-                      Subcategory: {expense.subCategoryName}
-                    </Text>
-                    {expense.subCategoryColor && (
-                      <View 
-                        style={[
-                          styles.colorCircle, 
-                          { backgroundColor: expense.subCategoryColor }
-                        ]} 
-                      />
-                    )}
-                  </View>
+                  {item.type === 'expense' && (
+                    <View style={styles.categoryContainer}>
+                      <Text style={styles.blueText}>
+                        Subcategory: {item.subCategoryName}
+                      </Text>
+                      {item.subCategoryColor && (
+                        <View 
+                          style={[
+                            styles.colorCircle, 
+                            { backgroundColor: item.subCategoryColor }
+                          ]} 
+                        />
+                      )}
+                    </View>
+                  )}
+                  <View style={styles.flexGrow} />
                   <View style={styles.iconContainer}>
-                    <TouchableOpacity onPress={() => handleDeleteExpense(expense.id)}>
+                    <TouchableOpacity onPress={() => handleDeleteExpense(item.id, item.type)}>
                       <FontAwesome5 name="trash-alt" size={20} color="red" />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleModifyItem(expense)}>
+                    <TouchableOpacity onPress={() => handleModifyItem(item)}>
                       <FontAwesome5 name="edit" size={20} color="blue" />
                     </TouchableOpacity>
                   </View>
@@ -224,58 +258,60 @@ const SummaryScreenWeb = () => {
           </View>
         )}
        <Modal
-        visible={isUpdateModalVisible}
-        animationType="slide"
-        transparent={true}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Actualizar Item</Text>
-            <TextInput
-              style={styles.modalInput}
-              placeholder={selectedItem ? selectedItem.title : "Título"}
-              value={updateForm.title}
-              onChangeText={text => setUpdateForm({ ...updateForm, title: text })}
-            />
-            <TextInput
-              style={styles.modalInput}
-              placeholder={selectedItem ? selectedItem.description : "Descripción"}
-              value={updateForm.description}
-              onChangeText={text => setUpdateForm({ ...updateForm, description: text })}
-            />
-            <TextInput
-              style={styles.modalInput}
-              placeholder={selectedItem ? selectedItem.amount.toString() : "Monto"}
-              value={updateForm.amount}
-              onChangeText={text => setUpdateForm({ ...updateForm, amount: text })}
-              keyboardType="numeric"
-            />
-            <RNPickerSelect
-              onValueChange={handleCategoryChange}
-              items={Object.keys(categories).map(key => ({
-                label: categories[key].name,
-                value: key,
-              }))}
-              value={updateForm.category}
-              placeholder={{ label: "Seleccionar Categoría", value: null }}
-              style={pickerSelectStyles}
-            />
-            <RNPickerSelect
-              onValueChange={value => setUpdateForm({ ...updateForm, subcategory: value })}
-              items={filteredSubCategories}
-              value={updateForm.subcategory}
-              placeholder={{ label: "Seleccionar Subcategoría", value: null }}
-              style={pickerSelectStyles}
-            />
-            <View style={styles.buttonContainer}>
-              <Button title="Actualizar" onPress={handleUpdateItem} />
-            </View>
-            <View style={styles.buttonContainer}>
-              <Button title="Cancelar" onPress={() => setIsUpdateModalVisible(false)} />
+          visible={isUpdateModalVisible}
+          animationType="slide"
+          transparent={true}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>
+                {selectedItem?.type === 'expense' ? 'Update expense' : 'Update income'}
+              </Text>
+              <TextInput
+                style={styles.modalInput}
+                placeholder={selectedItem ? selectedItem.title : "Title"}
+                value={updateForm.title}
+                onChangeText={text => setUpdateForm({ ...updateForm, title: text })}
+              />
+              <TextInput
+                style={styles.modalInput}
+                placeholder={selectedItem ? selectedItem.description : "Description"}
+                value={updateForm.description}
+                onChangeText={text => setUpdateForm({ ...updateForm, description: text })}
+              />
+              <TextInput
+                style={styles.modalInput}
+                placeholder={selectedItem ? selectedItem.amount.toString() : "Amount"}
+                value={updateForm.amount}
+                onChangeText={text => setUpdateForm({ ...updateForm, amount: text })}
+                keyboardType="numeric"
+              />
+              <RNPickerSelect
+                onValueChange={handleCategoryChange}
+                items={Object.keys(categories).map(key => ({
+                  label: categories[key].name,
+                  value: key,
+                }))}
+                value={updateForm.category}
+                placeholder={{ label: "Select a category...", value: null }}
+                style={pickerSelectStyles}
+              />
+              <RNPickerSelect
+                onValueChange={value => setUpdateForm({ ...updateForm, subcategory: value })}
+                items={filteredSubCategories}
+                value={updateForm.subcategory}
+                placeholder={{ label: "Select a subcategory...", value: null }}
+                style={pickerSelectStyles}
+              />
+              <View style={styles.buttonContainer}>
+                <Button title="Update" onPress={handleUpdateItem} />
+              </View>
+              <View style={styles.buttonContainer}>
+                <Button title="Cancel" onPress={() => setIsUpdateModalVisible(false)} />
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
       </ScrollView>
     </ImageBackground>
   );
