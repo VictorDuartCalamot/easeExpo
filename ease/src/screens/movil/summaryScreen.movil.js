@@ -187,7 +187,7 @@ const SummaryScreenMobile = () => {
         />
         <View style={styles.inputWrapper}>
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Fecha de inicio:</Text>
+            <Text style={styles.label}>Start date:</Text>
             <TextInput
               style={styles.input}
               placeholder="YYYY-MM-DD"
@@ -196,7 +196,7 @@ const SummaryScreenMobile = () => {
             />
           </View>
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Fecha de fin:</Text>
+            <Text style={styles.label}>Ending date:</Text>
             <TextInput
               style={styles.input}
               placeholder="YYYY-MM-DD"
@@ -206,32 +206,32 @@ const SummaryScreenMobile = () => {
           </View>
         </View>
         <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-          <Text style={styles.searchButtonText}>Buscar</Text>
+          <Text style={styles.searchButtonText}>Search</Text>
         </TouchableOpacity>
         {items.length > 0 && (
           <View style={styles.expensesContainer}>
             <Text style={styles.expensesTitle}>
-              Gastos e ingresos entre {startDate} y {endDate}:
+              Expenses and income between {startDate} y {endDate}:
             </Text>
             <View style={styles.columnsContainer}>
               {items.map((item, index) => (
                 <View key={item.id} style={[styles.expenseItem, index % 2 !== 0 && styles.newRow, { borderColor: item.type === 'expense' ? 'red' : 'green' }]}>
                   <Text style={styles.itemTypeText}>
-                    {item.type === 'expense' ? 'Gasto' : 'Ingreso'}
+                    {item.type === 'expense' ? 'Expense' : 'Income'}
                   </Text>
-                  <Text style={styles.blueText}>Titulo:</Text>
+                  <Text style={styles.blueText}>Title:</Text>
                   <Text>{item.title}</Text>
-                  <Text style={styles.blueText}>Descripción:</Text>
+                  <Text style={styles.blueText}>Description:</Text>
                   <Text>{item.description}</Text>
                   <Text style={styles.blueText}>Total:</Text>
                   <Text>€{item.amount}</Text>
-                  <Text style={styles.blueText}>Fecha:</Text>
+                  <Text style={styles.blueText}>Date:</Text>
                   <Text>{item.creation_date}</Text>
-                  <Text style={styles.blueText}>Hora:</Text>
+                  <Text style={styles.blueText}>Hour:</Text>
                   <Text>{item.creation_time}</Text>
                   <View style={styles.categoryContainer}>
                     <Text style={styles.blueText}>
-                      Categoría: {item.categoryName}
+                      Category: {item.categoryName}
                     </Text>
                     {item.categoryColor && (
                       <View
@@ -245,7 +245,7 @@ const SummaryScreenMobile = () => {
                   {item.type === 'expense' && (
                     <View style={styles.categoryContainer}>
                       <Text style={styles.blueText}>
-                        Subcategoría: {item.subCategoryName}
+                        Subcategory: {item.subCategoryName}
                       </Text>
                       {item.subCategoryColor && (
                         <View
@@ -273,23 +273,23 @@ const SummaryScreenMobile = () => {
         <Modal visible={isUpdateModalVisible} animationType="slide">
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>
-              {selectedItem?.type === 'expense' ? 'Actualizar gasto' : 'Actualizar ingreso'}
+              {selectedItem?.type === 'expense' ? 'Update expense' : 'Update income'}
             </Text>
             <TextInput
               style={styles.input}
-              placeholder={selectedItem?.title || 'Titulo'}
+              placeholder={selectedItem?.title || 'Title'}
               value={updateForm.title}
               onChangeText={(text) => setUpdateForm({ ...updateForm, title: text })}
             />
             <TextInput
               style={styles.input}
-              placeholder={selectedItem?.description || 'Descripción'}
+              placeholder={selectedItem?.description || 'Description'}
               value={updateForm.description}
               onChangeText={(text) => setUpdateForm({ ...updateForm, description: text })}
             />
             <TextInput
               style={styles.input}
-              placeholder={selectedItem?.amount.toString() || 'Cantidad'}
+              placeholder={selectedItem?.amount.toString() || 'Amount'}
               value={updateForm.amount}
               onChangeText={(text) => setUpdateForm({ ...updateForm, amount: text })}
               keyboardType="numeric"
@@ -299,7 +299,7 @@ const SummaryScreenMobile = () => {
               items={Object.keys(categories)
                 .filter(key => categories[key].type === selectedItem?.type)
                 .map((key) => ({ label: categories[key].name, value: key }))}
-              placeholder={{ label: selectedItem?.categoryName || 'Seleccione una categoría...', value: null }}
+              placeholder={{ label: selectedItem?.categoryName || 'Select a category...', value: null }}
               style={pickerSelectStyles}
               value={updateForm.category}
             />
@@ -307,14 +307,14 @@ const SummaryScreenMobile = () => {
               <RNPickerSelect
                 onValueChange={(value) => setUpdateForm({ ...updateForm, subcategory: value })}
                 items={filteredSubCategories}
-                placeholder={{ label: selectedItem?.subCategoryName || 'Seleccione una subcategoría...', value: null }}
+                placeholder={{ label: selectedItem?.subCategoryName || 'Select a subcategory...', value: null }}
                 style={pickerSelectStyles}
                 value={updateForm.subcategory}
               />
             )}
             <View style={styles.buttonContainer}>
-              <Button title="Cancelar" onPress={() => setIsUpdateModalVisible(false)} />
-              <Button title="Actualizar" onPress={handleUpdateItem} />
+              <Button title="Cancel" onPress={() => setIsUpdateModalVisible(false)} />
+              <Button title="Update" onPress={handleUpdateItem} />
             </View>
           </View>
         </Modal>

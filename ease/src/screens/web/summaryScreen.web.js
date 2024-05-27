@@ -146,7 +146,7 @@ const SummaryScreenWeb = () => {
           />
         </View>
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Fecha de inicio:</Text>
+          <Text style={styles.label}>Start date:</Text>
           <TextInput
             style={styles.input}
             placeholder="YYYY-MM-DD"
@@ -155,7 +155,7 @@ const SummaryScreenWeb = () => {
           />
         </View>
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Fecha de fin:</Text>
+          <Text style={styles.label}>Ending date:</Text>
           <TextInput
             style={styles.input}
             placeholder="YYYY-MM-DD"
@@ -164,29 +164,29 @@ const SummaryScreenWeb = () => {
           />
         </View>
         <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-          <Text style={styles.searchButtonText}>Buscar</Text>
+          <Text style={styles.searchButtonText}>Search</Text>
         </TouchableOpacity>
         {expenses.length > 0 && (
           <View style={styles.expensesContainer}>
             <Text style={styles.expensesTitle}>
-              Gastos entre {dateRange[0].toISOString().slice(0, 10)} y {dateRange[1].toISOString().slice(0, 10)}:
+              Expense between {dateRange[0].toISOString().slice(0, 10)} y {dateRange[1].toISOString().slice(0, 10)}:
             </Text>
             <View style={styles.gridContainer}>
               {expenses.map((expense) => (
                 <View key={expense.id} style={styles.expenseItem}>
                   <Text style={styles.blueText}>Title:</Text>
                   <Text>{expense.title}</Text>
-                  <Text style={styles.blueText}>Descripción:</Text>
+                  <Text style={styles.blueText}>Description:</Text>
                   <Text>{expense.description}</Text>
-                  <Text style={styles.blueText}>Monto:</Text>
+                  <Text style={styles.blueText}>Total:</Text>
                   <Text>€{expense.amount}</Text>
-                  <Text style={styles.blueText}>Fecha:</Text>
+                  <Text style={styles.blueText}>Date:</Text>
                   <Text>{expense.creation_date}</Text>
-                  <Text style={styles.blueText}>Hora:</Text>
+                  <Text style={styles.blueText}>Hour:</Text>
                   <Text>{expense.creation_time}</Text>
                   <View style={styles.categoryContainer}>
                     <Text style={[styles.blueText, styles.redText]}>
-                      Categoría: {expense.categoryName}
+                      Category: {expense.categoryName}
                     </Text>
                     {expense.categoryColor && (
                       <View 
@@ -199,7 +199,7 @@ const SummaryScreenWeb = () => {
                   </View>
                   <View style={styles.categoryContainer}>
                     <Text style={styles.redText}>
-                      Subcategoría: {expense.subCategoryName}
+                      Subcategory: {expense.subCategoryName}
                     </Text>
                     {expense.subCategoryColor && (
                       <View 
@@ -224,59 +224,58 @@ const SummaryScreenWeb = () => {
           </View>
         )}
        <Modal
-  visible={isUpdateModalVisible}
-  animationType="slide"
-  transparent={true}
->
-  <View style={styles.modalContainer}>
-    <View style={styles.modalContent}>
-      <Text style={styles.modalTitle}>Actualizar Item</Text>
-      <TextInput
-        style={styles.modalInput}
-        placeholder={selectedItem ? selectedItem.title : "Título"}
-        value={updateForm.title}
-        onChangeText={text => setUpdateForm({ ...updateForm, title: text })}
-      />
-      <TextInput
-        style={styles.modalInput}
-        placeholder={selectedItem ? selectedItem.description : "Descripción"}
-        value={updateForm.description}
-        onChangeText={text => setUpdateForm({ ...updateForm, description: text })}
-      />
-      <TextInput
-        style={styles.modalInput}
-        placeholder={selectedItem ? selectedItem.amount.toString() : "Monto"}
-        value={updateForm.amount}
-        onChangeText={text => setUpdateForm({ ...updateForm, amount: text })}
-        keyboardType="numeric"
-      />
-      <RNPickerSelect
-        onValueChange={handleCategoryChange}
-        items={Object.keys(categories).map(key => ({
-          label: categories[key].name,
-          value: key,
-        }))}
-        value={updateForm.category}
-        placeholder={{ label: "Seleccionar Categoría", value: null }}
-        style={pickerSelectStyles}
-      />
-      <RNPickerSelect
-        onValueChange={value => setUpdateForm({ ...updateForm, subcategory: value })}
-        items={filteredSubCategories}
-        value={updateForm.subcategory}
-        placeholder={{ label: "Seleccionar Subcategoría", value: null }}
-        style={pickerSelectStyles}
-      />
-      <View style={styles.buttonContainer}>
-        <Button title="Actualizar" onPress={handleUpdateItem} />
-      </View>
-      <View style={styles.buttonContainer}>
-        <Button title="Cancelar" onPress={() => setIsUpdateModalVisible(false)} />
-      </View>
-    </View>
-  </View>
-</Modal>
-
+        visible={isUpdateModalVisible}
+        animationType="slide"
+        transparent={true}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Actualizar Item</Text>
+            <TextInput
+              style={styles.modalInput}
+              placeholder={selectedItem ? selectedItem.title : "Título"}
+              value={updateForm.title}
+              onChangeText={text => setUpdateForm({ ...updateForm, title: text })}
+            />
+            <TextInput
+              style={styles.modalInput}
+              placeholder={selectedItem ? selectedItem.description : "Descripción"}
+              value={updateForm.description}
+              onChangeText={text => setUpdateForm({ ...updateForm, description: text })}
+            />
+            <TextInput
+              style={styles.modalInput}
+              placeholder={selectedItem ? selectedItem.amount.toString() : "Monto"}
+              value={updateForm.amount}
+              onChangeText={text => setUpdateForm({ ...updateForm, amount: text })}
+              keyboardType="numeric"
+            />
+            <RNPickerSelect
+              onValueChange={handleCategoryChange}
+              items={Object.keys(categories).map(key => ({
+                label: categories[key].name,
+                value: key,
+              }))}
+              value={updateForm.category}
+              placeholder={{ label: "Seleccionar Categoría", value: null }}
+              style={pickerSelectStyles}
+            />
+            <RNPickerSelect
+              onValueChange={value => setUpdateForm({ ...updateForm, subcategory: value })}
+              items={filteredSubCategories}
+              value={updateForm.subcategory}
+              placeholder={{ label: "Seleccionar Subcategoría", value: null }}
+              style={pickerSelectStyles}
+            />
+            <View style={styles.buttonContainer}>
+              <Button title="Actualizar" onPress={handleUpdateItem} />
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button title="Cancelar" onPress={() => setIsUpdateModalVisible(false)} />
+            </View>
+          </View>
+        </View>
+      </Modal>
       </ScrollView>
     </ImageBackground>
   );
