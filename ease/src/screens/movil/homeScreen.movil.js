@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
   },
   menuButton: {
     position: 'absolute',
-    marginTop: 20,
+    marginTop: 37,
     left: 0,
     zIndex: 2,
     padding: 10,
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
   menuDropdown: {
     position: 'absolute',
     left: 0,
-    top: 60,
+    top: 78,
     backgroundColor: 'white',
     paddingVertical: 20,
     paddingHorizontal: 10,
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 5,
     justifyContent: 'center',
-    marginTop: 200,
+    marginTop: 250,
     width: '100%',
   },
   chartTitle: {
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     position: 'absolute',
-    bottom: 120,
+    bottom: 230,
     width: '100%',
   },
   logo: {
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
     height: 100,
     alignSelf: 'center',
     borderRadius: 30,
-    marginTop: 85,
+    marginTop: 105,
   },
 });
 
